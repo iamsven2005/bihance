@@ -6,10 +6,37 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model User {
+model user {
   clerkId String @default(uuid()) @id
-  userid String
   name String
   profileImage String
   email String
+}
+model event {
+  eventid String @default(uuid()) @id
+  managerId String
+  location String
+  image String
+  description String
+  name String
+}
+model payroll {
+  payrollid String @default(uuid()) @id
+  userId String
+  weekend Int
+  weekday Int
+  eventid String
+}
+model attendance{
+  id String @default(uuid()) @id
+  userId String
+  imageurl String
+  time String
+  location String
+}
+
+model feedback{
+  id String @default(uuid()) @id
+  description String
+  userid String
 }
