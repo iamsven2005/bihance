@@ -8,7 +8,7 @@ export default function Loading() {
               <span className="loading loading-infinity loading-lg"></span>{" "}
             </span>
             <p className="text-center text-gray-500 md:w-96">
-              Crafting The Best Future
+              Ennhancing your business needs
             </p>
           </div>
           Loading...
