@@ -33,6 +33,7 @@ model attendance{
   imageurl String
   time String
   location String
+  eventId String
 }
 
 model feedback{

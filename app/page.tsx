@@ -1,10 +1,28 @@
-import LeafletMapComponent from "./Location";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
-  return (
-    <main className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-4xl font-bold mb-8">Welcome to My Next.js App</h1>
-      <LeafletMapComponent />
-    </main>
-  );
+const MainPage = () => {
+  return ( 
+  <div className="flex flex-col items-center justify-center mx-auto hero-content">
+    <Image src="/favicon.ico"
+    width={100}
+    height={100}
+    alt="Logo"/>
+    <h1 className="text-bold text-5xl">Bihance</h1>
+    <Link href="/event">
+    <Button>
+    View created events
+    </Button>
+    </Link>
+    <Link href="/upload">
+    <Button>
+    Upload attendance
+    </Button>
+    </Link>
+
+
+  </div> );
 }
+ 
+export default MainPage;
