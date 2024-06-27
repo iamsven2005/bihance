@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider, SignIn, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,7 @@ export default function RootLayout({
       <body>
         <header className="bg-base-100">
           <SignedOut>
-            <Button className="text-base-content">
+            <Button className="text-base-content mx-auto">
             <SignInButton/>
             </Button>
           </SignedOut>
@@ -40,6 +41,7 @@ export default function RootLayout({
         <main className="bg-base-100 text-base-content">
           {children}
         </main>
+        <Toaster/>
       </body>
     </html>
   </ClerkProvider>

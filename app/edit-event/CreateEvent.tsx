@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import UploadImage from "./upload";
+import { toast } from "sonner";
 
 const CreateEventForm: React.FC = () => {
   const [name, setName] = useState("");
@@ -30,7 +31,9 @@ const CreateEventForm: React.FC = () => {
       } else {
         console.error("Failed to create event", data.error);
       }
+      toast.success("Event added")
     } catch (error) {
+      toast.error("Failed to create event")
       console.error("Failed to create event", error);
     }
   };

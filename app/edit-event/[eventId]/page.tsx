@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import UploadImage from "./upload";
 import Link from "next/link";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog"; // Adjust the import path as necessary
+import { toast } from "sonner";
 
 type Props = {
   params: {

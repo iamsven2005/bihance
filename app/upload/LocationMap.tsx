@@ -18,6 +18,7 @@ interface LocationMapProps {
 const LocationMap: React.FC<LocationMapProps> = ({ latitude, longitude }) => {
   return (
     <MapContainer center={[latitude, longitude]} zoom={20} className="w-60 h-60">
+
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

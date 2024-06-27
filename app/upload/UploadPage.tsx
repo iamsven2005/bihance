@@ -7,6 +7,7 @@ import { event } from "@prisma/client";
 import { ComboboxDemo } from "./ComboBox"; // Adjust the import path as necessary
 import LocationMap from "./LocationMap"; // Import the LocationMap component
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface Location {
   latitude: number;
@@ -48,11 +49,11 @@ const UploadPage = () => {
       return () => clearInterval(intervalId);
     } else {
       setError('Geolocation is not supported by this browser.');
+      toast.error("Unable to get location")
     }
   }, []);
 
   useEffect(() => {
-    // Fetch events
     const fetchEvents = async () => {
       try {
         const response = await axios.get('/api/getEvents');
@@ -64,6 +65,7 @@ const UploadPage = () => {
         }
       } catch (error) {
         setError('Failed to fetch events');
+        toast.error("No events found")
       }
     };
 
@@ -74,11 +76,11 @@ const UploadPage = () => {
     const urls = res.map((file: { url: string }) => file.url);
     setImageUrls((prevUrls) => [...prevUrls, ...urls]);
     console.log("Files: ", res);
-    alert("Upload Completed");
+    toast.success("Image uploaded")
   };
 
   const handleUploadError = (error: Error) => {
-    alert(`ERROR! ${error.message}`);
+    toast.error("Unable to upload")
   };
 
   const handleSubmit = async () => {
@@ -104,6 +106,7 @@ const UploadPage = () => {
         setSubmitError("Failed to save attendance.");
         setSubmitSuccess(null);
       }
+      toast.success("Submitted attendance")
     } catch (error) {
       setSubmitError("Failed to save attendance.");
       setSubmitSuccess(null);
@@ -114,8 +117,16 @@ const UploadPage = () => {
   return (
     <main className="flex flex-col items-center justify-between mx-auto">
       <div className="flex flex-wrap items-center justify-center p-5">
+
         {location ? (
+          <div>
+            <h1>
+              Make sure you turn off your VPN
+            </h1>
             <LocationMap latitude={location.latitude} longitude={location.longitude} />
+          </div>
+
+
         ) : (
           <div>
             <h1>Loading location...</h1>
@@ -123,22 +134,22 @@ const UploadPage = () => {
           </div>
         )}
 
-      <UploadDropzone
-        endpoint="imageUploader"
-        onClientUploadComplete={handleUploadComplete}
-        onUploadError={handleUploadError}
-      />
-      <div className="flex mx-auto">
-        {imageUrls.map((url, index) => (
-          <div key={index} className="w-full h-48 relative">
-            <img
-              src={url}
-              alt={`Uploaded image ${index + 1}`}
-              className="object-cover w-full h-full"
-            />
-          </div>
-        ))}
-      </div>
+        <UploadDropzone
+          endpoint="imageUploader"
+          onClientUploadComplete={handleUploadComplete}
+          onUploadError={handleUploadError}
+        />
+        <div className="flex mx-auto">
+          {imageUrls.map((url, index) => (
+            <div key={index} className="w-full h-48 relative">
+              <img
+                src={url}
+                alt={`Uploaded image ${index + 1}`}
+                className="object-cover w-full h-full"
+              />
+            </div>
+          ))}
+        </div>
       </div>
       {submitError && <p className="mt-4 text-red-500">{submitError}</p>}
       {submitSuccess && <p className="mt-4 text-green-500">{submitSuccess}</p>}
@@ -153,21 +164,25 @@ const UploadPage = () => {
           Submit
         </Button>
       </div>
-        <h2 className="font-bold text-xl m-5">Available Events:</h2>
-        {events.length > 0 ? (
-          <div className="flex flex-wrap gap-5">
-            {events.map((event) => (
-              <div key={event.eventid} className="w-64 rounded-xl shadow-xl p-5 bg-base-200">
-                <h3 className="font-bold">{event.name}</h3>
-                <p>{event.description}</p>
-                <p>{event.location}</p>
-                {event.image && <img src={event.image} alt={event.name} className="w-full h-auto rounded-xl shadow-sm" />}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p>No events available.</p>
-        )}
+      <h2 className="font-bold text-xl m-5">Available Events:</h2>
+      {events.length > 0 ? (
+        <div className="flex flex-wrap gap-5">
+          {events.map((event) => (
+            <div key={event.eventid} className="w-64 rounded-xl shadow-xl p-5 bg-base-200">
+              <h3 className="font-bold">{event.name}</h3>
+              <p>Description:</p>
+              <p>{event.description}</p>
+              <p>
+                Location:
+              </p>
+              <p>{event.location}</p>
+              {event.image && <img src={event.image} alt={event.name} className="w-full h-auto rounded-xl shadow-sm" />}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p>No events available.</p>
+      )}
     </main>
   );
 }

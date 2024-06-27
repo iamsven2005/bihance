@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type AddPayrollProps = {
   eventId: string;
@@ -43,6 +44,7 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId }) => {
         const data = await response.json();
         setError(data.error);
       }
+      toast.success("Added payroll")
     } catch (error) {
       setError("An error occurred. Please try again.");
     }

@@ -4,6 +4,9 @@ import AddPayroll from "./Addpayroll";
 import PayrollList from "./PayrollList";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
+import { toast } from "sonner";
 
 interface Props {
   params: {
@@ -12,6 +15,10 @@ interface Props {
 }
 
 const View = async ({ params }: Props) => {
+  const {userId} = auth()
+  if(!userId){
+    return redirect("/")
+  }
   const members = await db.payroll.findMany({
     where: {
       eventid: params.eventId,
@@ -23,7 +30,9 @@ const View = async ({ params }: Props) => {
       eventid: params.eventId,
     },
   });
-
+  if(!event){
+    return redirect("/")
+  }
   const userIds = members.map((member) => member.userId);
 
   const users = await db.user.findMany({

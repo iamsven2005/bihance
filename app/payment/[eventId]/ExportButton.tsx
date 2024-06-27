@@ -2,6 +2,7 @@
 
 import React from "react";
 import { AttendanceRow, exportToCsv } from "./exportToCsv";
+import { toast } from "sonner";
 
 interface ExportButtonProps {
   data: AttendanceRow[];
@@ -11,6 +12,7 @@ interface ExportButtonProps {
 const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
   const handleExport = () => {
     exportToCsv(filename, data);
+    toast.success("Exported")
   };
 
   return (

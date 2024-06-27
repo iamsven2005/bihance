@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { event } from "@prisma/client";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { toast } from "sonner";
 
 const Event = async() => {
   const { userId } = auth();

@@ -18,7 +18,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
   } | null>(null);
 
   const handleUpdate = () => {
-    location.reload(); // Refresh logic to update the payroll list
+    location.reload();
   };
 
   return (

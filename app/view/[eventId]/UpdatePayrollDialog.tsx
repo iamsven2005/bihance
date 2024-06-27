@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 type UpdatePayrollDialogProps = {
   userId: string;
@@ -55,6 +56,7 @@ const UpdatePayrollDialog: React.FC<UpdatePayrollDialogProps> = ({
         const data = await response.json();
         setError(data.error);
       }
+      toast.success("Updated Payroll")
     } catch (error) {
       setError("An error occurred. Please try again.");
     }
