@@ -1,29 +1,34 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { auth } from '@clerk/nextjs/server';
+import { db } from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
 
-const prisma = new PrismaClient();
+export async function POST(req: Request) {
+  const { userId } = auth();
 
-export async function POST(request: Request) {
-  const { imageurl, time, location, eventId } = await request.json();
-  const { userId: authUserId } = auth();
-
-  const userId = authUserId || "sampleuser";
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
-    const newAttendance = await prisma.attendance.create({
+    const { imageurl, time, location, eventId } = await req.json();
+
+    if (!imageurl || !eventId) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const attendance = await db.attendance.create({
       data: {
         userId,
         imageurl,
         time,
         location,
-        eventId
+        eventId: eventId,
       },
     });
 
-    return NextResponse.json(newAttendance, { status: 200 });
+    return NextResponse.json(attendance, { status: 200 });
   } catch (error) {
     console.error('Failed to save attendance:', error);
-    return NextResponse.json({ error: 'Failed to save attendance' }, { status: 500 });
+    return NextResponse.json({ error: "Failed to save attendance" }, { status: 500 });
   }
 }

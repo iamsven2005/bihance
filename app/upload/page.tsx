@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { UploadDropzone } from "@/lib/uploadthing";
 import axios from 'axios';
 import { event } from "@prisma/client";
+import { ComboboxDemo } from "./ComboBox"; // Adjust the import path as necessary
 
 interface Location {
   latitude: number;
@@ -18,6 +19,7 @@ export default function Home() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [events, setEvents] = useState<event[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -78,13 +80,19 @@ export default function Home() {
   };
 
   const handleSubmit = async () => {
+    if (!selectedEvent) {
+      setSubmitError("Please select an event");
+      return;
+    }
+
     const locationString = location ? `${location.latitude},${location.longitude}` : 'Unknown location';
 
     try {
       const response = await axios.post('/api/saveAttendance', {
         imageurl: imageUrls[0],
         time: currentTime,
-        location: locationString
+        location: locationString,
+        eventId: selectedEvent
       });
 
       if (response.status === 200) {
@@ -142,12 +150,24 @@ export default function Home() {
       {submitError && <p className="mt-4 text-red-500">{submitError}</p>}
       {submitSuccess && <p className="mt-4 text-green-500">{submitSuccess}</p>}
       <div className="mt-8">
+        <h2>Select Event:</h2>
+        <ComboboxDemo events={events} onSelect={setSelectedEvent} />
+        {selectedEvent && (
+          <div>
+            <h2>Selected Event ID: {selectedEvent}</h2>
+          </div>
+        )}
+      </div>
+      <div className="mt-8">
         <h2>Available Events:</h2>
         {events.length > 0 ? (
           <ul>
-            {events.map((event: event) => (
+            {events.map((event) => (
               <li key={event.eventid}>
-                {event.description}
+                <h3>{event.name}</h3>
+                <p>{event.description}</p>
+                <p>{event.location}</p>
+                {event.image && <img src={event.image} alt={event.name} className="w-full h-auto" />}
               </li>
             ))}
           </ul>
