@@ -5,6 +5,8 @@ import { UploadDropzone } from "@/lib/uploadthing";
 import axios from 'axios';
 import { event } from "@prisma/client";
 import { ComboboxDemo } from "./ComboBox"; // Adjust the import path as necessary
+import LocationMap from "./LocationMap"; // Import the LocationMap component
+import { Button } from "@/components/ui/button";
 
 interface Location {
   latitude: number;
@@ -110,22 +112,17 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-between min-h-screen p-24">
-      <div className="flex flex-col items-center justify-center">
+    <main className="flex flex-col items-center justify-between mx-auto">
+      <div className="flex flex-wrap items-center justify-center p-5">
         {location ? (
-          <div>
-            <h1>Your Location:</h1>
-            <p>Latitude: {location.latitude}</p>
-            <p>Longitude: {location.longitude}</p>
-            <h2>Current Datetime: {currentDatetime}</h2>
-          </div>
+            <LocationMap latitude={location.latitude} longitude={location.longitude} />
         ) : (
           <div>
             <h1>Loading location...</h1>
             {error && <p>Error: {error}</p>}
           </div>
         )}
-      </div>
+
       <UploadDropzone
         endpoint="imageUploader"
         onClientUploadComplete={handleUploadComplete}
@@ -142,39 +139,35 @@ export default function Home() {
           </div>
         ))}
       </div>
-      <div className="mt-8">
-        <button onClick={handleSubmit} className="px-4 py-2 bg-blue-500 text-white rounded">
-          Submit
-        </button>
       </div>
       {submitError && <p className="mt-4 text-red-500">{submitError}</p>}
       {submitSuccess && <p className="mt-4 text-green-500">{submitSuccess}</p>}
-      <div className="mt-8">
-        <h2>Select Event:</h2>
+      <div className="flex flex-wrap gap-5">
         <ComboboxDemo events={events} onSelect={setSelectedEvent} />
         {selectedEvent && (
           <div>
             <h2>Selected Event ID: {selectedEvent}</h2>
           </div>
         )}
+        <Button onClick={handleSubmit}>
+          Submit
+        </Button>
       </div>
-      <div className="mt-8">
-        <h2>Available Events:</h2>
+        <h2 className="font-bold text-xl m-5">Available Events:</h2>
         {events.length > 0 ? (
-          <ul>
+          <div className="flex flex-wrap gap-5">
             {events.map((event) => (
-              <li key={event.eventid}>
-                <h3>{event.name}</h3>
+              <div key={event.eventid} className="w-64 rounded-xl shadow-xl p-5 bg-base-200">
+                <h3 className="font-bold">{event.name}</h3>
                 <p>{event.description}</p>
                 <p>{event.location}</p>
-                {event.image && <img src={event.image} alt={event.name} className="w-full h-auto" />}
-              </li>
+                {event.image && <img src={event.image} alt={event.name} className="w-full h-auto rounded-xl shadow-sm" />}
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
           <p>No events available.</p>
         )}
-      </div>
     </main>
   );
 }

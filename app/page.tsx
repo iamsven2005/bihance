@@ -1,15 +1,24 @@
 import { Button } from "@/components/ui/button";
+import WordRotate from "@/components/ui/rotate";
+import TypingAnimation from "@/components/ui/typing";
 import Image from "next/image";
 import Link from "next/link";
 
 const MainPage = () => {
   return ( 
-  <div className="flex flex-col items-center justify-center mx-auto hero-content">
-    <Image src="/favicon.ico"
-    width={100}
-    height={100}
+  <div className="flex flex-col items-center justify-center mx-auto gap-5">
+    <Image src="/logo.png"
+    width={200}
+    height={200}
     alt="Logo"/>
-    <h1 className="text-bold text-5xl">Bihance</h1>
+    <h1 className="font-bold text-5xl">Bihance</h1>
+    <h1 className="text-xl">
+      Your all-in-one
+    </h1>
+    <WordRotate
+      className="text-4xl font-bold text-base-content"
+      words={["HR solution", "Payroll system"]}
+    />
     <Link href="/event">
     <Button>
     View created events

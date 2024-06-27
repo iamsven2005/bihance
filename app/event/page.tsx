@@ -18,18 +18,21 @@ const Event = async() => {
           },
         });
   return (
-    <div className="flex flex-col container">
-        <h1>
-        All of your events:
+    <div className="flex flex-col p-5">
+      <div className="flex flex-row items-center justify-between">
+      <h1 className="font-bold text-2xl">
+        All events:
         </h1>
-        <Link href="/edit-event">
-        Create
+        <Link href="/edit-event" className="btn">
+        Create event
         </Link>
-        <div className="flex m-5 p-5 flex-wrap">
+      </div>
+
+        <div className="flex flex-wrap">
         {events.map((item: event) => (
-        <div key={item.eventid} className="flex flex-col rounded-xl bg-base-200 shadow-lg gap-5 p-5 w-40 m-5">
+        <div key={item.eventid} className="flex flex-col rounded-xl bg-base-200 shadow-lg gap-5 p-5 w-72 m-5 mx-auto">
             <img src={item.image} className="m-5 rounded-xl"/>
-            <h1 className="text-bold text-2xl">
+            <h1 className="font-bold text-2xl">
             {item.name}
             </h1>
             <p>
@@ -42,21 +45,24 @@ const Event = async() => {
             <br/>
             {item.location}
             </p>
+            <div className="flex flex-row gap-2">
             <Link href={`/edit-event/${item.eventid}`}>
             <Button>
-            Click to edit
+            Edit
             </Button>
             </Link>
             <Link href={`/view/${item.eventid}`}>
             <Button>
-            View employeees
+            Employees
             </Button>
             </Link>
             <Link href={`/payment/${item.eventid}`}>
             <Button>
-            View payroll
+            Payroll
             </Button>
             </Link>
+            </div>
+
         </div>
         
 

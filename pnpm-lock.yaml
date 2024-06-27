@@ -22,6 +22,7 @@ specifiers:
   date-fns: ^3.6.0
   eslint: ^8
   eslint-config-next: 14.2.3
+  framer-motion: ^11.2.12
   leaflet: ^1.9.4
   lucide-react: ^0.376.0
   next: 14.2.3
@@ -55,6 +56,7 @@ dependencies:
   clsx: 2.1.1
   cmdk: 1.0.0_iv3fbzfqanoonyhoyrhhflyvgy
   date-fns: 3.6.0
+  framer-motion: 11.2.12_nnrd3gsncyragczmpvfhocinkq
   leaflet: 1.9.4
   lucide-react: 0.376.0_react@18.3.1
   next: 14.2.3_nnrd3gsncyragczmpvfhocinkq
@@ -2444,6 +2446,25 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
+    dev: false
+
+  /framer-motion/11.2.12_nnrd3gsncyragczmpvfhocinkq:
+    resolution: {integrity: sha512-lCjkV4nA9rWOy2bhR4RZzkp2xpB++kFmUZ6D44V9VQaxk+JDmbDd5lq+u58DjJIIllE8AZEXp9OG/TyDN4FB/w==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1_react@18.3.1
+      tslib: 2.6.2
     dev: false
 
   /fs.realpath/1.0.0:
