@@ -24,7 +24,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
   return (
     <div>
       {members.map((items: payroll) => (
-        <div key={items.payrollid}>
+        <div key={items.payrollid} className="flex flex-row justify-between p-5">
           <h2>{userMap[items.userId]?.name}</h2>
           <p>Weekday Payment: {items.weekday}</p>
           <p>Weekend Payment: {items.weekend}</p>

@@ -4,6 +4,9 @@ import { attendance, payroll } from "@prisma/client";
 import { redirect } from "next/navigation";
 import React from "react";
 import LocationMap from "./LocationMap"; // Import the LocationMap component
+import ExportButton from "./ExportButton"; // Import the ExportButton component
+import { AttendanceRow } from "./exportToCsv"; // Import AttendanceRow type
+import { formatTime } from "./formatTime"; // Import the time formatting function
 
 interface Props {
   params: {
@@ -57,11 +60,43 @@ const Attend = async ({ params }: Props) => {
     return isWeekend ? payroll?.weekend ?? 0 : payroll?.weekday ?? 0;
   };
 
+  const rows: AttendanceRow[] = [];
+
+  Object.keys(groupedAttendances).forEach((date) => {
+    const items = groupedAttendances[date];
+    items.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+
+    for (let i = 0; i < items.length; i += 2) {
+      const checkIn = new Date(items[i].time);
+      const checkOut = items[i + 1] ? new Date(items[i + 1].time) : null;
+      const payrollValue = getPayrollValue(checkIn, payrolls);
+      const timeDifference = checkOut
+        ? calculateTimeDifference(checkIn, checkOut)
+        : 0;
+      const duePayment = timeDifference * payrollValue;
+
+      rows.push({
+        Date: checkIn.toLocaleDateString(),
+        "Check-in Time": formatTime(checkIn), // Use the formatTime function
+        "Check-out Time": checkOut ? formatTime(checkOut) : "",
+        "Time Difference (hours)": timeDifference,
+        "Payroll (per hour)": payrollValue,
+        "Due Payment": duePayment,
+        Location: items[i].location
+      });
+    }
+  });
+
   return (
     <div className="container">
-      <div className="flex flex-wrap p-5 bg-base-200 gap-5 rounded-xl">
+      <div className="flex flex-col p-5 bg-base-200 gap-5 rounded-xl">
+        <div className="flex flex-row justify-between">
         <h1 className="font-bold text-xl">Attendance</h1>
         <br />
+        <ExportButton data={rows} filename="attendance.csv" />
+        </div>
+
+
         <div className="flex flex-wrap gap-5">
           {Object.keys(groupedAttendances).map((date) => {
             const items = groupedAttendances[date];
@@ -91,11 +126,11 @@ const Attend = async ({ params }: Props) => {
                 >
                   <LocationMap location={items[0].location} />
                   <p>Date: {pair.checkIn.toLocaleDateString()}</p>
-                  <p>Check-in Time: {pair.checkIn.toLocaleTimeString()}</p>
+                  <p>Check-in Time: {formatTime(pair.checkIn)}</p>
                   {pair.checkOut && (
                     <>
                       <p>
-                        Check-out Time: {pair.checkOut.toLocaleTimeString()}
+                        Check-out Time: {formatTime(pair.checkOut)}
                       </p>
                       <p>
                         Time Difference: {timeDifference} hours

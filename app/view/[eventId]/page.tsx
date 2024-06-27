@@ -40,16 +40,22 @@ const View = async ({ params }: Props) => {
   });
 
   return (
-    <div>
+    <div className="p-5">
+      <div className="flex justify-between m-5 ">
+      <h1 className="font-bold text-xl">Payroll for {event?.name}</h1>
         <Link href="/event">
         <Button>
             Events
         </Button>
         </Link>
-      <h1>Payroll for {event?.name}</h1>
-      
+      </div>
+      <div className="m-5 bg-base-200 p-5 rounded-xl">
       <AddPayroll eventId={params.eventId} />
       <PayrollList members={members} userMap={userMap} />
+      </div>
+
+      
+
     </div>
   );
 };

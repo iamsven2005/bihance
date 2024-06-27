@@ -16,7 +16,7 @@ const MainPage = () => {
       Your all-in-one
     </h1>
     <WordRotate
-      className="text-4xl font-bold text-base-content"
+      className="text-4xl font-bold text-base-content h-20"
       words={["HR solution", "Payroll system"]}
     />
     <Link href="/event">

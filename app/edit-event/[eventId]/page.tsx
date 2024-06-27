@@ -97,49 +97,56 @@ const EventForm = async ({ params }: Props) => {
 
   return (
     <div className="container flex gap-5 flex-col">
-      <h1 className="text-2xl font-bold">Edit Event</h1>
-      <Link href="/event">
-        <Button>Back to events</Button>
-      </Link>
-      <form action={handlename}>
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold">Edit Event</h1>
+        <Link href="/event">
+          <Button>Back to events</Button>
+        </Link>
+        <DeleteConfirmationDialog onConfirm={handleDelete} />
+      </div>
+
+      <div className="flex flex-wrap gap-5 bg-base-200 mx-auto p-5">
+        <form action={handlename}>
+          <div>
+            <label htmlFor="name">Event Name:</label>
+            <Input type="text" id="name" name="name" defaultValue={event.name} required />
+          </div>
+          <Button type="submit">Save</Button>
+        </form>
+        <form action={handlelocation}>
+          <div>
+            <label htmlFor="location">Event Location:</label>
+            <Input
+              type="text"
+              id="location"
+              name="location"
+              defaultValue={event.location}
+              required
+            />
+          </div>
+          <Button type="submit">Save</Button>
+        </form>
+        <form action={handledescription}>
+          <div>
+            <label htmlFor="description">Event Description:</label>
+            <Input
+              type="text"
+              id="description"
+              name="description"
+              defaultValue={event.description}
+              required
+            />
+          </div>
+          <Button type="submit">Save</Button>
+        </form>
         <div>
-          <label htmlFor="name">Event Name:</label>
-          <Input type="text" id="name" name="name" defaultValue={event.name} required />
-        </div>
-        <Button type="submit">Save</Button>
-      </form>
-      <form action={handlelocation}>
-        <div>
-          <label htmlFor="location">Event Location:</label>
-          <Input
-            type="text"
-            id="location"
-            name="location"
-            defaultValue={event.location}
-            required
-          />
-        </div>
-        <Button type="submit">Save</Button>
-      </form>
-      <form action={handledescription}>
-        <div>
-          <label htmlFor="description">Event Description:</label>
-          <Input
-            type="text"
-            id="description"
-            name="description"
-            defaultValue={event.description}
-            required
-          />
-        </div>
-        <Button type="submit">Save</Button>
-      </form>
-      <div>
         <label htmlFor="image">Event Image:</label>
         <UploadImage onUploadComplete={handleimage} />
         <img src={event.image} className="items-center justify-center mx-auto flex" />
       </div>
-      <DeleteConfirmationDialog onConfirm={handleDelete} />
+      </div>
+
+
     </div>
   );
 };

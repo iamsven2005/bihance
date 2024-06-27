@@ -29,7 +29,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-red-500 text-white mt-4">Delete Event</Button>
+        <Button variant={"destructive"}>Delete</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

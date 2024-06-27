@@ -102,7 +102,7 @@ const UpdatePayrollDialog: React.FC<UpdatePayrollDialogProps> = ({
         {error && <p className="text-red-500">{error}</p>}
         <DialogFooter>
           <Button onClick={handleUpdatePayroll}>Save changes</Button>
-          <Button variant="outline" onClick={onClose}>
+          <Button onClick={onClose}>
             Cancel
           </Button>
         </DialogFooter>

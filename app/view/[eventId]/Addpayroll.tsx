@@ -49,7 +49,7 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId }) => {
   };
 
   return (
-    <form onSubmit={handleAddPayroll} className="flex flex-col gap-4">
+    <form onSubmit={handleAddPayroll} className="flex flex-wrap gap-4">
       {error && <p className="text-red-500">{error}</p>}
       <div>
         <label htmlFor="email">User Email:</label>
