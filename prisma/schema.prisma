@@ -31,7 +31,7 @@ model attendance{
   id String @default(uuid()) @id
   userId String
   imageurl String
-  time String
+  time DateTime
   location String
   eventId String
 }

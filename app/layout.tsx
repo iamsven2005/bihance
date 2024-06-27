@@ -28,7 +28,13 @@ export default function RootLayout({
             </Button>
           </SignedOut>
           <SignedIn>
+            <div className="flex flex-row items-center w-full justify-around p-5">
+            <Link href="/">
+            <img src="/favicon.ico" className="size-10"/>
+            </Link>
             <UserButton/>
+            </div>
+
           </SignedIn>
         </header>
         <main className="bg-base-100 text-base-content">

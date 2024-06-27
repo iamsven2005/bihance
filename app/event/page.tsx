@@ -52,6 +52,11 @@ const Event = async() => {
             View employeees
             </Button>
             </Link>
+            <Link href={`/payment/${item.eventid}`}>
+            <Button>
+            View payroll
+            </Button>
+            </Link>
         </div>
         
 

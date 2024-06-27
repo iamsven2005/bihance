@@ -14,7 +14,7 @@ interface Location {
 export default function Home() {
   const [location, setLocation] = useState<Location | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState<string>('');
+  const [currentDatetime, setCurrentDatetime] = useState<string>('');
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
@@ -37,14 +37,14 @@ export default function Home() {
     }
 
     const now = new Date();
-    const formattedTime = now.toLocaleTimeString();
-    setCurrentTime(formattedTime);
+    const formattedDatetime = now.toISOString();
+    setCurrentDatetime(formattedDatetime);
 
     const intervalId = setInterval(() => {
       const now = new Date();
-      const formattedTime = now.toLocaleTimeString();
-      setCurrentTime(formattedTime);
-    }, 1000);
+      const formattedDatetime = now.toISOString();
+      setCurrentDatetime(formattedDatetime);
+    }, 60000); // Update every minute
 
     return () => clearInterval(intervalId);
   }, []);
@@ -90,7 +90,7 @@ export default function Home() {
     try {
       const response = await axios.post('/api/saveAttendance', {
         imageurl: imageUrls[0],
-        time: currentTime,
+        datetime: currentDatetime,
         location: locationString,
         eventId: selectedEvent
       });
@@ -117,7 +117,7 @@ export default function Home() {
             <h1>Your Location:</h1>
             <p>Latitude: {location.latitude}</p>
             <p>Longitude: {location.longitude}</p>
-            <h2>Current Time: {currentTime}</h2>
+            <h2>Current Datetime: {currentDatetime}</h2>
           </div>
         ) : (
           <div>
@@ -131,7 +131,7 @@ export default function Home() {
         onClientUploadComplete={handleUploadComplete}
         onUploadError={handleUploadError}
       />
-      <div className="mt-8 grid grid-cols-3 gap-4">
+      <div className="flex mx-auto">
         {imageUrls.map((url, index) => (
           <div key={index} className="w-full h-48 relative">
             <img

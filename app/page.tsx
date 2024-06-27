@@ -20,6 +20,11 @@ const MainPage = () => {
     Upload attendance
     </Button>
     </Link>
+    <Link href="/attend">
+    <Button>
+    View attendance
+    </Button>
+    </Link>
 
 
   </div> );

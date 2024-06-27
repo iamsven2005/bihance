@@ -10,9 +10,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { imageurl, time, location, eventId } = await req.json();
+    const { imageurl, datetime, location, eventId } = await req.json();
 
-    if (!imageurl || !eventId) {
+    if (!imageurl || !eventId || !datetime) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       data: {
         userId,
         imageurl,
-        time,
+        time: datetime,
         location,
         eventId: eventId,
       },
