@@ -202,7 +202,7 @@ async function handleCheckoutSessionCompleted(
       };
 
       const { data: paymentsData, error: paymentsError } = await supabase
-        .from("payments")
+        .from("/dashboard/payments")
         .insert([paymentData]);
       if (paymentsError) throw new Error("Error inserting payment");
 
@@ -216,7 +216,7 @@ async function handleCheckoutSessionCompleted(
 
       return NextResponse.json({
         status: 200,
-        message: "Payment and credits updated successfully",
+        message: "/dashboard/payment and credits updated successfully",
         updatedUser,
       });
     } catch (error) {

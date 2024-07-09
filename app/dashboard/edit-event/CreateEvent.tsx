@@ -27,7 +27,7 @@ const CreateEventForm: React.FC = () => {
       const data = await response.json();
       if (response.ok) {
         const eventId = data.eventid;
-        router.push(`/edit-event/${eventId}`);
+        router.push(`/dashboard/edit-event/${eventId}`);
       } else {
         console.error("Failed to create event", data.error);
       }

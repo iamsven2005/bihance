@@ -1,4 +1,4 @@
-<h1 align="center">Nextjs Starter Kit: The Complete SAAS Toolkit</h1>
+<h1 align="center">Bihance: The Complete SAAS Toolkit</h1>
 <div>
     <div align="center">
         <a href="https://x.com/rasmickyy">
@@ -115,3 +115,8 @@ Contributions to the project are welcome. Feel free to fork the repository, make
 ## License
 
 This project is licensed under the MIT License.
+
+
+https://dashboard.stripe.com/test/products?active=true
+
+Adding a product

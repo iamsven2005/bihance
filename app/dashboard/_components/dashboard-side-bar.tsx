@@ -4,8 +4,10 @@ import { Separator } from '@/components/ui/separator'
 import clsx from 'clsx'
 import {
   Banknote,
+  Calendar,
   Folder,
   HomeIcon,
+  Plus,
   Settings
 } from "lucide-react"
 import Link from 'next/link'
@@ -20,7 +22,7 @@ export default function DashboardSideBar() {
       <div className="flex h-full max-h-screen flex-col gap-2 ">
         <div className="flex h-[55px] items-center justify-between border-b px-3 w-full">
           <Link className="flex items-center gap-2 font-semibold ml-1" href="/">
-            <span className="">Nextjs Starter Kit</span>
+            <span className="">Bihance</span>
           </Link>
         </div>
         <div className="flex-1 overflow-auto py-2 ">
@@ -38,36 +40,36 @@ export default function DashboardSideBar() {
             </Link>
             <Link
               className={clsx("flex items-center gap-2 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50", {
-                "flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50": pathname === "/dashboard/projects"
+                "flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50": pathname === "/dashboard/event"
               })}
-              href="/dashboard/projects"
+              href="/dashboard/event"
             >
               <div className="border rounded-lg dark:bg-black dark:border-gray-800 border-gray-400 p-1 bg-white">
-                <Folder className="h-3 w-3" />
+                <Calendar className="h-3 w-3" />
               </div>
-              Projects
+              Events
             </Link>
             <Link
               className={clsx("flex items-center gap-2 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50", {
-                "flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50": pathname === "/dashboard/kanban"
+                "flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50": pathname === "/dashboard/upload"
               })}
-              href="/dashboard/kanban"
+              href="/dashboard/upload"
             >
               <div className="border rounded-lg dark:bg-black dark:border-gray-800 border-gray-400 p-1 bg-white">
                 <FaTasks className="h-3 w-3" />
               </div>
-              Kanban
+              Upload
             </Link>
             <Link
               className={clsx("flex items-center gap-2 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50", {
-                "flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50": pathname === "/dashboard/finance"
+                "flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50": pathname === "/dashboard/edit-event"
               })}
-              href="/dashboard/finance"
+              href="/dashboard/edit-event"
             >
               <div className="border rounded-lg dark:bg-black dark:border-gray-800 border-gray-400 p-1 bg-white">
-                <Banknote className="h-3 w-3" />
+                <Plus className="h-3 w-3" />
               </div>
-              Finance
+              Add Event
             </Link>
             <Separator className="my-3" />
             <Link

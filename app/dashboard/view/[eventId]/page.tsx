@@ -52,7 +52,7 @@ const View = async ({ params }: Props) => {
     <div className="p-5">
       <div className="flex justify-between m-5 ">
       <h1 className="font-bold text-xl">Payroll for {event?.name}</h1>
-        <Link href="/event">
+        <Link href="/dashboard/event">
         <Button>
             Events
         </Button>

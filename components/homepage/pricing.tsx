@@ -145,8 +145,8 @@ export default function Pricing() {
       yearlyPrice: 100,
       description: "Essential features you need to get started",
       features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3"],
-      priceIdMonthly: "price_1OHwQqKCuFqcLnh8QmcSRSQ9",
-      priceIdYearly: "price_1OHwQqKCuFqcLnh8QmcSRSQ9",
+      priceIdMonthly: "price_1PaUeNGZumt4oiwzivMfOtOF",
+      priceIdYearly: "price_1PaUeNGZumt4oiwzivMfOtOF",
       actionLabel: "Get Started",
     },
     {
@@ -156,8 +156,8 @@ export default function Pricing() {
       description: "Perfect for owners of small & medium businessess",
       features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3"],
       actionLabel: "Get Started",
-      priceIdMonthly: "price_1OHwQqKCuFqcLnh8QmcSRSQ9",
-      priceIdYearly: "price_1OHwQqKCuFqcLnh8QmcSRSQ9",
+      priceIdMonthly: "price_1PaUeNGZumt4oiwzivMfOtOF",
+      priceIdYearly: "price_1PaUeNGZumt4oiwzivMfOtOF",
       popular: true,
     },
     {
@@ -166,8 +166,8 @@ export default function Pricing() {
       description: "Dedicated support and infrastructure to fit your needs",
       features: ["Example Feature Number 1", "Example Feature Number 2", "Example Feature Number 3", "Super Exclusive Feature"],
       actionLabel: "Contact Sales",
-      priceIdMonthly: "price_1OHwQqKCuFqcLnh8QmcSRSQ9",
-      priceIdYearly: "price_1OHwQqKCuFqcLnh8QmcSRSQ9",
+      priceIdMonthly: "price_1PaUeNGZumt4oiwzivMfOtOF",
+      priceIdYearly: "price_1PaUeNGZumt4oiwzivMfOtOF",
       exclusive: true,
     },
   ]

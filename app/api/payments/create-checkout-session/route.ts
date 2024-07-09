@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
         metadata: { userId, email, subscription },
-        mode: "payment",
+        mode: "/dashboard/payment",
         success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.FRONTEND_URL}/cancel`,
       });

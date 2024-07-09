@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { UserProfile } from '@/components/user-profile'
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
-import { Banknote, Folder, HomeIcon, Settings } from 'lucide-react'
+import { Banknote, Calendar, Folder, HomeIcon, Plus, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import { FaTasks } from 'react-icons/fa'
@@ -26,7 +26,7 @@ export default function DashboardTopNav({ children }: { children: ReactNode }) {
           <SheetContent side="left">
             <SheetHeader>
               <Link href="/">
-                <SheetTitle>Nextjs Starter Kit</SheetTitle>
+                <SheetTitle>Bihance</SheetTitle>
               </Link>
             </SheetHeader>
             <div className="flex flex-col space-y-3 mt-[1rem]">
@@ -39,26 +39,26 @@ export default function DashboardTopNav({ children }: { children: ReactNode }) {
                 </Link>
               </DialogClose>
               <DialogClose asChild>
-                <Link href="/dashboard/projects">
+                <Link href="/dashboard/event">
                   <Button variant="outline" className="w-full">
-                    <Folder className="mr-2 h-4 w-4" />
-                    Projects
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Events
                   </Button>
                 </Link>
               </DialogClose>
               <DialogClose asChild>
-                <Link href="/dashboard/kanban">
+                <Link href="/dashboard/upload">
                   <Button variant="outline" className="w-full">
                     <FaTasks className="mr-2 h-4 w-4" />
-                    Kanban
+                    Upload
                   </Button>
                 </Link>
               </DialogClose>
               <DialogClose asChild>
-                <Link href="/dashboard/finance">
+                <Link href="/dashboard/edit-event">
                   <Button variant="outline" className="w-full">
-                    <Banknote className="mr-2 h-4 w-4" />
-                    Finance
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Event
                   </Button>
                 </Link>
               </DialogClose>
