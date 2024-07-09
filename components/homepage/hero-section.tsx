@@ -11,7 +11,7 @@ export default function HeroSection() {
                 <AnimatedGradientTextComponent />
             </div> */}
             <h1 className="scroll-m-20 text-4xl sm:text-4xl md:text-6xl font-semibold tracking-tight lg:text-7xl text-center max-w-[1120px] bg-gradient-to-b dark:text-white">
-                build & ship fast
+                Bihance
             </h1>
             <p className="mx-auto max-w-[700px] text-gray-500 text-xl text-center mt-2 dark:text-gray-400">
                 Everything you need to quickly build your SaaS giving you time to focus on what really matters

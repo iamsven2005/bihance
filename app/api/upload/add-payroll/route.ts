@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
+      return new Response(JSON.stringify({ error: "User not found" }), { status: 403 });
     }
 
     await db.payroll.create({
