@@ -1,42 +1,32 @@
-import { Button } from "@/components/ui/button";
-import WordRotate from "@/components/ui/rotate";
-import TypingAnimation from "@/components/ui/typing";
-import Image from "next/image";
-import Link from "next/link";
+import { AccordionComponent } from "@/components/homepage/accordion-component";
+import BlogSample from "@/components/homepage/blog-samples";
+import HeroSection from "@/components/homepage/hero-section";
+import MarketingCards from "@/components/homepage/marketing-cards";
+import Pricing from "@/components/homepage/pricing";
+import SideBySide from "@/components/homepage/side-by-side";
+import PageWrapper from "@/components/wrapper/page-wrapper";
 
-const MainPage = () => {
-  return ( 
-  <div className="flex flex-col items-center justify-center mx-auto gap-5">
-    <Image src="/logo.png"
-    width={200}
-    height={200}
-    alt="Logo"/>
-    <h1 className="font-bold text-5xl">Bihance</h1>
-    <h1 className="text-xl">
-      Your all-in-one
-    </h1>
-    <WordRotate
-      className="text-4xl font-bold text-base-content h-20"
-      words={["HR solution", "Payroll system"]}
-    />
-    <Link href="/event">
-    <Button>
-    View created events
-    </Button>
-    </Link>
-    <Link href="/upload">
-    <Button>
-    Upload attendance
-    </Button>
-    </Link>
-    <Link href="/attend">
-    <Button>
-    View attendance
-    </Button>
-    </Link>
-
-
-  </div> );
+export default function Home() {
+  return (
+    <PageWrapper>
+      <div className="flex flex-col justify-center items-center w-full mt-[1rem] p-3">
+        <HeroSection />
+      </div>
+      <div className="flex my-[8rem] w-full justify-center items-center">
+        <SideBySide />
+      </div>
+      <div className="flex flex-col p-2 w-full justify-center items-center">
+        <MarketingCards />
+      </div>
+      <div className="max-w-[1200px] p-8 mt-[2rem] lg:mt-[6rem] lg:mb-[5rem]">
+        <BlogSample />
+      </div>
+      <div>
+        <Pricing />
+      </div>
+      <div className="flex justify-center items-center w-full my-[8rem]">
+        <AccordionComponent />
+      </div>
+    </PageWrapper>
+  );
 }
- 
-export default MainPage;

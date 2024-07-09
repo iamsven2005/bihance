@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { generateUploadDropzone } from "@uploadthing/react";
-import { OurFileRouter } from "@/app/api/uploadthing/core";
+import { OurFileRouter } from "@/app/api/uploadthing/core"
 import { toast } from "sonner";
 
 type UploadImageProps = {

@@ -21,7 +21,7 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/add-payroll", {
+      const response = await fetch("/api/upload/add-payroll", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

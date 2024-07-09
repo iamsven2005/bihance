@@ -8,7 +8,6 @@ import { ComboboxDemo } from "./ComboBox"; // Adjust the import path as necessar
 import LocationMap from "./LocationMap"; // Import the LocationMap component
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
 interface Location {
   latitude: number;
   longitude: number;
@@ -56,7 +55,7 @@ const UploadPage = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('/api/getEvents');
+        const response = await axios.get('/api/upload/getEvents');
         console.log('Fetched events:', response.data);
         if (response.status === 200) {
           setEvents(response.data);
@@ -92,7 +91,7 @@ const UploadPage = () => {
     const locationString = location ? `${location.latitude},${location.longitude}` : 'Unknown location';
 
     try {
-      const response = await axios.post('/api/saveAttendance', {
+      const response = await axios.post('/api/upload/saveAttendance', {
         imageurl: imageUrls[0],
         datetime: currentDatetime,
         location: locationString,

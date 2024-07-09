@@ -36,7 +36,7 @@ const UpdatePayrollDialog: React.FC<UpdatePayrollDialogProps> = ({
 
   const handleUpdatePayroll = async () => {
     try {
-      const response = await fetch("/api/update-payroll", {
+      const response = await fetch("/api/upload/update-payroll", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

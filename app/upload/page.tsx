@@ -7,10 +7,10 @@ import { toast } from "sonner";
 const UploadPage = dynamic(() => import("./UploadPage"), { ssr: false });
 
 export default function Page() {
-  const {userId} = auth()
-  if(!userId){
-    return redirect("/")
-  }
+  // const {userId} = auth()
+  // if(!userId){
+  //   return redirect("/")
+  // }
   return (
     <div>
       <UploadPage />

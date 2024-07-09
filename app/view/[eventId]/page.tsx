@@ -37,7 +37,7 @@ const View = async ({ params }: Props) => {
 
   const users = await db.user.findMany({
     where: {
-      clerkId: {
+      user_id: {
         in: userIds,
       },
     },
@@ -45,7 +45,7 @@ const View = async ({ params }: Props) => {
 
   const userMap: Record<string, user> = {};
   users.forEach((user) => {
-    userMap[user.clerkId] = user;
+    userMap[user.user_id] = user;
   });
 
   return (
