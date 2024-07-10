@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { SignInButton, useUser } from "@clerk/nextjs"
+import { SignedIn, SignedOut, useUser } from "@clerk/nextjs"
 import axios from "axios"
 import { loadStripe } from "@stripe/stripe-js"
 import { toast } from "sonner"
@@ -83,16 +83,26 @@ const Pricing = () => {
           framerProps={{
             show: { transition: { delay: 0.2 } },
           }}
-          text="The most comprehensive HR Platform"
+          text="Bihance, the most comprehensive HR Platform"
         />
         <h1 className="mx-auto mt-4 max-w-2xl text-base/6 text-gray-600 sm:text-lg">
         Need more than just a excel sheet? Bihance is a complete suite of HR solutions to improve your business processes and manage your employees.
         </h1>
+        <SignedIn>
+        <Link href="/dashboard">
         <Button>
-          <SignInButton>
-            Get Started
-          </SignInButton>
+          Dashboard
         </Button>
+        </Link>
+        </SignedIn>
+        <SignedOut>
+        <Link href="/sign-in">
+        <Button>
+          Sign In
+        </Button>
+        </Link>
+        </SignedOut>
+
 
       </section>
       <section className="text-center">
