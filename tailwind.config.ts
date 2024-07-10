@@ -33,6 +33,7 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      
       // Merging colors, borderRadius, keyframes, and animation from the second file
       colors: {
         border: "hsl(var(--border))",
@@ -75,6 +76,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        
         "background-shine": {
           from: {
             backgroundPosition: "0 0",
