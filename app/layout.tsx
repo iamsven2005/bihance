@@ -1,55 +1,49 @@
-import Provider from '@/app/provider'
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/sonner"
-import { ClerkProvider } from '@clerk/nextjs'
-import { Analytics } from "@vercel/analytics/react"
-import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans';
-import './globals.css'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ClerkProvider, SignIn, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Toaster } from "@/components/ui/sonner";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://starter.rasmic.xyz"),
-  title: {
-    default: 'Bihance',
-    template: `%s | Bihance`
-  },
-  openGraph: {
-    description: 'Build your next SAAS product',
-    images: ['']
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Nextjs Starter ',
-    description: 'Build your next SAAS product.',
-    siteId: "",
-    creator: "@rasmic",
-    creatorId: "",
-    images: [''],
-  },
-}
+  title: "Bihance",
+  description: "Ehance your jobs",
+};
+
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={GeistSans.className}>
-          <Provider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-            {children}
-            <Toaster />
-            </ThemeProvider>
-          </Provider>
-          <Analytics />
-        </body>
-      </html>
-    </ClerkProvider>
-  )
+    <html lang="en">
+      <body>
+        <header className="bg-base-100">
+          <SignedOut>
+            <Button className="text-base-content mx-auto">
+            <SignInButton/>
+            </Button>
+          </SignedOut>
+          <SignedIn>
+            <div className="flex flex-row items-center w-full justify-around p-5">
+            <Link href="/">
+            <img src="/favicon.ico" className="size-10"/>
+            </Link>
+            <UserButton/>
+            </div>
+
+          </SignedIn>
+        </header>
+        <main className="bg-base-100 text-base-content">
+          {children}
+        </main>
+        <Toaster/>
+      </body>
+    </html>
+  </ClerkProvider>
+  );
 }
