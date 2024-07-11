@@ -1,10 +1,16 @@
+import { getUserSubscription } from "@/actions/queries";
+import Payment from "@/components/payment";
 import { Button } from "@/components/ui/button";
 import WordRotate from "@/components/ui/rotate";
 import TypingAnimation from "@/components/ui/typing";
 import Image from "next/image";
 import Link from "next/link";
 
-const MainPage = () => {
+const MainPage = async() => {
+  const useSubcriptionData = getUserSubscription()
+  const [ userSubcription] = await Promise.all([useSubcriptionData
+  ])
+  const isPro = !!userSubcription?.isActive
   return ( 
   <div className="flex flex-col items-center justify-center mx-auto gap-5">
     <Image src="/logo.png"
@@ -34,7 +40,9 @@ const MainPage = () => {
     View attendance
     </Button>
     </Link>
-
+    <Payment
+                hasActiveSubscription={isPro}
+            />
 
   </div> );
 }

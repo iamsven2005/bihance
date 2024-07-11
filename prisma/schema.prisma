@@ -5,30 +5,41 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+
 }
 model user {
-  clerkId String @default(uuid()) @id
+  clerkId String @default(cuid()) @id
   name String
-  profileImage String
+  profileImage String?
   email String
 }
 model event {
-  eventid String @default(uuid()) @id
+  eventid String @default(cuid()) @id
   managerId String
   location String
   image String
   description String
   name String
 }
+model userSubcription {
+  id                   String @id @default(cuid())
+  user_id              String @unique
+  stripeCustomerId     String @unique
+  stripeSubscriptionId String @unique
+  stripePriceId        String @unique
+  stripeEnd            DateTime @unique
+}
+
 model payroll {
-  payrollid String @default(uuid()) @id
+  payrollid String @default(cuid()) @id
   userId String
   weekend Int
   weekday Int
   eventid String
 }
 model attendance{
-  id String @default(uuid()) @id
+  id String @default(cuid()) @id
   userId String
   imageurl String
   time DateTime
@@ -37,7 +48,7 @@ model attendance{
 }
 
 model feedback{
-  id String @default(uuid()) @id
+  id String @default(cuid()) @id
   description String
   userid String
 }
