@@ -55,9 +55,9 @@ export async function POST(req: Request) {
       try {
         await prisma.user.create({
           data: {
-            email: payload?.data?.email_addresses?.[0]?.email_address,
-            first_name: payload?.data?.first_name,
-            last_name: payload?.data?.last_name,
+            email: payload?.data?.email_addresses?.[0]?.email_address || "",
+            first_name: payload?.data?.first_name || "",
+            last_name: payload?.data?.last_name || "",
             image_url: payload?.data?.profile_image_url,
             clerkId: payload?.data?.id,
           },
