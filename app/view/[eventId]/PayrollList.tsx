@@ -25,7 +25,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
     <div>
       {members.map((items: payroll) => (
         <div key={items.payrollid} className="flex flex-row justify-between p-5">
-          <h2>{userMap[items.userId]?.name}</h2>
+          <h2>{userMap[items.userId]?.last_name}&nbsp;{userMap[items.userId]?.first_name}</h2>
           <p>Weekday Payment: {items.weekday}</p>
           <p>Weekend Payment: {items.weekend}</p>
           <Button onClick={() => setSelectedUser({ userId: items.userId, weekday: items.weekday, weekend: items.weekend })}>

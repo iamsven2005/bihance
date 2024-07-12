@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { id, email_addresses, first_name, image_url, lastname } = body?.data
+    const { id, email_addresses, first_name, image_url, last_name } = body?.data
 
     const email = email_addresses[0]?.email_address
     console.log('✅', body)
