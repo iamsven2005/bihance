@@ -15,7 +15,7 @@ const Payment = ({hasActiveSubscription}: Props) => {
             if (response.data) {
                 window.location.href = response.data
             }
-         }).catch(() => toast.error("Something went wrong"))
+         }).catch(() => toast.error("Could not process payment"))
 
         })
     }

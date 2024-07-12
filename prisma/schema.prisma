@@ -12,7 +12,7 @@ model user {
   clerkId String @default(cuid()) @id
   first_name String
   last_name String
-  profileImage String?
+  image_url String?
   email String
 }
 model event {

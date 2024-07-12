@@ -56,7 +56,7 @@ const UploadPage = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('/api/getEvents');
+        const response = await axios.get('/api/events');
         console.log('Fetched events:', response.data);
         if (response.status === 200) {
           setEvents(response.data);

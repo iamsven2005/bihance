@@ -15,14 +15,14 @@ export async function POST(req: Request) {
         email,
         first_name,
         last_name,
-        profileImage: image_url,
+        image_url,
       },
       create: {
         clerkId: id,
         email,
         first_name,
         last_name,
-        profileImage: image_url || '',
+        image_url,
       },
     })
     return new NextResponse('User updated in database successfully', {
