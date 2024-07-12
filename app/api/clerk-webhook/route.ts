@@ -13,13 +13,15 @@ export async function POST(req: Request) {
       where: { clerkId: id },
       update: {
         email,
-        name: first_name + "" + lastname,
+        first_name,
+        last_name,
         profileImage: image_url,
       },
       create: {
         clerkId: id,
         email,
-        name: first_name + "" + lastname || '',
+        first_name,
+        last_name,
         profileImage: image_url || '',
       },
     })
