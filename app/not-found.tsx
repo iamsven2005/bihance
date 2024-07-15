@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const notfound = () => {
-    return ( <div className="flex flex-col items-center justify-center min-h-[400px] gap-4 py-10">
+    return ( <div className="flex flex-col items-center justify-center gap-4 py-10">
     <div className="flex flex-col items-center gap-2 text-center">
       <span className="text-4xl font-extrabold tracking-tighter">404</span>
       <h1 className="text-2xl font-extrabold tracking-tighter">Uh oh. I think you&apos;re lost.</h1>

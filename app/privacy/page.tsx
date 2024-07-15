@@ -1,8 +1,6 @@
 const PrivacyPage = () => {
     return ( 
-        <div>
-            Privacy Page
-        </div>
+<iframe src="https://www.iubenda.com/privacy-policy/27259699"/>
      );
 }
  

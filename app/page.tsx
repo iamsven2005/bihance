@@ -2,7 +2,6 @@ import { getUserSubscription } from "@/actions/queries";
 import Payment from "@/components/payment";
 import { Button } from "@/components/ui/button";
 import WordRotate from "@/components/ui/rotate";
-import TypingAnimation from "@/components/ui/typing";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -21,10 +20,13 @@ const MainPage = async() => {
     <h1 className="text-xl">
       Your all-in-one
     </h1>
+    <div className="h-20">
     <WordRotate
       className="text-4xl font-bold text-base-content h-20"
       words={["HR solution", "Payroll system"]}
     />
+    </div>
+
     <Link href="/event">
     <Button>
     View created events

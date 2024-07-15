@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider, SignIn, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { ClerkProvider, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/sonner";
@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Bihance",
-  description: "Ehance your jobs",
+  description: "Enhance your jobs",
 };
 
 export default function RootLayout({
@@ -21,31 +21,38 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
-      <body>
-        <header className="bg-base-100">
-          <SignedOut>
-            <Button className="text-base-content mx-auto">
-            <SignInButton/>
-            </Button>
-          </SignedOut>
-          <SignedIn>
-            <div className="flex flex-row items-center w-full justify-around p-5">
-            <Link href="/">
-            <img src="/favicon.ico" className="size-10"/>
-            </Link>
-            <UserButton/>
+      <html lang="en" className="min-h-100">
+        <body className={inter.className}>
+          <header className="bg-base-100 shadow-md">
+            <div className="container mx-auto flex justify-between items-center p-4">
+              <Link href="/">
+                <img src="/favicon.ico" className="h-10 w-10" alt="Bihance Logo" />
+              </Link>
+              <nav className="flex items-center space-x-4">
+                <SignedOut>
+                  <Button className="text-base-content">
+                    <SignInButton />
+                  </Button>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </nav>
             </div>
-
-          </SignedIn>
-        </header>
-        <main className="bg-base-100 text-base-content">
-          {children}
-        </main>
-        <Toaster/>
-        <Analytics />
-      </body>
-    </html>
-  </ClerkProvider>
+          </header>
+          <main className="container mx-auto p-4 bg-base-100 text-base-content">
+            {children}
+          </main>
+          <footer className="bg-base-100 border-t">
+            <div className="container mx-auto p-4 text-center">
+              <Link href="/cookies" className="btn btn-link">Cookies</Link>
+              <Link href="/privacy" className="btn btn-link">Privacy</Link>
+            </div>
+          </footer>
+          <Toaster />
+          <Analytics />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
