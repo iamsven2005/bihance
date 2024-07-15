@@ -14,6 +14,7 @@ specifiers:
   '@types/react': ^18
   '@types/react-dom': ^18
   '@uploadthing/react': ^6.6.0
+  '@vercel/analytics': ^1.3.1
   axios: ^1.7.2
   class-variance-authority: ^0.7.0
   clsx: ^2.1.1
@@ -53,6 +54,7 @@ dependencies:
   '@radix-ui/react-popover': 1.1.1_iv3fbzfqanoonyhoyrhhflyvgy
   '@radix-ui/react-slot': 1.0.2_omxgp22l5i4odgutx2pskcopxu
   '@uploadthing/react': 6.6.0_clsndgfyq7laxvxufnagay2o7y
+  '@vercel/analytics': 1.3.1_next@14.2.3+react@18.3.1
   axios: 1.7.2
   class-variance-authority: 0.7.0
   clsx: 2.1.1
@@ -1378,6 +1380,22 @@ packages:
       '@uploadthing/mime-types': 0.2.10
       effect: 3.4.2
       std-env: 3.7.0
+    dev: false
+
+  /@vercel/analytics/1.3.1_next@14.2.3+react@18.3.1:
+    resolution: {integrity: sha512-xhSlYgAuJ6Q4WQGkzYTLmXwhYl39sWjoMA3nHxfkvG+WdBT25c563a7QhwwKivEOZtPJXifYHR1m2ihoisbWyA==}
+    peerDependencies:
+      next: '>= 13'
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      next:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      next: 14.2.3_nnrd3gsncyragczmpvfhocinkq
+      react: 18.3.1
+      server-only: 0.0.1
     dev: false
 
   /acorn-jsx/5.3.2_acorn@8.11.3:
@@ -3723,6 +3741,10 @@ packages:
     dependencies:
       lru-cache: 6.0.0
     dev: true
+
+  /server-only/0.0.1:
+    resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
+    dev: false
 
   /set-function-length/1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}

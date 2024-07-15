@@ -5,6 +5,7 @@ import { ClerkProvider, SignIn, SignInButton, SignedIn, SignedOut, UserButton } 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,6 +43,7 @@ export default function RootLayout({
           {children}
         </main>
         <Toaster/>
+        <Analytics />
       </body>
     </html>
   </ClerkProvider>
