@@ -80,7 +80,7 @@ const Attend = async ({ params }: Props) => {
         "Check-in Time": formatTime(checkIn), // Use the formatTime function
         "Check-out Time": checkOut ? formatTime(checkOut) : "",
         "Time Difference (hours)": timeDifference,
-        "Payroll (per hour)": payrollValue,
+        "Pay (per hour)": payrollValue,
         "Due Payment": duePayment,
         Location: items[i].location
       });
@@ -135,7 +135,7 @@ const Attend = async ({ params }: Props) => {
                       <p>
                         Time Difference: {timeDifference} hours
                       </p>
-                      <p>Payroll: {payrollValue} (per hour)</p>
+                      <p>Shift: {payrollValue} (per hour)</p>
                       <p>Due Payment: {duePayment}</p>
                     </>
                   )}

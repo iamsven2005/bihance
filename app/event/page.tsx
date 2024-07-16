@@ -59,7 +59,7 @@ const Event = async() => {
             </Link>
             <Link href={`/payment/${item.eventid}`}>
             <Button>
-            Payroll
+          Shifts
             </Button>
             </Link>
             </div>

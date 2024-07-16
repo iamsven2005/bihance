@@ -56,7 +56,7 @@ const UpdatePayrollDialog: React.FC<UpdatePayrollDialogProps> = ({
         const data = await response.json();
         setError(data.error);
       }
-      toast.success("Updated Payroll")
+      toast.success("Updated Shift")
     } catch (error) {
       setError("An error occurred. Please try again.");
     }
@@ -66,7 +66,7 @@ const UpdatePayrollDialog: React.FC<UpdatePayrollDialogProps> = ({
     <Dialog open={true} onOpenChange={onClose} >
       <DialogContent className="text-base-content bg-base-200 p-5">
         <DialogHeader>
-          <DialogTitle>Update Payroll</DialogTitle>
+          <DialogTitle>Update Shift</DialogTitle>
           <DialogDescription>
             Make changes to the payroll here. Click save when you&apos;re done.
           </DialogDescription>

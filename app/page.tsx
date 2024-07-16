@@ -29,7 +29,7 @@ const MainPage = async() => {
     <div className="h-20">
     <WordRotate
       className="text-4xl font-bold text-base-content h-20"
-      words={["HR solution", "Payroll system"]}
+      words={["HR solution", "Shift system"]}
     />
     </div>
 

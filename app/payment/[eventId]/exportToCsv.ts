@@ -3,7 +3,7 @@ export interface AttendanceRow {
     'Check-in Time': string;
     'Check-out Time': string;
     'Time Difference (hours)': number;
-    'Payroll (per hour)': number;
+    'Pay (per hour)': number;
     'Due Payment': number;
     Location: string;
   }
