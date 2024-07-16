@@ -91,7 +91,7 @@ const MainPage = async() => {
     <Card className="bg-base-300 text-base-content w-96">
       <CardHeader>
       <CardTitle>
-        Starter Plan $0 /mth
+        Starter Plan $240 /yr
       </CardTitle>
       </CardHeader>
       <CardContent>

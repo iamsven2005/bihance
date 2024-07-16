@@ -34,9 +34,9 @@ export const createStripeUrl = async() => {
                         name: "Bihance",
                         description: "Starter Plan",
                     },
-                    unit_amount: 0,
+                    unit_amount: 24000,
                     recurring:{
-                        interval: "month",
+                        interval: "year",
                     }
                 }
             }
