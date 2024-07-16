@@ -40,13 +40,14 @@ export default function RootLayout({
               </nav>
             </div>
           </header>
-          <main className="container mx-auto p-4 bg-base-100 text-base-content">
+          <main className="mx-auto p-4 bg-base-100 text-base-content">
             {children}
           </main>
           <footer className="bg-base-100 border-t">
             <div className="container mx-auto p-4 text-center">
               <Link href="/cookies" className="btn btn-link">Cookies</Link>
               <Link href="/privacy" className="btn btn-link">Privacy</Link>
+              <Link href="/service" className="btn btn-link">Service</Link>
             </div>
           </footer>
           <Toaster />

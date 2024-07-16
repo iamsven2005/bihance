@@ -31,8 +31,8 @@ export const createStripeUrl = async() => {
                 price_data:{
                     currency: "SGD",
                     product_data:{
-                        name: "NYPTECH",
-                        description: "Unlimited Hearts",
+                        name: "Bihance",
+                        description: "Starter Plan",
                     },
                     unit_amount: 0,
                     recurring:{

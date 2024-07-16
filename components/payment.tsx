@@ -21,8 +21,10 @@ const Payment = ({hasActiveSubscription}: Props) => {
     }
     return ( 
         <Button
+                className="btn btn-primary"
                 onClick={onUpgrade} disabled={pending || hasActiveSubscription}>
                     {hasActiveSubscription? "settings" : "upgrade"}
+            
             </Button>
      );
 }

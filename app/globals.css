@@ -75,6 +75,12 @@
     }
   }
   iframe{
+    width: 100%;
     height: 100vh;
-    width: 100vw;
+    margin-left: auto;
+    margin-right: auto;
+    --tw-text-opacity: 1;
+    color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));
+    --tw-bg-opacity: 1;
+    background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
   }

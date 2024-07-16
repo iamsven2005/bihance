@@ -19,7 +19,7 @@ const Event = async() => {
           },
         });
   return (
-    <div className="flex flex-col p-5">
+    <div className="flex flex-col p-5 text-base-content bg-base-100">
       <div className="flex flex-row items-center justify-between">
       <h1 className="font-bold text-2xl">
         All events:
