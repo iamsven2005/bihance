@@ -1,60 +1,35 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { auth } from '@clerk/nextjs/server';
+import { NextResponse, NextRequest } from 'next/server';
+import { db } from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
 
-const prisma = new PrismaClient();
+export async function GET(req: NextRequest) {
+  const { userId } = auth();
 
-export async function PATCH(req: Request, { params }: { params: { courseId: string } }) {
-  try {
-    const { userId } = auth();
-
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const { title, location, image, description } = await req.json();
-
-    const data: any = {};
-    if (title) data.name = title;
-    if (location) data.location = location;
-    if (image) data.image = image;
-    if (description) data.description = description;
-
-    if (Object.keys(data).length === 0) {
-      console.error("No fields provided for update");
-      return new NextResponse("No fields provided for update", { status: 400 });
-    }
-
-    const updatedCourse = await prisma.event.update({
-      where: {
-        eventid: params.courseId,
-      },
-      data,
-    });
-
-    return new NextResponse(JSON.stringify(updatedCourse), { status: 200 });
-  } catch (error) {
-    console.error("API/events/[courseId]", error);
-    return new NextResponse("Internal API error", { status: 500 });
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-}
 
-export async function DELETE(req: Request, { params }: { params: { courseId: string } }) {
+  const url = new URL(req.url);
+  const eventId = url.pathname.split("/").pop();
+
+  if (!eventId) {
+    return NextResponse.json({ error: "Event ID is missing" }, { status: 400 });
+  }
+
   try {
-    const { userId } = auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-    
-    const deletedEvent = await prisma.event.delete({
+    const event = await db.event.findUnique({
       where: {
-        eventid: params.courseId,
+        eventid: eventId,
       },
     });
 
-    return NextResponse.json(deletedEvent);
+    if (!event) {
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(event, { status: 200 });
   } catch (error) {
-    console.log("API/events/[courseId]/delete", error);
-    return new NextResponse("Cannot delete event", { status: 500 });
+    console.error('Failed to fetch event:', error);
+    return NextResponse.json({ error: "Failed to fetch event" }, { status: 500 });
   }
 }

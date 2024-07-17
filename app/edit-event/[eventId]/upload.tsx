@@ -6,13 +6,13 @@ import { OurFileRouter } from "@/app/api/uploadthing/core";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+
 type UploadImageProps = {
   onUploadComplete: (url: string) => void;
 };
 
 const UploadImage: React.FC<UploadImageProps> = ({ onUploadComplete }) => {
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-
   const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 
   const handleUploadComplete = (res: any) => {

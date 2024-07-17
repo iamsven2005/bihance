@@ -48,7 +48,7 @@ const CookiesPolicy = () => {
 
         <CardTitle>Third-Party Cookies</CardTitle>
         <CardDescription>
-          We also use third-party services that may place cookies on your device. These services help us analyze our website's usage, deliver personalized content, and manage our advertising campaigns. Our third-party partners include:
+          We also use third-party services that may place cookies on your device. These services help us analyze our website&apos;s usage, deliver personalized content, and manage our advertising campaigns. Our third-party partners include:
           <br />
           - Google Analytics for website analytics
           <br />
@@ -84,7 +84,7 @@ const CookiesPolicy = () => {
           <br />
           - Regular audits and monitoring for security vulnerabilities
           <br />
-          We use industry-leading services like Neon for database management, Clerk for authentication, and Vercel for hosting to ensure your data's security and integrity.
+          We use industry-leading services like Neon for database management, Clerk for authentication, and Vercel for hosting to ensure your data&apos;s security and integrity.
         </CardDescription>
 
         <CardTitle>Changes to This Policy</CardTitle>

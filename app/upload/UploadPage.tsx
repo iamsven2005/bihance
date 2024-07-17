@@ -171,7 +171,7 @@ const UploadPage = () => {
             <div key={event.eventid} className="w-64 rounded-xl shadow-xl p-5 bg-base-200">
               <h3 className="font-bold">{event.name}</h3>
               <p>Description:</p>
-              <p>{event.description}</p>
+              <div dangerouslySetInnerHTML={{__html: event.description}}></div>
               <p>
                 Location:
               </p>

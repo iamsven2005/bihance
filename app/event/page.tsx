@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { event } from "@prisma/client";
+import { EditorContent } from "@tiptap/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
-
+import 'react-quill/dist/quill.bubble.css'
 const Event = async() => {
   const { userId } = auth();
 
@@ -39,7 +40,8 @@ const Event = async() => {
             <p>
             About the event:
             <br/>
-            {item.description}
+            <div dangerouslySetInnerHTML={{__html: item.description}}></div>
+
             </p>
             <p>
             Location:

@@ -1,14 +1,17 @@
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+"use client";
+
 import { event } from "@prisma/client";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import UploadImage from "./upload";
 import Link from "next/link";
-import DeleteConfirmationDialog from "./DeleteConfirmationDialog"; // Adjust the import path as necessary
+import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import { toast } from "sonner";
+import { EditorContent, useEditor } from "@tiptap/react";
+import { useState, useEffect } from "react";
+import StarterKit from "@tiptap/starter-kit";
+import { updateEventName, updateEventDescription, updateEventLocation, updateEventImage, deleteEvent } from "./eventActions";
+import Tiptap from "./Tiptap";
 
 type Props = {
   params: {
@@ -16,85 +19,85 @@ type Props = {
   };
 };
 
-const EventForm = async ({ params }: Props) => {
-  const { userId } = auth();
-  if (!userId) {
-    return redirect("/");
-  }
+const EventForm: React.FC<Props> = ({ params }) => {
+  const [event, setEvent] = useState<event | null>(null);
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(true); // New state to manage loading
 
-  if (!params.eventId) {
-    return <div>Event ID is missing</div>;
-  }
-
-  const event: event | null = await db.event.findUnique({
-    where: {
-      eventid: params.eventId,
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: "",
+    onUpdate: ({ editor }) => {
+      setDescription(editor.getHTML());
     },
   });
 
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(`/api/events/${params.eventId}`, {
+          method: 'GET',
+        });
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setEvent(data);
+        setDescription(data.description);
+        editor?.commands.setContent(data.description);
+      } catch (error) {
+        console.error('Failed to fetch event:', error);
+        toast.error('Failed to fetch event');
+      } finally {
+        setLoading(false); // Set loading to false after the fetch attempt
+      }
+    };
+  
+    fetchEvent();
+  }, [params.eventId]);
+  
+
+  if (loading) {
+    return <div className="hero-content text-3xl"><span className="loading loading-ring loading-lg"></span>
+
+</div>; // Display loading state
+  }
+
   if (!event) {
-    return <div>Event not found</div>;
+    return <div>Event not found</div>; // Display error if event not found
   }
 
-  async function handlename(formData: FormData) {
-    "use server";
+  const handleSaveName = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
+    await updateEventName(params.eventId, name);
+    toast.success("Event name updated");
+  };
 
-    await db.event.update({
-      where: { eventid: params.eventId },
-      data: { name },
-    });
+  const handleSaveDescription = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await updateEventDescription(params.eventId, description);
+    toast.success("Event description updated");
+  };
 
-    // Revalidate the page after submission
-    revalidatePath(`/edit-event/${params.eventId}`);
-  }
-
-  async function handledescription(formData: FormData) {
-    "use server";
-    const description = formData.get("description") as string;
-
-    await db.event.update({
-      where: { eventid: params.eventId },
-      data: { description },
-    });
-
-    // Revalidate the page after submission
-    revalidatePath(`/edit-event/${params.eventId}`);
-  }
-
-  async function handlelocation(formData: FormData) {
-    "use server";
+  const handleSaveLocation = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     const location = formData.get("location") as string;
+    await updateEventLocation(params.eventId, location);
+    toast.success("Event location updated");
+  };
 
-    await db.event.update({
-      where: { eventid: params.eventId },
-      data: { location },
-    });
+  const handleSaveImage = async (url: string) => {
+    await updateEventImage(params.eventId, url);
+    toast.success("Event image updated");
+  };
 
-    // Revalidate the page after submission
-    revalidatePath(`/edit-event/${params.eventId}`);
-  }
-
-  async function handleimage(url: string) {
-    "use server";
-    await db.event.update({
-      where: { eventid: params.eventId },
-      data: { image: url },
-    });
-
-    // Revalidate the page after submission
-    revalidatePath(`/edit-event/${params.eventId}`);
-  }
-
-  async function handleDelete() {
-    "use server";
-    await db.event.delete({
-      where: { eventid: params.eventId },
-    });
-
-    // Redirect to the events page after deletion
-    redirect("/event");
-  }
+  const handleDelete = async () => {
+    await deleteEvent(params.eventId);
+    toast.success("Event deleted");
+  };
 
   return (
     <div className="container flex gap-5 flex-col">
@@ -106,48 +109,35 @@ const EventForm = async ({ params }: Props) => {
         <DeleteConfirmationDialog onConfirm={handleDelete} />
       </div>
 
-      <div className="flex flex-wrap gap-5 bg-base-200 mx-auto p-5">
-        <form action={handlename}>
+      <div className="flex flex-col gap-5 bg-base-200 mx-auto p-5">
+        <form onSubmit={handleSaveName}>
           <div>
             <label htmlFor="name">Event Name:</label>
             <Input type="text" id="name" name="name" defaultValue={event.name} required />
           </div>
           <Button type="submit">Save</Button>
         </form>
-        <form action={handlelocation}>
+        <form onSubmit={handleSaveLocation}>
           <div>
             <label htmlFor="location">Event Location:</label>
-            <Input
-              type="text"
-              id="location"
-              name="location"
-              defaultValue={event.location}
-              required
-            />
-          </div>
-          <Button type="submit">Save</Button>
-        </form>
-        <form action={handledescription}>
-          <div>
-            <label htmlFor="description">Event Description:</label>
-            <Input
-              type="text"
-              id="description"
-              name="description"
-              defaultValue={event.description}
-              required
-            />
+            <Input type="text" id="location" name="location" defaultValue={event.location} required />
           </div>
           <Button type="submit">Save</Button>
         </form>
         <div>
-        <label htmlFor="image">Event Image:</label>
-        <UploadImage onUploadComplete={handleimage} />
-        <img src={event.image} className="items-center justify-center mx-auto flex" />
-      </div>
-      </div>
+          <label htmlFor="description">Event Description:</label>
+          <div className="m-5">
+          <Tiptap content={event.description} />
 
-
+          </div>
+          <Button onClick={handleSaveDescription}>Save</Button>
+        </div>
+        <div>
+          <label htmlFor="image">Event Image:</label>
+          <UploadImage onUploadComplete={handleSaveImage} />
+          <img src={event.image} className="items-center justify-center mx-auto flex" />
+        </div>
+      </div>
     </div>
   );
 };
