@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/payment/[eventId]/ExportButton.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/payment/[eventId]/ExportButton.tsx", "app/api/upload-file"],
   "exclude": ["node_modules"]
 }

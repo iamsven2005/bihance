@@ -76,5 +76,6 @@ model files {
   id       String @default(cuid()) @id
   eventId  String
   url      String
+  name     String
   event    event  @relation(fields: [eventId], references: [eventid], onDelete: Cascade)
 }

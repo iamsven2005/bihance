@@ -61,7 +61,7 @@ const MainPage = async() => {
         Moreover, our system promotes fairness and transparency in the workplace. Employees benefit from accurate time tracking and timely pay, while employers can ensure compliance with labor regulations more easily. This fosters a more positive work environment and can lead to improved job satisfaction and retention rates.
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-3">
+      <AccordionItem value="item-4">
         <AccordionTrigger>
           Empowering
 

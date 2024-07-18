@@ -13,6 +13,7 @@ const CreateEventForm: React.FC = () => {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [image, setImage] = useState("");
+  const [description, setDescription] = useState("");
   const router = useRouter();
 
   const editor = useEditor({
@@ -22,8 +23,6 @@ const CreateEventForm: React.FC = () => {
       setDescription(editor.getHTML());
     },
   });
-
-  const [description, setDescription] = useState(editor?.getHTML() || "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

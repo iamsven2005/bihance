@@ -5,6 +5,9 @@ import { event } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Ellipsis } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 type EventListProps = {
   events: event[];
@@ -51,34 +54,44 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
 
       <div className="flex flex-wrap">
         {filteredEvents.map((item: event) => (
-          <div
-            key={item.eventid}
-            className="flex flex-col rounded-xl bg-base-200 shadow-lg gap-5 p-5 w-72 m-5 mx-auto"
-          >
-            <img src={item.image} className="m-5 rounded-xl" />
-            <h1 className="font-bold text-2xl">{item.name}</h1>
-            <p>About the event:</p>
+          <Card key={item.eventid} className="w-56">
+            <CardHeader>
+              <DropdownMenu>
+                <DropdownMenuTrigger>    <Ellipsis />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Link href={`/edit-event/${item.eventid}`} className="w-full">Edit
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href={`/view/${item.eventid}`}className="w-full">Employees
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href={`/payment/${item.eventid}`} className="w-full">Shifts
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button onClick={() => handleCopyLink(item.eventid)}>
+                      Copy Invite
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </CardHeader>
+            <CardContent>
+              <img src={item.image}/>
+              <CardTitle>{item.name}</CardTitle>
+              <CardDescription>
+                {item.location}
+              </CardDescription>
+            </CardContent>
+            <CardFooter>
             <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
-            <p>
-              Location:
-              <br />
-              {item.location}
-            </p>
-            <div className="flex flex-row gap-2">
-              <Link href={`/edit-event/${item.eventid}`}>
-                <Button>Edit</Button>
-              </Link>
-              <Link href={`/view/${item.eventid}`}>
-                <Button>Employees</Button>
-              </Link>
-              <Link href={`/payment/${item.eventid}`}>
-                <Button>Shifts</Button>
-              </Link>
-              <Button onClick={() => handleCopyLink(item.eventid)}>
-                Copy Upload Invite
-              </Button>
-            </div>
-          </div>
+            </CardFooter>
+
+          </Card>
         ))}
       </div>
     </div>

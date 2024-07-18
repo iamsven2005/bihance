@@ -1,7 +1,8 @@
-'use client'
+'use client';
 
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import { useEffect } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 
 interface TiptapProps {
   content: string;
@@ -11,20 +12,23 @@ interface TiptapProps {
 
 const Tiptap = ({ content, onUpdate, editable = true }: TiptapProps) => {
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-    ],
+    extensions: [StarterKit],
     content,
     editable,
-    onUpdate: editable && onUpdate ? ({ editor }) => {
-      const newContent = editor.getHTML();
-      onUpdate(newContent);
-    } : undefined,
+    onUpdate: ({ editor }) => {
+      if (onUpdate) {
+        onUpdate(editor.getHTML());
+      }
+    },
   });
 
-  return (
-    <EditorContent editor={editor} />
-  );
-}
+  useEffect(() => {
+    if (editor) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
+
+  return <EditorContent editor={editor} />;
+};
 
 export default Tiptap;

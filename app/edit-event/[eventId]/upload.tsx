@@ -33,11 +33,6 @@ const UploadImage: React.FC<UploadImageProps> = ({ onUploadComplete }) => {
         onClientUploadComplete={handleUploadComplete}
         onUploadError={handleUploadError}
       />
-      {uploadedUrl && (
-        <div>
-          <p>Upload complete. Image URL: {uploadedUrl}</p>
-        </div>
-      )}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { UploadDropzone } from "@/lib/uploadthing";
 import axios from 'axios';
 import { event } from "@prisma/client";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface Location {
   latitude: number;
@@ -117,6 +118,10 @@ const UploadPage = ({event}:Props) => {
       </div>
       {submitError && <p className="mt-4 text-red-500">{submitError}</p>}
       {submitSuccess && <p className="mt-4 text-green-500">{submitSuccess}</p>}
+      <Button onClick={handleSubmit}>
+          Submit
+      </Button>
+      
     </main>
   );
 }

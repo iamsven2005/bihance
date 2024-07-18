@@ -1,17 +1,19 @@
 "use client";
 
-import { event } from "@prisma/client";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import UploadImage from "./upload";
+import Tiptap from "./Tiptap";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
+import { deleteEvent, updateEvent } from "./eventActions";
 import { toast } from "sonner";
-import { EditorContent, useEditor } from "@tiptap/react";
-import { useState, useEffect } from "react";
+import { useEditor } from "@tiptap/react";
+import { event } from "@prisma/client";
 import StarterKit from "@tiptap/starter-kit";
-import { updateEventName, updateEventDescription, updateEventLocation, updateEventImage, deleteEvent } from "./eventActions";
-import Tiptap from "./Tiptap";
+import UploadImage from "./upload";
+import UploadFile from "./UploadFile";
 
 type Props = {
   params: {
@@ -20,9 +22,14 @@ type Props = {
 };
 
 const EventForm: React.FC<Props> = ({ params }) => {
+  const { eventId } = params;
   const [event, setEvent] = useState<event | null>(null);
   const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(true); // New state to manage loading
+  const [name, setName] = useState("");
+  const [location, setLocation] = useState("");
+  const [image, setImage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [files, setFiles] = useState<{ url: string; name: string }[]>([]);
 
   const editor = useEditor({
     extensions: [StarterKit],
@@ -35,110 +42,152 @@ const EventForm: React.FC<Props> = ({ params }) => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await fetch(`/api/events/${params.eventId}`, {
-          method: 'GET',
+        const response = await fetch(`/api/events/${eventId}`, {
+          method: "GET",
         });
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }
         const data = await response.json();
         setEvent(data);
+        setName(data.name);
+        setLocation(data.location);
         setDescription(data.description);
-        editor?.commands.setContent(data.description);
+        setImage(data.image);
+        if (editor) {
+          editor.commands.setContent(data.description);
+        }
       } catch (error) {
-        console.error('Failed to fetch event:', error);
-        toast.error('Failed to fetch event');
+        console.error("Failed to fetch event:", error);
+        toast.error("Failed to fetch event");
       } finally {
-        setLoading(false); // Set loading to false after the fetch attempt
+        setLoading(false);
       }
     };
-  
+
     fetchEvent();
-  }, [params.eventId]);
-  
+  }, [eventId, editor]);
+
+  const handleFileUpload = (file: { url: string; name: string }) => {
+    setFiles((prevFiles) => [...prevFiles, file]);
+  };
 
   if (loading) {
-    return <div className="hero-content text-3xl"><span className="loading loading-ring loading-lg"></span>
-
-</div>; // Display loading state
+    return (
+      <div className="hero-content text-3xl">
+        <span className="loading loading-ring loading-lg"></span>
+      </div>
+    );
   }
 
   if (!event) {
-    return <div>Event not found</div>; // Display error if event not found
+    return <div>Event not found</div>;
   }
 
-  const handleSaveName = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
-    await updateEventName(params.eventId, name);
-    toast.success("Event name updated");
-  };
-
-  const handleSaveDescription = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await updateEventDescription(params.eventId, description);
-    toast.success("Event description updated");
-  };
-
-  const handleSaveLocation = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const location = formData.get("location") as string;
-    await updateEventLocation(params.eventId, location);
-    toast.success("Event location updated");
-  };
-
-  const handleSaveImage = async (url: string) => {
-    await updateEventImage(params.eventId, url);
-    toast.success("Event image updated");
+    try {
+      await updateEvent(eventId, { name, location, description, image });
+      toast.success("Event updated");
+    } catch (error) {
+      console.error("Failed to update event:", error);
+      toast.error("Failed to update event");
+    }
   };
 
   const handleDelete = async () => {
-    await deleteEvent(params.eventId);
-    toast.success("Event deleted");
+    try {
+      await deleteEvent(eventId);
+      toast.success("Event deleted");
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+      toast.error("Failed to delete event");
+    }
   };
 
   return (
-    <div className="container flex gap-5 flex-col">
-      <div className="flex justify-between">
-        <h1 className="text-2xl font-bold">Edit Event</h1>
-        <Link href="/event">
-          <Button>Back to events</Button>
-        </Link>
-        <DeleteConfirmationDialog onConfirm={handleDelete} />
-      </div>
-
-      <div className="flex flex-col gap-5 bg-base-200 mx-auto p-5">
-        <form onSubmit={handleSaveName}>
-          <div>
-            <label htmlFor="name">Event Name:</label>
-            <Input type="text" id="name" name="name" defaultValue={event.name} required />
-          </div>
-          <Button type="submit">Save</Button>
-        </form>
-        <form onSubmit={handleSaveLocation}>
-          <div>
-            <label htmlFor="location">Event Location:</label>
-            <Input type="text" id="location" name="location" defaultValue={event.location} required />
-          </div>
-          <Button type="submit">Save</Button>
-        </form>
-        <div>
-          <label htmlFor="description">Event Description:</label>
-          <div className="m-5">
-          <Tiptap content={event.description} />
-
-          </div>
-          <Button onClick={handleSaveDescription}>Save</Button>
+    <Card className="bg-base-200 text-base-content">
+      <CardHeader className="flex flex-wrap">
+        <div className="flex flex-row justify-between w-full">
+          <CardTitle className="bg">Edit {event.name}</CardTitle>
+          <Link href="/event" className="btn btn-link">
+            Back to events
+          </Link>
+          <DeleteConfirmationDialog onConfirm={handleDelete} />
         </div>
-        <div>
-          <label htmlFor="image">Event Image:</label>
-          <UploadImage onUploadComplete={handleSaveImage} />
-          <img src={event.image} className="items-center justify-center mx-auto flex" />
-        </div>
-      </div>
-    </div>
+      </CardHeader>
+
+      <CardContent>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-sm font-medium">
+              Event Name:
+            </label>
+            <Input
+              type="text"
+              id="name"
+              name="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="location" className="block text-sm font-medium">
+              Event Location:
+            </label>
+            <Input
+              type="text"
+              id="location"
+              name="location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="description" className="block text-sm font-medium">
+              Event Description:
+            </label>
+            <Tiptap content={description} onUpdate={setDescription} />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="image" className="block text-sm font-medium">
+              Event Image:
+            </label>
+            <UploadImage onUploadComplete={setImage} />
+            {image && (
+              <img
+                src={image}
+                alt="Event"
+                className="mt-4 w-full h-auto rounded-lg shadow-md"
+              />
+            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="files" className="block text-sm font-medium">
+              Upload Files:
+            </label>
+            <UploadFile eventId={eventId} onUploadComplete={handleFileUpload} />
+            {files.length > 0 && (
+              <ul className="mt-4">
+                {files.map((file, index) => (
+                  <li key={index}>
+                    <a href={file.url} target="_blank" rel="noopener noreferrer">
+                      {file.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <Button type="submit" className="w-full">
+            Save
+          </Button>
+        </form>
+      </CardContent>
+      <CardFooter></CardFooter>
+    </Card>
   );
 };
 

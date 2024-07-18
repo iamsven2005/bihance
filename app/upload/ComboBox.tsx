@@ -49,7 +49,6 @@ export function ComboboxDemo({ events, onSelect }: ComboboxProps) {
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search event..." />
           <CommandList>
             <CommandEmpty>No event found.</CommandEmpty>
             <CommandGroup>
