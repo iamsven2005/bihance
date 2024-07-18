@@ -1,78 +1,23 @@
-import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
-import { event } from "@prisma/client";
-import { EditorContent } from "@tiptap/react";
-import Link from "next/link";
+import { currentUser } from "@clerk/nextjs/server"; // Correct import for server-side authentication
+import EventList from "./EventList"; // Client component
 import { redirect } from "next/navigation";
-import { toast } from "sonner";
-import 'react-quill/dist/quill.bubble.css'
-const Event = async() => {
-  const { userId } = auth();
 
-    if (!userId) {
-      return redirect("/")
-    }
+const EventPage = async () => {
+  const user = await currentUser();
 
-        const events = await db.event.findMany({
-          where: {
-            managerId: userId,
-          },
-        });
-  return (
-    <div className="flex flex-col p-5 text-base-content bg-base-100">
-      <div className="flex flex-row items-center justify-between">
-      <h1 className="font-bold text-2xl">
-        All events:
-        </h1>
-        <Link href="/edit-event" className="btn">
-        Create event
-        </Link>
-      </div>
+  if (!user) {
+    redirect("/");
+    return null;
+  }
 
-        <div className="flex flex-wrap">
-        {events.map((item: event) => (
-        <div key={item.eventid} className="flex flex-col rounded-xl bg-base-200 shadow-lg gap-5 p-5 w-72 m-5 mx-auto">
-            <img src={item.image} className="m-5 rounded-xl"/>
-            <h1 className="font-bold text-2xl">
-            {item.name}
-            </h1>
-            <p>
-            About the event:
-            <br/>
-            <div dangerouslySetInnerHTML={{__html: item.description}}></div>
+  const events = await db.event.findMany({
+    where: {
+      managerId: user.id,
+    },
+  });
 
-            </p>
-            <p>
-            Location:
-            <br/>
-            {item.location}
-            </p>
-            <div className="flex flex-row gap-2">
-            <Link href={`/edit-event/${item.eventid}`}>
-            <Button>
-            Edit
-            </Button>
-            </Link>
-            <Link href={`/view/${item.eventid}`}>
-            <Button>
-            Employees
-            </Button>
-            </Link>
-            <Link href={`/payment/${item.eventid}`}>
-            <Button>
-          Shifts
-            </Button>
-            </Link>
-            </div>
-
-        </div>
-        
-
-      ))}
-        </div>
-    </div>
-  );
+  return <EventList events={events} />;
 };
 
-export default Event;
+export default EventPage;

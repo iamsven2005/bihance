@@ -22,6 +22,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className="min-h-100">
+        <head>
+          <meta name="robots" content="index, follow" />
+          <link rel="icon" href="/favicon.ico" />
+          <title>Bihance</title>
+          <meta name="description" content="Enhance your jobs" />
+        </head>
         <body className={inter.className}>
           <header className="bg-base-100 shadow-md">
             <div className="container mx-auto flex justify-between items-center p-4">

@@ -3,6 +3,7 @@
 import React from "react";
 import { AttendanceRow, exportToCsv } from "./exportToCsv";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface ExportButtonProps {
   data: AttendanceRow[];
@@ -16,9 +17,9 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
   };
 
   return (
-    <button onClick={handleExport} className="px-4 py-2 bg-blue-500 text-white rounded">
+    <Button onClick={handleExport} className="btn btn-outline">
       Export as CSV
-    </button>
+    </Button>
   );
 };
 

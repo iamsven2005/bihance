@@ -28,36 +28,15 @@ const PrivacyPolicy = () => {
 
                 <CardTitle>Types of Data Collected</CardTitle>
                 <CardDescription>
-                    The owner does not provide a list of Personal Data types collected.<br />
-                    Complete details on each type of Personal Data collected are provided in the dedicated sections of this privacy policy or by specific explanation texts displayed prior to the Data collection.<br />
-                    Personal Data may be freely provided by the User, or, in case of Usage Data, collected automatically when using this Application.<br />
-                    Unless specified otherwise, all Data requested by this Application is mandatory and failure to provide this Data may make it impossible for this Application to provide its services. In cases where this Application specifically states that some Data is not mandatory, Users are free not to communicate this Data without consequences to the availability or the functioning of the Service.<br />
-                    Users who are uncertain about which Personal Data is mandatory are welcome to contact the Owner.<br />
-                    Any use of Cookies – or of other tracking tools — by this Application or by the owners of third-party services used by this Application serves the purpose of providing the Service required by the User, in addition to any other purposes described in the present document and in the Cookie Policy.<br />
-                    Users are responsible for any third-party Personal Data obtained, published or shared through this Application and confirm that they have the third party&apos;s consent to provide the Data to the Owner.
+                    Our application accesses and uses the following Google user data to provide you with a personalized and efficient experience:<br />
+                    - **Email address**: Used for authentication, communication, and account recovery.<br />
+                    - **Profile information (name, profile picture)**: Used to personalize your experience within the application.<br />
+                    Users grant permission for this access through the Google OAuth consent screen.
                 </CardDescription>
 
-                <CardTitle>Mode and Place of Processing the Data</CardTitle>
+                <CardTitle>User Consent</CardTitle>
                 <CardDescription>
-                    <strong>Methods of processing</strong><br />
-                    The Owner takes appropriate security measures to prevent unauthorized access, disclosure, modification, or unauthorized destruction of the Data.<br />
-                    The Data processing is carried out using computers and/or IT enabled tools, following organizational procedures and modes strictly related to the purposes indicated. In addition to the Owner, in some cases, the Data may be accessible to certain types of persons in charge, involved with the operation of this Application (administration, sales, marketing, legal, system administration) or external parties (such as third-party technical service providers, mail carriers, hosting providers, IT companies, communications agencies) appointed, if necessary, as Data Processors by the Owner. The updated list of these parties may be requested from the Owner at any time.<br />
-                    <strong>Place</strong><br />
-                    The Data is processed at the Owner&apos;s operating offices and in any other places where the parties involved in the processing are located.<br />
-                    Depending on the User&apos;s location, data transfers may involve transferring the User&apos;s Data to a country other than their own. To find out more about the place of processing of such transferred Data, Users can check the section containing details about the processing of Personal Data.<br />
-                    <strong>Retention time</strong><br />
-                    Unless specified otherwise in this document, Personal Data shall be processed and stored for as long as required by the purpose they have been collected for and may be retained for longer due to applicable legal obligation or based on the Users’ consent.
-                </CardDescription>
-
-                <CardTitle>Legal Basis of Processing</CardTitle>
-                <CardDescription>
-                    The Owner may process Personal Data relating to Users if one of the following applies:<br />
-                    - Users have given their consent for one or more specific purposes.<br />
-                    - Provision of Data is necessary for the performance of an agreement with the User and/or for any pre-contractual obligations thereof.<br />
-                    - Processing is necessary for compliance with a legal obligation to which the Owner is subject.<br />
-                    - Processing is related to a task that is carried out in the public interest or in the exercise of official authority vested in the Owner.<br />
-                    - Processing is necessary for the purposes of the legitimate interests pursued by the Owner or by a third party.<br />
-                    In any case, the Owner will gladly help to clarify the specific legal basis that applies to the processing, and in particular whether the provision of Personal Data is a statutory or contractual requirement, or a requirement necessary to enter into a contract.
+                    We obtain your explicit consent before accessing your Google user data. You have the right to revoke this consent at any time by managing your account settings or contacting us directly.
                 </CardDescription>
 
                 <CardTitle>How We Use Information</CardTitle>
@@ -88,9 +67,9 @@ const PrivacyPolicy = () => {
                 <CardTitle>Security Practices</CardTitle>
                 <CardDescription>
                     We utilize industry-leading services to ensure your data&apos;s security and integrity:<br />
-                    <strong>Neon:</strong> Our database management is handled by Neon, which offers automated backups, encryption at rest and in transit, and stringent access controls to protect your data.<br />
-                    <strong>Clerk:</strong> We use Clerk for authentication and user management, ensuring secure user sessions with multi-factor authentication (MFA), secure password storage, and regular security updates.<br />
-                    <strong>Vercel:</strong> Our application is hosted on Vercel, which provides a secure hosting environment with continuous deployment, automated SSL, and DDoS protection.<br />
+                    <p className='font-bold'>Neon:</p> Our database management is handled by Neon, which offers automated backups, encryption at rest and in transit, and stringent access controls to protect your data.<br />
+                    <p className='font-bold'>Clerk:</p> We use Clerk for authentication and user management, ensuring secure user sessions with multi-factor authentication (MFA), secure password storage, and regular security updates.<br />
+                    <p className='font-bold'>Vercel:</p> Our application is hosted on Vercel, which provides a secure hosting environment with continuous deployment, automated SSL, and DDoS protection.<br />
                     These third-party services are carefully selected and regularly reviewed to ensure they meet our stringent security standards and comply with all relevant data protection regulations.
                 </CardDescription>
 
@@ -156,3 +135,4 @@ const PrivacyPolicy = () => {
 };
 
 export default PrivacyPolicy;
+

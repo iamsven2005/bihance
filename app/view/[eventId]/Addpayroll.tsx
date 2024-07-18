@@ -86,7 +86,7 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId }) => {
           required
         />
       </div>
-      <Button type="submit">Add Shift</Button>
+      <Button type="submit" className="btn">Add Shift</Button>
     </form>
   );
 };
