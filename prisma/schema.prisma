@@ -6,50 +6,75 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
 
-}
 model user {
-  clerkId String @default(cuid()) @id
-  first_name String?
-  last_name String?
-  image_url String?
-  email String?
+  clerkId       String            @default(cuid()) @id
+  first_name    String?
+  last_name     String?
+  image_url     String?
+  email         String? @unique
+  events        event[]           @relation("UserEvents")
+  subscriptions userSubcription[]
+  payrolls      payroll[]
+  attendances   attendance[]
+  feedbacks     feedback[]
 }
+
 model event {
-  eventid String @default(cuid()) @id
-  managerId String
-  location String
-  image String
+  eventid     String       @default(cuid()) @id
+  managerId   String
+  location    String
+  image       String
   description String
-  name String
+  name        String
+  files       files[]
+  users       user[]       @relation("UserEvents")
+  attendances attendance[]
+  payrolls    payroll[]
 }
+
 model userSubcription {
-  id                   String @id @default(cuid())
-  user_id              String @unique
-  stripeCustomerId     String @unique
-  stripeSubscriptionId String @unique
-  stripePriceId        String @unique
+  id                   String   @id @default(cuid())
+  user_id              String   @unique
+  stripeCustomerId     String   @unique
+  stripeSubscriptionId String   @unique
+  stripePriceId        String   @unique
   stripeEnd            DateTime @unique
+  user                 user     @relation(fields: [user_id], references: [clerkId], onDelete: Cascade)
 }
 
 model payroll {
   payrollid String @default(cuid()) @id
-  userId String
-  weekend Int
-  weekday Int
-  eventid String
-}
-model attendance{
-  id String @default(cuid()) @id
-  userId String
-  imageurl String
-  time DateTime
-  location String
-  eventId String
+  userId    String
+  weekend   Int
+  weekday   Int
+  eventid   String
+  user      user   @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  event     event  @relation(fields: [eventid], references: [eventid], onDelete: Cascade)
 }
 
-model feedback{
-  id String @default(cuid()) @id
+model attendance {
+  id        String   @default(cuid()) @id
+  userId    String
+  imageurl  String
+  time      DateTime
+  location  String
+  eventId   String
+  user      user     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  event     event    @relation(fields: [eventId], references: [eventid], onDelete: Cascade)
+}
+
+model feedback {
+  id          String @default(cuid()) @id
   description String
-  userid String
+  userid      String
+  user        user   @relation(fields: [userid], references: [clerkId], onDelete: Cascade)
+}
+
+model files {
+  id       String @default(cuid()) @id
+  eventId  String
+  url      String
+  event    event  @relation(fields: [eventId], references: [eventid], onDelete: Cascade)
 }

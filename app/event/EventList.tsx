@@ -4,6 +4,7 @@ import { useState } from "react";
 import { event } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type EventListProps = {
   events: event[];
@@ -14,6 +15,15 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleCopyLink = (eventId: string) => {
+    const uploadLink = `${window.location.origin}/event/${eventId}`;
+    navigator.clipboard.writeText(uploadLink).then(() => {
+      toast.success("Copied Link!");
+    }).catch(err => {
+      toast.error('Failed to copy: ', err);
+    });
   };
 
   const filteredEvents = events.filter((event) =>
@@ -47,10 +57,8 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
           >
             <img src={item.image} className="m-5 rounded-xl" />
             <h1 className="font-bold text-2xl">{item.name}</h1>
-            <p>
-              About the event:
-            </p>
-              <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
+            <p>About the event:</p>
+            <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
             <p>
               Location:
               <br />
@@ -66,6 +74,9 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
               <Link href={`/payment/${item.eventid}`}>
                 <Button>Shifts</Button>
               </Link>
+              <Button onClick={() => handleCopyLink(item.eventid)}>
+                Copy Upload Invite
+              </Button>
             </div>
           </div>
         ))}
