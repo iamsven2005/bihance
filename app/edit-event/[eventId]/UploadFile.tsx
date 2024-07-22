@@ -4,10 +4,11 @@ import { useState } from "react";
 import { generateUploadDropzone } from "@uploadthing/react";
 import { OurFileRouter } from "@/app/api/uploadthing/core";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 type UploadFileProps = {
   eventId: string;
-  onUploadComplete: (file: { url: string; name: string }) => void;
+  onUploadComplete: (file: { id: string; url: string; name: string }) => void;
 };
 
 const UploadFile: React.FC<UploadFileProps> = ({ eventId, onUploadComplete }) => {
@@ -34,7 +35,7 @@ const UploadFile: React.FC<UploadFileProps> = ({ eventId, onUploadComplete }) =>
 
       const file = await response.json();
       setUploadedUrl(file.url);
-      onUploadComplete(file);
+      onUploadComplete({ id: file.id, url: file.url, name: file.name });
       toast.success("File uploaded successfully");
     } catch (error) {
       console.error("Failed to upload file", error);
@@ -49,15 +50,13 @@ const UploadFile: React.FC<UploadFileProps> = ({ eventId, onUploadComplete }) =>
   return (
     <div>
       <div className="mb-4">
-        <label htmlFor="fileName" className="block text-sm font-medium">
-          File Name:
-        </label>
-        <input
+        <Input
           type="text"
           id="fileName"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="input input-bordered w-full"
+          placeholder="filename"
           required
         />
       </div>
@@ -66,11 +65,6 @@ const UploadFile: React.FC<UploadFileProps> = ({ eventId, onUploadComplete }) =>
         onClientUploadComplete={handleUploadComplete}
         onUploadError={handleUploadError}
       />
-      {uploadedUrl && (
-        <div>
-          <p>Upload complete. File URL: {uploadedUrl}</p>
-        </div>
-      )}
     </div>
   );
 };

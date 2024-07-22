@@ -14,6 +14,7 @@ import { event } from "@prisma/client";
 import StarterKit from "@tiptap/starter-kit";
 import UploadImage from "./upload";
 import UploadFile from "./UploadFile";
+import { File } from "lucide-react";
 
 type Props = {
   params: {
@@ -29,7 +30,7 @@ const EventForm: React.FC<Props> = ({ params }) => {
   const [location, setLocation] = useState("");
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
-  const [files, setFiles] = useState<{ url: string; name: string }[]>([]);
+  const [files, setFiles] = useState<{ id: string; url: string; name: string }[]>([]);
 
   const editor = useEditor({
     extensions: [StarterKit],
@@ -65,11 +66,44 @@ const EventForm: React.FC<Props> = ({ params }) => {
       }
     };
 
+    const fetchFiles = async () => {
+      try {
+        const response = await fetch(`/api/events/${eventId}/files`, {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setFiles(data);
+      } catch (error) {
+        console.error("Failed to fetch files:", error);
+        toast.error("Failed to fetch files");
+      }
+    };
+
     fetchEvent();
+    fetchFiles();
   }, [eventId, editor]);
 
-  const handleFileUpload = (file: { url: string; name: string }) => {
+  const handleFileUpload = (file: { id: string; url: string; name: string }) => {
     setFiles((prevFiles) => [...prevFiles, file]);
+  };
+
+  const handleFileDelete = async (fileId: string) => {
+    try {
+      const response = await fetch(`/api/files/${fileId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete file");
+      }
+      setFiles((prevFiles) => prevFiles.filter(file => file.id !== fileId));
+      toast.success("File deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete file", error);
+      toast.error("Failed to delete file");
+    }
   };
 
   if (loading) {
@@ -149,7 +183,10 @@ const EventForm: React.FC<Props> = ({ params }) => {
             <label htmlFor="description" className="block text-sm font-medium">
               Event Description:
             </label>
+            <div className="m-5">
             <Tiptap content={description} onUpdate={setDescription} />
+
+            </div>
           </div>
           <div className="mb-4">
             <label htmlFor="image" className="block text-sm font-medium">
@@ -169,24 +206,28 @@ const EventForm: React.FC<Props> = ({ params }) => {
               Upload Files:
             </label>
             <UploadFile eventId={eventId} onUploadComplete={handleFileUpload} />
-            {files.length > 0 && (
-              <ul className="mt-4">
-                {files.map((file, index) => (
-                  <li key={index}>
-                    <a href={file.url} target="_blank" rel="noopener noreferrer">
-                      {file.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
           <Button type="submit" className="w-full">
             Save
           </Button>
         </form>
       </CardContent>
-      <CardFooter></CardFooter>
+      <CardFooter>
+        {files.length > 0 && (
+          <ul className="mt-4">
+            {files.map((file) => (
+              <li key={file.id} className="flex items-center">
+                <Link href={file.url} target="_blank" rel="noopener noreferrer" className="btn btn-link">
+                  <File /> {file.name}
+                </Link>
+                <Button onClick={() => handleFileDelete(file.id)} className="ml-2" variant="destructive">
+                  Delete
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardFooter>
     </Card>
   );
 };

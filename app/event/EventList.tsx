@@ -60,10 +60,10 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
                 <DropdownMenuTrigger>    <Ellipsis />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <Link href={`/edit-event/${item.eventid}`} className="w-full">Edit
+                    <Link href={`/edit-event/${item.eventid}`} className="w-full"> <DropdownMenuItem>
+                    Edit
+                    </DropdownMenuItem>
                     </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Link href={`/view/${item.eventid}`}className="w-full">Employees
                     </Link>

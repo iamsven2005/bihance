@@ -3,27 +3,30 @@
 import { useEffect, useState } from "react";
 import { UploadDropzone } from "@/lib/uploadthing";
 import axios from 'axios';
-import { event } from "@prisma/client";
+import { event, files } from "@prisma/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Files } from "lucide-react";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
 interface Location {
   latitude: number;
   longitude: number;
 }
+
 interface Props {
-  event: string
+  event: string;
+  files: files[];
 }
 
-const UploadPage = ({event}:Props) => {
+const UploadPage = ({ event: selectedEvent, files }: Props) => {
   const [location, setLocation] = useState<Location | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentDatetime, setCurrentDatetime] = useState<string>('');
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
-  const [events, setEvents] = useState<event[]>([]);
-  const selectedEvent = event
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -50,7 +53,7 @@ const UploadPage = ({event}:Props) => {
       return () => clearInterval(intervalId);
     } else {
       setError('Geolocation is not supported by this browser.');
-      toast.error("Unable to get location")
+      toast.error("Unable to get location");
     }
   }, []);
 
@@ -58,11 +61,11 @@ const UploadPage = ({event}:Props) => {
     const urls = res.map((file: { url: string }) => file.url);
     setImageUrls((prevUrls) => [...prevUrls, ...urls]);
     console.log("Files: ", res);
-    toast.success("Image uploaded")
+    toast.success("Image uploaded");
   };
 
   const handleUploadError = (error: Error) => {
-    toast.error("Unable to upload")
+    toast.error("Unable to upload");
   };
 
   const handleSubmit = async () => {
@@ -88,7 +91,7 @@ const UploadPage = ({event}:Props) => {
         setSubmitError("Failed to save attendance.");
         setSubmitSuccess(null);
       }
-      toast.success("Submitted attendance")
+      toast.success("Submitted attendance");
     } catch (error) {
       setSubmitError("Failed to save attendance.");
       setSubmitSuccess(null);
@@ -116,11 +119,22 @@ const UploadPage = ({event}:Props) => {
           ))}
         </div>
       </div>
+      
       {submitError && <p className="mt-4 text-red-500">{submitError}</p>}
       {submitSuccess && <p className="mt-4 text-green-500">{submitSuccess}</p>}
       <Button onClick={handleSubmit}>
-          Submit
+        Submit
       </Button>
+      <Card className="bg-base-200 text-base-content m-5 p-5">
+      <CardTitle>View related files:</CardTitle>
+      {files.map((file) => (
+        <CardDescription key={file.id}>
+          <Link href={file.url} target="_blank" rel="noopener noreferrer" className="btn btn-link">
+            <Files/>{file.name}
+          </Link>
+        </CardDescription>
+      ))}
+      </Card>
       
     </main>
   );
