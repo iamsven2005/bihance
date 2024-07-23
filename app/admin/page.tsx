@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Color from "@tiptap/extension-color";
@@ -8,15 +8,35 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useState } from "react";
 import MenuBar from "./editor";
-import "./styles.css"
+import "./styles.css";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const BlogForm = () => {
+  const { user } = useUser();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const router = useRouter();
+
+  const restrictedEmails = [
+    "iamsven2005@gmail.com",
+    "email2edusng@gmail.com",
+    "support@bihance.app",
+    "cornerguys05@gmail.com"
+  ];
+
+  const isRestrictedEmail = user && restrictedEmails.includes(user.primaryEmailAddress?.emailAddress || "");
+
+  useEffect(() => {
+    if (user && !isRestrictedEmail) {
+      router.push("/"); // Redirect non-restricted users to home
+    }
+  }, [user, isRestrictedEmail, router]);
 
   const editor = useEditor({
     extensions: [
@@ -42,7 +62,7 @@ const BlogForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title, description }),
+        body: JSON.stringify({ title, description, email: user?.primaryEmailAddress?.emailAddress }),
       });
 
       if (res.ok) {
@@ -72,11 +92,19 @@ const BlogForm = () => {
     return null;
   }
 
+  if (!user) {
+    return <p>Loading...</p>;
+  }
+
+  if (!isRestrictedEmail) {
+    return <p>You Dont have Acess</p>
+  }
+
   return (
     <Card className="bg-base-100 text-base-content">
-    <Link href="/blog"className="btn btn-link">
-    Blogs
-    </Link>
+      <Link href="/blog" className="btn btn-link">
+        Blogs
+      </Link>
       <form onSubmit={handleSubmit}>
         <CardContent>
           <Input
@@ -88,6 +116,7 @@ const BlogForm = () => {
             placeholder="Title"
             className="mb-4"
           />
+          {user && <p className="mb-4">Logged in as: {user.primaryEmailAddress?.emailAddress}</p>}
           <MenuBar editor={editor} />
           <EditorContent editor={editor} className="border p-2 mt-2 text-base-content" />
         </CardContent>
