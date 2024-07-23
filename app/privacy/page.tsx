@@ -67,9 +67,9 @@ const PrivacyPolicy = () => {
                 <CardTitle>Security Practices</CardTitle>
                 <CardDescription>
                     We utilize industry-leading services to ensure your data&apos;s security and integrity:<br />
-                    <p className='font-bold'>Neon:</p> Our database management is handled by Neon, which offers automated backups, encryption at rest and in transit, and stringent access controls to protect your data.<br />
-                    <p className='font-bold'>Clerk:</p> We use Clerk for authentication and user management, ensuring secure user sessions with multi-factor authentication (MFA), secure password storage, and regular security updates.<br />
-                    <p className='font-bold'>Vercel:</p> Our application is hosted on Vercel, which provides a secure hosting environment with continuous deployment, automated SSL, and DDoS protection.<br />
+                    <strong>Neon:</strong> Our database management is handled by Neon, which offers automated backups, encryption at rest and in transit, and stringent access controls to protect your data.<br />
+                    <strong>Clerk:</strong> We use Clerk for authentication and user management, ensuring secure user sessions with multi-factor authentication (MFA), secure password storage, and regular security updates.<br />
+                    <strong>Vercel:</strong> Our application is hosted on Vercel, which provides a secure hosting environment with continuous deployment, automated SSL, and DDoS protection.<br />
                     These third-party services are carefully selected and regularly reviewed to ensure they meet our stringent security standards and comply with all relevant data protection regulations.
                 </CardDescription>
 

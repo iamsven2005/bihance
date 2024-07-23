@@ -1,8 +1,13 @@
 import { db } from '@/lib/db';
+import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const { userId } = auth();
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
   const { id } = params;
 
   try {

@@ -84,6 +84,9 @@ const MainPage = async() => {
     <Link href="/attend" className="btn btn-outline">
     Attendance
     </Link>
+    <Link href="/blog" className="btn btn-outline">
+    Blog
+    </Link>
     </CardContent>
 
     </Card>

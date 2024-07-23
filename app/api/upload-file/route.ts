@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { auth } from '@clerk/nextjs/server';
 
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
+  const { userId } = auth();
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
   try {
     const { eventId, url, name } = await req.json();
 

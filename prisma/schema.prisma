@@ -79,3 +79,9 @@ model files {
   name     String
   event    event  @relation(fields: [eventId], references: [eventid], onDelete: Cascade)
 }
+model blog{
+  id          String @default(cuid()) @id
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+}
