@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { toast } from "sonner";
+import Redirect from "@/components/redirect";
 
 interface Props {
   params: {
@@ -17,7 +18,7 @@ interface Props {
 const View = async ({ params }: Props) => {
   const {userId} = auth()
   if(!userId){
-    return redirect("/")
+    return <Redirect/>
   }
   const members = await db.payroll.findMany({
     where: {
@@ -31,7 +32,7 @@ const View = async ({ params }: Props) => {
     },
   });
   if(!event){
-    return redirect("/")
+    return <Redirect/>
   }
   const userIds = members.map((member) => member.userId);
 

@@ -3,13 +3,14 @@ import { auth } from "@clerk/nextjs/server";
 import { attendance } from "@prisma/client";
 import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
+import Redirect from "@/components/redirect";
 
 const AttendList = dynamic(() => import("./AttendList"), { ssr: false });
 
 const Attend = async () => {
   const { userId } = auth();
   if (!userId) {
-    return redirect("/");
+    return <Redirect/>
   }
 
   const attendances: attendance[] = await db.attendance.findMany({

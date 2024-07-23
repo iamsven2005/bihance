@@ -33,8 +33,8 @@ const BlogForm = () => {
   const isRestrictedEmail = user && restrictedEmails.includes(user.primaryEmailAddress?.emailAddress || "");
 
   useEffect(() => {
-    if (user && !isRestrictedEmail) {
-      router.push("/"); // Redirect non-restricted users to home
+    if (!isRestrictedEmail) {
+      router.push("/");
     }
   }, [user, isRestrictedEmail, router]);
 
