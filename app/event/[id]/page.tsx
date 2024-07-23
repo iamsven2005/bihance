@@ -14,7 +14,6 @@ interface Props{
 export default async function Page({params}: Props) {
   const {userId} = auth()
   if(!userId){
-    toast.error("Please Sign In")
     return redirect("/")
   }
   const files = await db.files.findMany({where:{eventId: params.id}})
