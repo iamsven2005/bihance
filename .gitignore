@@ -1,4 +1,5 @@
 .env
+.env.*
 /node_modules
 /.pnp
 .pnp.js
@@ -32,6 +33,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sentry Config File
+.env.sentry-build-plugin
 
 # Sentry Config File
 .env.sentry-build-plugin
