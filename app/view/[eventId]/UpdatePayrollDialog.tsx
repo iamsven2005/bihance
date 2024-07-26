@@ -64,7 +64,7 @@ const UpdatePayrollDialog: React.FC<UpdatePayrollDialogProps> = ({
 
   return (
     <Dialog open={true} onOpenChange={onClose} >
-      <DialogContent className="text-base-content bg-base-200 p-5">
+      <DialogContent className="p-5">
         <DialogHeader>
           <DialogTitle>Update Shift</DialogTitle>
           <DialogDescription>

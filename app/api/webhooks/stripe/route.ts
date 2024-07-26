@@ -1,9 +1,7 @@
+import { db } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
-import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     const body = await req.text();
@@ -33,7 +31,7 @@ export async function POST(req: Request) {
             return new NextResponse("User ID is required", { status: 400 });
         }
 
-        await prisma.userSubcription.create({
+        await db.userSubcription.create({
             data: {
                 user_id: session.metadata.userId,
                 stripeCustomerId: subscription.customer as string,
@@ -49,7 +47,7 @@ export async function POST(req: Request) {
             session.subscription as string
         );
 
-        await prisma.userSubcription.update({
+        await db.userSubcription.update({
             where: {
                 stripeSubscriptionId: subscription.id,
             },

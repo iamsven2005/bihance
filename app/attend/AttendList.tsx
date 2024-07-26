@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { attendance } from "@prisma/client";
+import { Input } from "@/components/ui/input";
 
 interface AttendListProps {
   attendances: attendance[];
@@ -38,7 +39,7 @@ const AttendList: React.FC<AttendListProps> = ({ attendances }) => {
 
   return (
     <div className="container">
-      <input
+      <Input
         type="date"
         value={searchDate}
         onChange={(e) => setSearchDate(e.target.value)}

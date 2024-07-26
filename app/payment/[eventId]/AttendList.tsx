@@ -7,6 +7,8 @@ import ExportButton from "./ExportButton"; // Import the ExportButton component
 import { AttendanceRow } from "./exportToCsv"; // Import AttendanceRow type
 import { formatTime } from "./formatTime"; // Import the time formatting function
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface AttendListProps {
   attendances: attendance[];
@@ -78,17 +80,17 @@ const AttendList: React.FC<AttendListProps> = ({ attendances, payrolls, userId }
 
   return (
     <div className="container">
-      <div className="flex flex-col p-5 bg-base-200 gap-5 rounded-xl">
+      <div className="flex flex-col p-5 gap-5 rounded-xl">
         <div className="flex flex-wrap justify-between">
           <h1 className="font-bold text-xl">Attendance</h1>
           <br />
-          <Link href="/event" className="btn btn-outline">Events</Link>
-          
+          <Button asChild>
+          <Link href="/event">Events</Link>
+          </Button>
           <ExportButton data={rows} filename="attendance.csv"/>
         </div>
-        <input
+        <Input
           type="date"
-          className="input input-bordered"
           value={searchDate}
           onChange={(e) => setSearchDate(e.target.value)}
         />
@@ -116,7 +118,7 @@ const AttendList: React.FC<AttendListProps> = ({ attendances, payrolls, userId }
               return (
                 <div
                   key={`${date}-${index}`}
-                  className="flex flex-col shadow-lg p-5 bg-base-300 rounded-xl"
+                  className="flex flex-col shadow-lg p-5 rounded-xl"
                 >
                   <LocationMap location={items[0].location} />
                   <p>Date: {pair.checkIn.toISOString().split('T')[0]}</p>

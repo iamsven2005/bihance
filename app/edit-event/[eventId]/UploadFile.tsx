@@ -55,7 +55,7 @@ const UploadFile: React.FC<UploadFileProps> = ({ eventId, onUploadComplete }) =>
           id="fileName"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="input input-bordered w-full"
+          className="w-full"
           placeholder="filename"
           required
         />

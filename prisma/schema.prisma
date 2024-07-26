@@ -18,7 +18,6 @@ model user {
   subscriptions userSubcription[]
   payrolls      payroll[]
   attendances   attendance[]
-  feedbacks     feedback[]
 }
 
 model event {
@@ -64,24 +63,10 @@ model attendance {
   user      user     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
   event     event    @relation(fields: [eventId], references: [eventid], onDelete: Cascade)
 }
-
-model feedback {
-  id          String @default(cuid()) @id
-  description String
-  userid      String
-  user        user   @relation(fields: [userid], references: [clerkId], onDelete: Cascade)
-}
-
 model files {
   id       String @default(cuid()) @id
   eventId  String
   url      String
   name     String
   event    event  @relation(fields: [eventId], references: [eventid], onDelete: Cascade)
-}
-model blog{
-  id          String @default(cuid()) @id
-  title       String
-  description String
-  createdAt   DateTime @default(now())
 }

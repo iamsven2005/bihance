@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const notfound = () => {
@@ -9,12 +10,11 @@ const notfound = () => {
         It looks like the page you&apos;re searching for doesn&apos;t exist.
       </p>
     </div>
-    <Link
-      className="btn"
-      href="/"
-    >
+    <Button asChild>
+    <Link href="/">
       Back to the Home
     </Link>
+    </Button>
   </div>);
 }
  

@@ -4,7 +4,7 @@ import React from 'react';
 
 const CookiesPolicy = () => {
   return (
-    <Card className='bg-base-200 text-base-content m-5 p-5'>
+    <Card className='m-5 p-5'>
       <CardHeader>
         <CardTitle>Cookies Policy</CardTitle>
         <CardDescription>

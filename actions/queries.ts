@@ -1,15 +1,15 @@
+import { db } from '@/lib/db';
 import { auth } from '@clerk/nextjs/server';
 import { PrismaClient } from '@prisma/client';
 import { cache } from 'react';
 
-const prisma = new PrismaClient();
 const DAY_IN_MS = 86_400_400;
 
 export const getUserSubscription = cache(async () => {
     const { userId } = await auth();
     if (!userId) return null;
 
-    const data = await prisma.userSubcription.findFirst({
+    const data = await db.userSubcription.findFirst({
         where: { user_id: userId },
     });
 

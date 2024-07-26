@@ -1,31 +1,18 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { db } from "@/lib/db";
-import Link from "next/link";
+import { BlogPosts } from "@/components/posts";
 
-const Blogs = async () => {
-    const blogs = await db.blog.findMany()
-    return (
-        <Card className="bg-base-300 text-base-content">
-            <CardHeader>
-                <CardTitle>
-                    Blogs
-                </CardTitle>
-            </CardHeader>
-            {blogs.map((blog) => (
-                <Link href={`/blog/${blog.id}`} key={blog.id} className="m-5">
-                    <CardContent className="flex gap-2 flex-col rounded-xl bg-base-100 p-5 m-5 shadow-xl">
-
-                        <CardTitle>{blog.title}</CardTitle>
-                        <CardDescription>
-                            {blog.createdAt.toDateString()}
-                        </CardDescription>
-                    </CardContent>
-
-                </Link>
-            ))}
-
-        </Card>
-    );
+export default function Page() {
+  return (
+    <section>
+      <h1 className="mb-8 text-3xl font-semibold tracking-tighter">
+        What intrests you?
+      </h1>
+      <p className="mb-4">
+        {`Bihance, short for Business Enhanced aims to create solutions that enhances your business operations. We are a small startup that aims to solve current easy to solve pressing issues at scale in a cost effective manner.
+        From our blogs we hope that you can leverage our services to enhance your business or just to better understand who we are.`}
+      </p>
+      <div className="my-8">
+        <BlogPosts />
+      </div>
+    </section>
+  )
 }
-
-export default Blogs;

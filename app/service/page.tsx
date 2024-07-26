@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function TermsOfService() {
   return (
-    <Card className='bg-base-200 text-base-content m-5 p-5'>
+    <Card className='m-5 p-5'>
       <CardHeader>
         <CardTitle>Terms of Service</CardTitle>
       </CardHeader>

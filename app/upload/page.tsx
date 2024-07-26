@@ -6,6 +6,7 @@ import axios from 'axios';
 import { event } from "@prisma/client";
 import { ComboboxDemo } from "./ComboBox"; // Adjust the import path as necessary
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface Location {
   latitude: number;
@@ -139,15 +140,15 @@ const UploadPage = () => {
       {submitSuccess && <p className="mt-4 text-green-500">{submitSuccess}</p>}
       <div className="flex flex-wrap gap-5">
         <ComboboxDemo events={events} onSelect={setSelectedEvent} />
-        <div onClick={handleSubmit} className="btn btn-outline">
+        <Button onClick={handleSubmit}>
           Submit
-        </div>
+        </Button>
       </div>
       <h2 className="font-bold text-xl m-5">Available Events:</h2>
       {events.length > 0 ? (
         <div className="flex flex-wrap gap-5">
           {events.map((event) => (
-            <div key={event.eventid} className="relative w-64 rounded-xl shadow-xl p-5 text-base-100 group">
+            <div key={event.eventid} className="relative w-64 rounded-xl shadow-xl p-5 group">
               <img src={event.image} alt={event.name} className="absolute inset-0 object-cover w-full h-full rounded-xl opacity-70 group-hover:opacity-90" />
               <div className="absolute inset-0 bg-black bg-opacity-50 rounded-xl"></div>
               <div className="relative z-10 p-5 text-white">

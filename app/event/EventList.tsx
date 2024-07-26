@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Ellipsis } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 type EventListProps = {
   events: event[];
@@ -21,7 +22,7 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
   };
 
   const handleCopyLink = (eventId: string) => {
-    const uploadLink = `${window.location.origin}/event/${eventId}`;
+    const uploadLink = `/event/${eventId}`;
     navigator.clipboard.writeText(uploadLink).then(() => {
       toast.success("Copied Link!");
     }).catch(err => {
@@ -37,20 +38,20 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
     <div className="flex flex-col p-5 text-base-content bg-base-100">
       <div className="flex flex-row items-center justify-between mb-4">
         <h1 className="font-bold text-2xl">All events:</h1>
-        <Link href="/edit-event" className="btn">
-          Create event
-        </Link>
-      </div>
+        <Button asChild>
 
-      <div className="mb-4">
-        <input
+          <Link href="/edit-event">
+            Create event
+          </Link>
+        </Button>
+
+      </div>
+        <Input
           type="text"
-          className="input input-bordered w-full"
           placeholder="Search for an event..."
           value={searchTerm}
           onChange={handleSearchChange}
         />
-      </div>
 
       <div className="flex flex-wrap">
         {filteredEvents.map((item: event) => (
@@ -60,12 +61,12 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
                 <DropdownMenuTrigger>    <Ellipsis />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <Link href={`/edit-event/${item.eventid}`} className="w-full"> <DropdownMenuItem>
+                  <Link href={`/edit-event/${item.eventid}`} className="w-full"> <DropdownMenuItem>
                     Edit
-                    </DropdownMenuItem>
-                    </Link>
+                  </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem>
-                    <Link href={`/view/${item.eventid}`}className="w-full">Employees
+                    <Link href={`/view/${item.eventid}`} className="w-full">Employees
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
@@ -81,14 +82,14 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
               </DropdownMenu>
             </CardHeader>
             <CardContent>
-              <img src={item.image}/>
+              <img src={item.image} />
               <CardTitle>{item.name}</CardTitle>
               <CardDescription>
                 {item.location}
               </CardDescription>
             </CardContent>
             <CardFooter>
-            <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
+              <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
             </CardFooter>
 
           </Card>

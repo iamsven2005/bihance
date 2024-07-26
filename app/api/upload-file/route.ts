@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { auth } from '@clerk/nextjs/server';
-
-const prisma = new PrismaClient();
+import { db } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   const { userId } = auth();
@@ -16,7 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Event ID, URL, and name are required' }, { status: 400 });
     }
 
-    const file = await prisma.files.create({
+    const file = await db.files.create({
       data: {
         eventId,
         url,

@@ -1,0 +1,99 @@
+---
+title: 'Our Journey: Hosting on Vercel, Buying a Domain, and Migrating to Cloudflare'
+publishedAt: '2024-07-30'
+summary: 'A detailed look at our process of hosting on Vercel, purchasing a domain, and migrating to Cloudflare, including incremental changes for services like Google Authentication, Clerk, Zoho Email, Resend, and Sentry.'
+---
+
+Launching a startup involves several technical steps, from hosting your website to managing domain names and integrating various services. At Bihance, we started by hosting our website on Vercel, purchased a domain, and eventually migrated it to Cloudflare for enhanced performance and security. This blog post outlines our journey, including the incremental changes we made to update nameservers and integrate essential services like Google Login, Clerk, Zoho Email, Resend, and Sentry.
+
+## Step 1: Hosting on Vercel
+
+### Choosing Vercel
+
+Vercel was our platform of choice for hosting due to its seamless integration with frontend frameworks like Next.js, ease of deployment, and excellent performance. Setting up our project on Vercel was straightforward, allowing us to focus on development without worrying about server management.
+
+### Initial Deployment
+
+Deploying our application on Vercel involved:
+1. Connecting our GitHub repository to Vercel.
+2. Configuring build settings for Next.js.
+3. Deploying the application with a click of a button.
+
+This initial deployment provided us with a subdomain (e.g., `bihance.vercel.app`) to access our live site.
+
+## Step 2: Buying a Domain Name
+
+### Selecting a Domain Registrar
+
+We chose a domain registrar that offered competitive pricing and reliable service. Popular options include Namecheap, GoDaddy, and Google Domains. We selected a domain that reflected our brand identity and was easy to remember and at a reasonable price.
+
+### Purchasing the Domain
+
+The process of purchasing the domain involved:
+1. Searching for available domain names.
+2. Selecting and purchasing our preferred domain.
+3. Configuring basic DNS settings provided by the registrar.
+
+## Step 3: Migrating to Cloudflare
+
+### Setting Up Cloudflare
+
+Cloudflare offers enhanced security, performance improvements, and robust DNS management. We decided to migrate our domain to Cloudflare to leverage these benefits.
+
+#### Adding the Domain to Cloudflare
+
+1. **Sign Up and Add Domain:** We signed up for a Cloudflare account and added our domain.
+2. **DNS Record Scanning:** Cloudflare automatically scanned and imported existing DNS records.
+3. **Nameserver Update:** Cloudflare provided new nameservers, which we updated in our domain registrar’s dashboard.
+
+### Updating Nameservers
+
+Updating the nameservers to point to Cloudflare involved:
+1. Logging into our domain registrar’s dashboard.
+2. Navigating to the DNS settings section.
+3. Replacing the existing nameservers with the ones provided by Cloudflare.
+4. Allowing up to 48 hours for the DNS changes to propagate globally.
+
+## Step 4: Integrating Services
+
+### Google Authentication
+
+To enable Google Authentication:
+1. **Google Cloud Console:** Set up a project in the Google Cloud Console.
+2. **OAuth Consent Screen:** Configure the OAuth consent screen with necessary details.
+3. **Credentials:** Create OAuth 2.0 credentials and configure redirect URIs.
+4. **DNS Records:** Add necessary DNS records in Cloudflare to verify domain ownership.
+5. **Back and forth ** We communicated back and forth for days to make sure that we are legally compliant to gdpa, googles terms and conditionsa as well as IMDA data protection act for collection of user details.
+
+### Clerk
+
+For user authentication and management using Clerk:
+1. **Clerk Dashboard:** Set up an application in the Clerk dashboard.
+2. **Domain Configuration:** Add our domain to the Clerk configuration settings.
+3. **DNS Records:** Update DNS records in Cloudflare as instructed by Clerk for email verification and security purposes. Proxying our frontend for performance.
+
+### Zoho Email
+
+To set up email hosting with Zoho:
+1. **Zoho Mail Setup:** Sign up for Zoho Mail and add our domain.
+2. **DNS Configuration:** Follow Zoho’s instructions to add MX records, SPF, and DKIM records in Cloudflare to configure email delivery and authentication.
+3. **Socials:** Using the emails to create proffesional acounts for branding purposes.
+
+### Resend
+
+For email services using Resend:
+1. **Resend Dashboard:** Create and configure a project in the Resend dashboard.
+2. **Domain Verification:** Verify our domain ownership by adding TXT records provided by Resend to our Cloudflare DNS settings.
+3. **Integration:** Integrate Resend with our application for transactional email sending.
+
+### Sentry
+
+For error tracking and monitoring with Sentry:
+1. **Sentry Project:** Set up a project in Sentry and configure our application to send error reports.
+2. **DNS Records:** Add any necessary DNS records in Cloudflare for Sentry integrations, such as verifying ownership or configuring inbound filters.
+
+## Conclusion
+
+Migrating our domain to Cloudflare and configuring various services was a step-by-step process that significantly enhanced our website’s performance, security, and functionality. Starting with Vercel for hosting, purchasing a domain, and then leveraging Cloudflare's powerful features allowed us to create a robust and scalable infrastructure.
+
+This journey highlighted the importance of careful planning and incremental changes when managing DNS settings and integrating multiple services. By following these steps, we ensured a smooth transition and seamless user experience, setting a strong foundation for our startup's growth and success. At Bihance, we continue to build and iterate on this foundation, always aiming to deliver the best possible experience for our users.

@@ -40,14 +40,13 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
         placeholder="Search pay by name"
         value={searchTerm}
         onChange={handleSearchChange}
-        className="input input-primary"
       />
       {filteredMembers.map((items: payroll) => (
         <div key={items.payrollid} className="flex flex-row justify-between p-5">
           <h2>{userMap[items.userId]?.last_name}&nbsp;{userMap[items.userId]?.first_name}</h2>
           <p>Weekday Payment: {items.weekday}</p>
           <p>Weekend Payment: {items.weekend}</p>
-          <Button onClick={() => setSelectedUser({ userId: items.userId, weekday: items.weekday, weekend: items.weekend })} className="btn btn-outline">
+          <Button onClick={() => setSelectedUser({ userId: items.userId, weekday: items.weekday, weekend: items.weekend })}>
             Edit Pay
           </Button>
         </div>

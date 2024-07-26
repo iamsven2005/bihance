@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { db } from "@/lib/db";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
 
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -53,7 +52,7 @@ export async function POST(req: Request) {
   switch (eventType) {
     case "user.created":
       try {
-        await prisma.user.create({
+        await db.user.create({
           data: {
             email: payload?.data?.email_addresses?.[0]?.email_address || "",
             first_name: payload?.data?.first_name || "",
@@ -77,7 +76,7 @@ export async function POST(req: Request) {
 
     case "user.updated":
       try {
-        await prisma.user.update({
+        await db.user.update({
           where: {
             clerkId: payload?.data?.id,
           },

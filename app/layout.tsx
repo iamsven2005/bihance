@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from '@vercel/analytics/react';
+import Image from "next/image";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/ui/theme";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,34 +31,47 @@ export default function RootLayout({
           <title>Bihance</title>
           <meta name="description" content="Enhance your jobs" />
         </head>
-        <body className={inter.className}>
-          <header className="bg-base-100 shadow-md">
-            <div className="container mx-auto flex justify-between items-center p-4">
-              <Link href="/">
-                <img src="/favicon.ico" className="h-10 w-10" alt="Bihance Logo" />
-              </Link>
-              <nav className="flex items-center space-x-4">
-                <SignedOut>
-                  <Button className="btn">
-                    <SignInButton />
-                  </Button>
-                </SignedOut>
-                <SignedIn>
-                  <UserButton />
-                </SignedIn>
-              </nav>
-            </div>
-          </header>
-          <main className="mx-auto p-4 bg-base-100 text-base-content">
-            {children}
-          </main>
-          <footer className="bg-base-100 border-t">
-            <div className="container mx-auto p-4 text-center">
-              <Link href="/cookies" className="btn btn-link">Cookies</Link>
-              <Link href="/privacy" className="btn btn-link">Privacy</Link>
-              <Link href="/service" className="btn btn-link">Service</Link>
-            </div>
-          </footer>
+        <body className={` min-h-screen ${inter.className}`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <header className="shadow-md">
+              <div className="container mx-auto flex justify-between items-center py-4 px-8">
+                <Link href="/" className="flex items-center space-x-2">
+                  <Image src="/favicon.ico" alt="Bihance Logo" width={30} height={30} />
+                  <span className="text-lg font-semibold">Bihance</span>
+                </Link>
+                <nav className="flex items-center space-x-6">
+                  <SignedOut>
+                    <Button>
+                      <SignInButton />
+                    </Button>
+                  </SignedOut>
+                  <SignedIn>
+                    <UserButton />
+                  </SignedIn>
+                  <ModeToggle />
+                </nav>
+              </div>
+            </header>
+            <main className="mx-auto p-4">
+              {children}
+            </main>
+            <footer className="mx-auto flex m-5 items-center justify-center">
+                <Button asChild variant={"link"}>
+                  <Link href="/cookies">Cookies</Link>
+                </Button>
+                <Button asChild variant={"link"}>
+                  <Link href="/privacy">Privacy</Link>
+                </Button>
+                <Button asChild variant={"link"}>
+                  <Link href="/service">Service</Link>
+                </Button>
+            </footer>
+          </ThemeProvider>
           <Toaster />
           <Analytics />
         </body>

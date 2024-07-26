@@ -11,107 +11,98 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-const MainPage = async() => {
+import DotPattern from "@/components/magicui/dot-pattern";
+import { cn } from "@/lib/utils";
+import ShimmerButton from "@/components/magicui/shimmer-button";
+const MainPage = async () => {
   const useSubcriptionData = getUserSubscription()
-  const [ userSubcription] = await Promise.all([useSubcriptionData
+  const [userSubcription] = await Promise.all([useSubcriptionData
   ])
   const isPro = !!userSubcription?.isActive
-  return ( 
-  <div className="flex flex-col items-center justify-center mx-auto gap-5">
-    <Image src="/logo.png"
-    width={200}
-    height={200}
-    alt="Logo"/>
-    <h1 className="font-bold text-5xl">Bihance</h1>
-    <h1 className="text-xl">
-      Your all-in-one
-    </h1>
-    <div className="h-20">
-    <WordRotate
-      className="text-4xl font-bold text-base-content h-20"
-      words={["HR solution", "Shift system"]}
-    />
-    </div>
+  return (
+    <div className="flex flex-col items-center justify-center mx-auto gap-5">
+      <section className="z-10 text-center m-10 text-black dark:text-white gap-5 flex flex-col">
+        <h1 className=" whitespace-pre-wrap text-5xl font-medium tracking-tighter">
+          Ehancing your business
+        </h1>
+        <h2>
+          Bihance: Business Enhanced
+        </h2>
 
-    <Card className="bg-base-100 w-96 text-base-content">
-    <CardHeader>
-    <CardTitle>
-    About Bihance:
-    </CardTitle>
-    <CardDescription>
-    &quot;Enhancing your business&quot;
-    
-    </CardDescription>
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1">
-        <AccordionTrigger>Cutting Edge</AccordionTrigger>
-        <AccordionContent>
-        Our cloud-based human resource management system leverages cutting-edge technology to revolutionize how businesses in these sectors operate. At its core, our solution features a mobile application that allows field employees to clock in and out using timestamp photos, ensuring accurate time tracking and location verification. This data seamlessly integrates with our comprehensive web dashboard, where managers can effortlessly oversee shift details, optimize scheduling, and streamline payroll processes.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-2">
-        <AccordionTrigger>Impact</AccordionTrigger>
-        <AccordionContent>
-        The impact of our technology extends far beyond mere convenience. By automating traditionally manual processes, we are helping businesses reduce administrative overhead, minimize payroll errors, and gain unprecedented insights into their workforce dynamics. This leads to significant cost savings, improved operational efficiency, and better decision-making capabilities.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3">
-        <AccordionTrigger>Fairness and Transparency</AccordionTrigger>
-        <AccordionContent>
-        Moreover, our system promotes fairness and transparency in the workplace. Employees benefit from accurate time tracking and timely pay, while employers can ensure compliance with labor regulations more easily. This fosters a more positive work environment and can lead to improved job satisfaction and retention rates.
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-4">
-        <AccordionTrigger>
-          Empowering
+        <Link href="/upload" className="flex mx-auto">
+          <ShimmerButton className="shadow-2xl">
+            <span>
+              Upload now
 
-        </AccordionTrigger>
-        <AccordionContent>
-        As we continue to develop and refine our solution, we are not just creating a product – we are driving digital transformation in industries that have been underserved by technology. Our goal is to empower businesses of all sizes to optimize their operations, allowing them to focus on growth and innovation rather than administrative tasks.
-        <br/>
-        By supporting our initiative, you will be investing in the future of work, helping to modernize essential sectors of our economy, and contributing to the creation of more efficient, equitable, and productive workplaces across various industries.
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-    </CardHeader>
-    <CardContent className="flex flex-wrap gap-5 m-5 p-5 mx-auto ">
-    <Link href="/event" className="btn btn-outline">
-    Events
-    </Link>
-    <Link href="/upload" className="btn btn-outline">
-    Upload
-    </Link>
-    <Link href="/attend" className="btn btn-outline">
-    Attendance
-    </Link>
-    <Link href="/blog" className="btn btn-outline">
-    Blog
-    </Link>
-    </CardContent>
+            </span>
+          </ShimmerButton>
 
-    </Card>
+        </Link>
+      </section>
+      <section className="z-10 flex flex-col gap-5">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              Customer Centric
 
-    <Card className="bg-base-300 text-base-content w-96">
-      <CardHeader>
-      <CardTitle>
-        Starter Plan $240 /yr
-      </CardTitle>
-      </CardHeader>
-      <CardContent>
-      <CardDescription>
-      Powerful extra features for your growing business.
-      </CardDescription>
+            </CardTitle>
+            <CardDescription>
+              We design with efficiency and ease of use in mind, allowing you to have ease in mind for your day to day operations.
+            </CardDescription>
+
+          </CardHeader>
+          <CardContent className="gap-5 flex">
+            <Button asChild>
+              <Link href="/blog">
+                Blog
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/event">
+                Dashboard
+              </Link>
+            </Button>
+
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>$240 /mth</CardTitle>
+            <CardDescription>
+              Pay for pro to get better support
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+
+            <Payment
+              hasActiveSubscription={isPro} />
+          </CardContent>
+        </Card>
 
 
-      </CardContent>
-      <CardFooter>
-      <Payment
-      hasActiveSubscription={isPro}/>
-      </CardFooter>
-    </Card>
+      </section>
 
 
-  </div> );
+      <DotPattern
+        width={20}
+        height={20}
+        cx={1}
+        cy={1}
+        cr={1}
+        className={cn(
+          "[mask-image:radial-gradient(300px_circle_at_center,white,transparent)]",
+        )}
+      />
+
+
+
+
+
+
+
+
+
+    </div>);
 }
- 
+
 export default MainPage;

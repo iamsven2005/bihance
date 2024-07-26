@@ -10,15 +10,6 @@ export default withUt({
     './src/**/*.{ts,tsx}',
 	],
   prefix: "",
-  daisyui: { themes: [ "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter", "dim", "nord", "sunset",],
-  darkTheme: "dark",
-  base: true, 
-  styled: true,
-  utils: true, 
-  prefix: "",
-  logs: true,
-  themeRoot: ":root",
-   },
   theme: {
     container: {
       center: true,
@@ -81,13 +72,35 @@ export default withUt({
           from: { backgroundPosition: '200% 0' },
           to: { backgroundPosition: '-200% 0' },
         },
+        "spin-around": {
+          "0%": {
+            transform: "translateZ(0) rotate(0)",
+          },
+          "15%, 35%": {
+            transform: "translateZ(0) rotate(90deg)",
+          },
+          "65%, 85%": {
+            transform: "translateZ(0) rotate(270deg)",
+          },
+          "100%": {
+            transform: "translateZ(0) rotate(360deg)",
+          },
+        },
+        slide: {
+          to: {
+            transform: "translate(calc(100cqw - 100%), 0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "shine": "shine 8s ease-in-out infinite",
+        "spin-around": "spin-around calc(var(--speed) * 2) infinite linear",
+        slide: "slide var(--speed) ease-in-out infinite alternate",
       },
+      
     },
   },
-  plugins: [require("tailwindcss-animate"),require('daisyui'),require('@tailwindcss/typography'),],
+  plugins: [require("tailwindcss-animate"),require('@tailwindcss/typography'),],
 } satisfies Config);

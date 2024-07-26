@@ -125,13 +125,15 @@ const UploadPage = ({ event: selectedEvent, files }: Props) => {
       <Button onClick={handleSubmit}>
         Submit
       </Button>
-      <Card className="bg-base-200 text-base-content m-5 p-5">
+      <Card className="m-5 p-5">
       <CardTitle>View related files:</CardTitle>
       {files.map((file) => (
         <CardDescription key={file.id}>
-          <Link href={file.url} target="_blank" rel="noopener noreferrer" className="btn btn-link">
+          <Button asChild>
+          <Link href={file.url} target="_blank" rel="noopener noreferrer">
             <Files/>{file.name}
           </Link>
+          </Button>
         </CardDescription>
       ))}
       </Card>

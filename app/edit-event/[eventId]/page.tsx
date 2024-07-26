@@ -15,6 +15,7 @@ import StarterKit from "@tiptap/starter-kit";
 import UploadImage from "./upload";
 import UploadFile from "./UploadFile";
 import { File } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   params: {
@@ -22,7 +23,9 @@ type Props = {
   };
 };
 
-const EventForm: React.FC<Props> = ({ params }) => {
+const EventForm = ({ params }: Props) => {
+  const router = useRouter()
+
   const { eventId } = params;
   const [event, setEvent] = useState<event | null>(null);
   const [description, setDescription] = useState("");
@@ -78,7 +81,6 @@ const EventForm: React.FC<Props> = ({ params }) => {
         setFiles(data);
       } catch (error) {
         console.error("Failed to fetch files:", error);
-        toast.error("Failed to fetch files");
       }
     };
 
@@ -115,7 +117,7 @@ const EventForm: React.FC<Props> = ({ params }) => {
   }
 
   if (!event) {
-    return <div>Event not found</div>;
+    return router.push("/event");
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -140,13 +142,15 @@ const EventForm: React.FC<Props> = ({ params }) => {
   };
 
   return (
-    <Card className="bg-base-200 text-base-content">
+    <Card>
       <CardHeader className="flex flex-wrap">
         <div className="flex flex-row justify-between w-full">
           <CardTitle className="bg">Edit {event.name}</CardTitle>
-          <Link href="/event" className="btn btn-link">
+          <Button asChild>
+          <Link href="/event">
             Back to events
           </Link>
+          </Button>
           <DeleteConfirmationDialog onConfirm={handleDelete} />
         </div>
       </CardHeader>
@@ -217,9 +221,11 @@ const EventForm: React.FC<Props> = ({ params }) => {
           <ul className="mt-4">
             {files.map((file) => (
               <li key={file.id} className="flex items-center">
-                <Link href={file.url} target="_blank" rel="noopener noreferrer" className="btn btn-link">
+                <Button asChild>
+                <Link href={file.url} target="_blank" rel="noopener noreferrer">
                   <File /> {file.name}
                 </Link>
+                </Button>
                 <Button onClick={() => handleFileDelete(file.id)} className="ml-2" variant="destructive">
                   Delete
                 </Button>

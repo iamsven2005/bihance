@@ -17,7 +17,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
   };
 
   return (
-    <div onClick={handleExport} className="btn btn-outline">
+    <div onClick={handleExport}>
       Export as CSV
     </div>
   );
