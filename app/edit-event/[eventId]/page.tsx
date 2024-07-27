@@ -144,14 +144,17 @@ const EventForm = ({ params }: Props) => {
   return (
     <Card>
       <CardHeader className="flex flex-wrap">
-        <div className="flex flex-row justify-between w-full">
-          <CardTitle className="bg">Edit {event.name}</CardTitle>
+        <div className="flex flex-col justify-between w-full">
+          <CardTitle className="m-5">Edit {event.name}</CardTitle>
+          <div className="flex flex-wrap gap-5">
           <Button asChild>
           <Link href="/event">
             Back to events
           </Link>
           </Button>
           <DeleteConfirmationDialog onConfirm={handleDelete} />
+          </div>
+
         </div>
       </CardHeader>
 

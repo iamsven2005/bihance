@@ -83,11 +83,13 @@ const AttendList: React.FC<AttendListProps> = ({ attendances, payrolls, userId }
       <div className="flex flex-col p-5 gap-5 rounded-xl">
         <div className="flex flex-wrap justify-between">
           <h1 className="font-bold text-xl">Attendance</h1>
-          <br />
+          <div className="flex flex-wrap gap-5">
           <Button asChild>
           <Link href="/event">Events</Link>
           </Button>
           <ExportButton data={rows} filename="attendance.csv"/>
+          </div>
+
         </div>
         <Input
           type="date"
@@ -120,6 +122,7 @@ const AttendList: React.FC<AttendListProps> = ({ attendances, payrolls, userId }
                   key={`${date}-${index}`}
                   className="flex flex-col shadow-lg p-5 rounded-xl"
                 >
+                  https://billing.stripe.com/p/login/28o003bn6ad065ieUU
                   <LocationMap location={items[0].location} />
                   <p>Date: {pair.checkIn.toISOString().split('T')[0]}</p>
                   <p>Check-in Time: {formatTime(pair.checkIn)}</p>

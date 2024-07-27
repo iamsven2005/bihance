@@ -104,6 +104,6 @@ export function CustomMDX(props: any) {
     <MDXRemote
       {...props}
       components={{ ...components, ...(props.components || {}) }}
-    />
+     />
   )
 }

@@ -17,9 +17,9 @@ const ExportButton: React.FC<ExportButtonProps> = ({ data, filename }) => {
   };
 
   return (
-    <div onClick={handleExport}>
+    <Button onClick={handleExport}>
       Export as CSV
-    </div>
+    </Button>
   );
 };
 

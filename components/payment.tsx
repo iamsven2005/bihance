@@ -3,6 +3,7 @@ import { createStripeUrl } from "@/actions/user-subscription";
 import { Button } from "./ui/button";
 import { useTransition } from "react";
 import { toast } from "sonner";
+import Link from "next/link";
 interface Props {
     hasActiveSubscription: boolean
 }
@@ -20,11 +21,22 @@ const Payment = ({ hasActiveSubscription }: Props) => {
         })
     }
     return (
-        <Button
-            onClick={onUpgrade} disabled={pending || hasActiveSubscription}>
-            {hasActiveSubscription ? "settings" : "upgrade"}
+        <>
+        {hasActiveSubscription ? (
+        <Button asChild>
+          <Link
+            href="https://billing.stripe.com/p/login/28o003bn6ad065ieUU"
+          >
+            Settings
+          </Link>
+          </Button>
 
-        </Button>
+        ) : (
+          <Button onClick={onUpgrade} disabled={pending}>
+            Upgrade
+          </Button>
+        )}
+      </>
     );
 }
 

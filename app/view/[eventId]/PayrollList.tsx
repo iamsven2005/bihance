@@ -6,6 +6,7 @@ import UpdatePayrollDialog from "./UpdatePayrollDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type PayrollListProps = {
   members: payroll[];
@@ -43,7 +44,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
 
       if (response.ok) {
         toast.success("Deleted payroll entry");
-        location.reload(); // Reload the page to show the updated payroll
+        location.reload(); // Reload method page to show method updated payroll
       } else {
         const data = await response.json();
         toast.error(data.error);
@@ -67,19 +68,44 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
         value={searchTerm}
         onChange={handleSearchChange}
       />
-      {filteredMembers.map((items: payroll) => (
-        <div key={items.payrollid} className="flex flex-row justify-between p-5">
-          <h2>{userMap[items.userId]?.first_name}&nbsp;{userMap[items.userId]?.last_name}</h2>
-          <p>Weekday Payment: {items.weekday}</p>
-          <p>Weekend Payment: {items.weekend}</p>
-          <Button onClick={() => setSelectedUser({ userId: items.userId, weekday: items.weekday, weekend: items.weekend })}>
-            Edit Pay
-          </Button>
-          <Button onClick={() => handleDelete(items.userId, items.eventid)}>
-            Delete
-          </Button>
-        </div>
-      ))}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Weekday Payment</TableHead>
+            <TableHead>Weekend Payment</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredMembers.map((items: payroll) => (
+            <TableRow key={items.payrollid}>
+              <TableCell>
+                {userMap[items.userId]?.first_name}&nbsp;{userMap[items.userId]?.last_name}
+              </TableCell>
+              <TableCell>{items.weekday}</TableCell>
+              <TableCell>{items.weekend}</TableCell>
+              <TableCell className="flex gap-5 flex-wrap">
+                <Button
+                  onClick={() =>
+                    setSelectedUser({
+                      userId: items.userId,
+                      weekday: items.weekday,
+                      weekend: items.weekend,
+                    })
+                  }
+                  className="mr-2"
+                >
+                  Edit Pay
+                </Button>
+                <Button onClick={() => handleDelete(items.userId, items.eventid)}>
+                  Delete
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       {selectedUser && (
         <UpdatePayrollDialog
           userId={selectedUser.userId}

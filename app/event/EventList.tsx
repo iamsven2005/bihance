@@ -36,22 +36,29 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
 
   return (
     <div className="flex flex-col p-5 text-base-content bg-base-100">
-      <div className="flex flex-row items-center justify-between mb-4">
+      <div className="flex flex-col mb-4 gap-5">
         <h1 className="font-bold text-2xl">All events:</h1>
+        <div className="flex-wrap flex gap-5">
         <Button asChild>
-
           <Link href="/edit-event">
             Create event
           </Link>
         </Button>
+        <Button asChild>
+          <Link href="/event/board">
+            Analytics
+          </Link>
+        </Button>
+        </div>
+
 
       </div>
-        <Input
-          type="text"
-          placeholder="Search for an event..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
+      <Input
+        type="text"
+        placeholder="Search for an event..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+      />
 
       <div className="flex flex-wrap m-5">
         {filteredEvents.map((item: event) => (

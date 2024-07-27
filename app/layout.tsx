@@ -46,7 +46,7 @@ export default function RootLayout({
                 </Link>
                 <nav className="flex items-center space-x-6">
                   <SignedOut>
-                    <Button>
+                    <Button asChild>
                       <SignInButton />
                     </Button>
                   </SignedOut>
