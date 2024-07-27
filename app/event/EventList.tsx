@@ -53,7 +53,7 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
           onChange={handleSearchChange}
         />
 
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap m-5">
         {filteredEvents.map((item: event) => (
           <Card key={item.eventid} className="w-56">
             <CardHeader>

@@ -14,6 +14,7 @@ import {
 import DotPattern from "@/components/magicui/dot-pattern";
 import { cn } from "@/lib/utils";
 import ShimmerButton from "@/components/magicui/shimmer-button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 const MainPage = async () => {
   const useSubcriptionData = getUserSubscription()
   const [userSubcription] = await Promise.all([useSubcriptionData
@@ -31,9 +32,8 @@ const MainPage = async () => {
 
         <Link href="/upload" className="flex mx-auto">
           <ShimmerButton className="shadow-2xl">
-            <span>
+            <span className="text-white">
               Upload now
-
             </span>
           </ShimmerButton>
 
@@ -64,6 +64,23 @@ const MainPage = async () => {
             </Button>
 
           </CardContent>
+          <CardFooter className="flex flex-col">
+            <CardDescription>Socials:
+            </CardDescription>
+            <div className="flex gap-5">
+            <Link href="https://www.instagram.com/bihance.app?igsh=a2I4Z2d6ODlkbHQ4">
+              <Avatar>
+                <AvatarFallback>IG</AvatarFallback>
+              </Avatar>
+            </Link>
+            <Link href="https://www.linkedin.com/company/bihance-app/">
+              <Avatar>
+                <AvatarFallback>In</AvatarFallback>
+              </Avatar>
+            </Link>
+            </div>
+            
+          </CardFooter>
         </Card>
         <Card>
           <CardHeader>
