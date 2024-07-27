@@ -7,6 +7,7 @@ import { event } from "@prisma/client";
 import { ComboboxDemo } from "./ComboBox"; // Adjust the import path as necessary
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface Location {
   latitude: number;
@@ -115,6 +116,11 @@ const UploadPage = () => {
 
   return (
     <main className="flex flex-col items-center justify-between mx-auto">
+      <Button>
+        <Link href="/attend">
+        View Attendance
+        </Link>
+      </Button>
       <div className="flex flex-wrap items-center justify-center p-5">
         <UploadDropzone
           endpoint="imageUploader"

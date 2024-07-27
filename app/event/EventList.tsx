@@ -22,7 +22,7 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
   };
 
   const handleCopyLink = (eventId: string) => {
-    const uploadLink = `/event/${eventId}`;
+    const uploadLink = `https://www.bihance.app/event/${eventId}`;
     navigator.clipboard.writeText(uploadLink).then(() => {
       toast.success("Copied Link!");
     }).catch(err => {

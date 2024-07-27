@@ -34,24 +34,26 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId }) => {
         }),
       });
 
+      const data = await response.json();
       if (response.ok) {
         setEmail("");
         setWeekday("");
         setWeekend("");
         setError("");
         router.refresh(); // Refresh the page to show the updated payroll
+        toast.success("Added payroll");
       } else {
-        const data = await response.json();
         setError(data.error);
+        toast.error(data.error);
       }
-      toast.success("Added payroll")
     } catch (error) {
       setError("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     }
   };
 
   return (
-    <form onSubmit={handleAddPayroll} className="flex flex-wrap gap-4">
+    <form onSubmit={handleAddPayroll} className="flex flex-wrap gap-4 m-5">
       {error && <p className="text-red-500">{error}</p>}
       <div>
         <label htmlFor="email">User Email:</label>
