@@ -18,6 +18,7 @@ model user {
   subscriptions userSubcription[]
   payrolls      payroll[]
   attendances   attendance[]
+
 }
 
 model event {
@@ -69,4 +70,19 @@ model files {
   url      String
   name     String
   event    event  @relation(fields: [eventId], references: [eventid], onDelete: Cascade)
+}
+model Feature {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  votes         Vote[]   @relation("FeatureVotes")
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  featureId String
+  feature   Feature  @relation(fields: [featureId], references: [id], name: "FeatureVotes")
+
+  @@unique([userId, featureId])
 }

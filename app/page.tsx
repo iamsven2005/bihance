@@ -62,6 +62,11 @@ const MainPage = async () => {
                 Dashboard
               </Link>
             </Button>
+            <Button asChild>
+              <Link href="/vote">
+                Vote Features
+              </Link>
+            </Button>
 
           </CardContent>
           <CardFooter className="flex flex-col">
@@ -95,11 +100,7 @@ const MainPage = async () => {
               hasActiveSubscription={isPro} />
           </CardContent>
         </Card>
-
-
       </section>
-
-
       <DotPattern
         width={20}
         height={20}
@@ -110,15 +111,6 @@ const MainPage = async () => {
           "[mask-image:radial-gradient(300px_circle_at_center,white,transparent)]",
         )}
       />
-
-
-
-
-
-
-
-
-
     </div>);
 }
 
