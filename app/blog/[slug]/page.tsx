@@ -1,19 +1,22 @@
-import { notFound } from 'next/navigation'
-import { CustomMDX } from '@/components/mdx'
-import { formatDate, getBlogPosts } from '../utils'
-import { baseUrl } from '@/app/sitemap'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { notFound } from 'next/navigation';
+import { CustomMDX } from '@/components/mdx';
+import { formatDate, getBlogPosts } from '../utils';
+import { baseUrl } from '@/app/sitemap';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import ClipboardLink from '@/components/clipboard';
 
 export default function Blog({ params }: any) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug)
+  let post = getBlogPosts().find((post) => post.slug === params.slug);
 
   if (!post) {
-    notFound()
+    notFound();
   }
 
+  const postUrl = `${baseUrl}/blog/${post.slug}`;
+
   return (
-    <section>
+    <section className='mx-auto flex flex-col p-5 m-5 items-center justify-center'>
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -28,7 +31,7 @@ export default function Blog({ params }: any) {
             image: post.metadata.image
               ? `${baseUrl}${post.metadata.image}`
               : `/og?title=${encodeURIComponent(post.metadata.title)}`,
-            url: `${baseUrl}/blog/${post.slug}`,
+            url: postUrl,
             author: {
               '@type': 'Person',
               name: 'My Portfolio',
@@ -44,14 +47,15 @@ export default function Blog({ params }: any) {
           {formatDate(post.metadata.publishedAt)}
         </p>
       </div>
+      <ClipboardLink url={postUrl} /> 
       <article className="prose dark:prose-invert">
         <CustomMDX source={post.content} />
         <Button variant={"link"}>
           <Link href={"/blog"}>
-          Back to blogs
+            Back to blogs
           </Link>
         </Button>
       </article>
     </section>
-  )
+  );
 }

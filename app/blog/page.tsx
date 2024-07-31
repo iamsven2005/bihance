@@ -1,8 +1,10 @@
 import { BlogPosts } from "@/components/posts";
-
+import { getBlogPosts } from "./utils";
+//fs is taken on the server side, so a client component desBlog, brings format date to the server
 export default function Page() {
+  let allBlogs = getBlogPosts()
   return (
-    <section>
+    <section className="m-5 p-5">
       <h1 className="mb-8 text-3xl font-semibold tracking-tighter">
         What intrests you?
       </h1>
@@ -11,7 +13,7 @@ export default function Page() {
         From our blogs we hope that you can leverage our services to enhance your business or just to better understand who we are.`}
       </p>
       <div className="my-8">
-        <BlogPosts />
+        <BlogPosts allblogs={allBlogs}/>
       </div>
     </section>
   )
