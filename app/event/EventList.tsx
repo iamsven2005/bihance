@@ -37,16 +37,12 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
   return (
     <div className="flex flex-col p-5">
       <div className="flex flex-col mb-4 gap-5">
+      <h1 className="font-bold text-2xl">Analytics</h1>
         <h1 className="font-bold text-2xl">All events:</h1>
         <div className="flex-wrap flex gap-5">
         <Button asChild>
           <Link href="/edit-event">
             Create event
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href="/event/board">
-            Analytics
           </Link>
         </Button>
         </div>

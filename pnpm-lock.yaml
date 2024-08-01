@@ -11,8 +11,10 @@ specifiers:
   '@radix-ui/react-label': ^2.1.0
   '@radix-ui/react-popover': ^1.1.1
   '@radix-ui/react-slot': ^1.0.2
+  '@radix-ui/react-tooltip': ^1.1.2
   '@sentry/cli': ^2.32.2
   '@sentry/nextjs': ^8.19.0
+  '@sentry/utils': ^8.22.0
   '@tailwindcss/typography': ^0.5.13
   '@tiptap/extension-color': ^2.5.5
   '@tiptap/extension-highlight': ^2.5.5
@@ -75,8 +77,10 @@ dependencies:
   '@radix-ui/react-label': 2.1.0_iv3fbzfqanoonyhoyrhhflyvgy
   '@radix-ui/react-popover': 1.1.1_iv3fbzfqanoonyhoyrhhflyvgy
   '@radix-ui/react-slot': 1.0.2_omxgp22l5i4odgutx2pskcopxu
+  '@radix-ui/react-tooltip': 1.1.2_iv3fbzfqanoonyhoyrhhflyvgy
   '@sentry/cli': 2.32.2
   '@sentry/nextjs': 8.19.0_next@14.2.3+react@18.3.1
+  '@sentry/utils': 8.22.0
   '@tiptap/extension-color': 2.5.5_nwa6eweontm4xp4avllgysdlga
   '@tiptap/extension-highlight': 2.5.5
   '@tiptap/extension-image': 2.5.5
@@ -1900,6 +1904,37 @@ packages:
       react: 18.3.1
     dev: false
 
+  /@radix-ui/react-tooltip/1.1.2_iv3fbzfqanoonyhoyrhhflyvgy:
+    resolution: {integrity: sha512-9XRsLwe6Yb9B/tlnYCPVUd/TFS4J7HuOZW345DCeC6vKIxQGMZdx21RK4VoZauPD5frgkXTYVS5y90L+3YBn4w==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@radix-ui/primitive': 1.1.0
+      '@radix-ui/react-compose-refs': 1.1.0_omxgp22l5i4odgutx2pskcopxu
+      '@radix-ui/react-context': 1.1.0_omxgp22l5i4odgutx2pskcopxu
+      '@radix-ui/react-dismissable-layer': 1.1.0_iv3fbzfqanoonyhoyrhhflyvgy
+      '@radix-ui/react-id': 1.1.0_omxgp22l5i4odgutx2pskcopxu
+      '@radix-ui/react-popper': 1.2.0_iv3fbzfqanoonyhoyrhhflyvgy
+      '@radix-ui/react-portal': 1.1.1_iv3fbzfqanoonyhoyrhhflyvgy
+      '@radix-ui/react-presence': 1.1.0_iv3fbzfqanoonyhoyrhhflyvgy
+      '@radix-ui/react-primitive': 2.0.0_iv3fbzfqanoonyhoyrhhflyvgy
+      '@radix-ui/react-slot': 1.1.0_omxgp22l5i4odgutx2pskcopxu
+      '@radix-ui/react-use-controllable-state': 1.1.0_omxgp22l5i4odgutx2pskcopxu
+      '@radix-ui/react-visually-hidden': 1.1.0_iv3fbzfqanoonyhoyrhhflyvgy
+      '@types/react': 18.3.1
+      '@types/react-dom': 18.3.0
+      react: 18.3.1
+      react-dom: 18.3.1_react@18.3.1
+    dev: false
+
   /@radix-ui/react-use-callback-ref/1.0.1_omxgp22l5i4odgutx2pskcopxu:
     resolution: {integrity: sha512-D94LjX4Sp0xJFVaoQOd3OO9k7tpBYNOXdVhkltUbGv2Qb9OXdrg/CpsjlZv7ia14Sylv398LswWBVVu5nqKzAQ==}
     peerDependencies:
@@ -2038,6 +2073,26 @@ packages:
       '@radix-ui/react-use-layout-effect': 1.1.0_omxgp22l5i4odgutx2pskcopxu
       '@types/react': 18.3.1
       react: 18.3.1
+    dev: false
+
+  /@radix-ui/react-visually-hidden/1.1.0_iv3fbzfqanoonyhoyrhhflyvgy:
+    resolution: {integrity: sha512-N8MDZqtgCgG5S3aV60INAB475osJousYpZ4cTJ2cFbMpdHS5Y6loLTH8LPtkj2QN0x93J30HT/M3qJXM0+lyeQ==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@radix-ui/react-primitive': 2.0.0_iv3fbzfqanoonyhoyrhhflyvgy
+      '@types/react': 18.3.1
+      '@types/react-dom': 18.3.0
+      react: 18.3.1
+      react-dom: 18.3.1_react@18.3.1
     dev: false
 
   /@radix-ui/rect/1.1.0:
@@ -2392,11 +2447,23 @@ packages:
     engines: {node: '>=14.18'}
     dev: false
 
+  /@sentry/types/8.22.0:
+    resolution: {integrity: sha512-1MLK3xO+uF2oJaa+M98aLIrQsEHzV7xnVWPfE3MhejYLNQebj4rQnQKTut/xZNIF9W0Q+bRcakLarC3ce2a74g==}
+    engines: {node: '>=14.18'}
+    dev: false
+
   /@sentry/utils/8.19.0:
     resolution: {integrity: sha512-8dWJJKaUN6Hf92Oxw2TBmHchGua2W3ZmonrZTTwLvl06jcAigbiQD0MGuF5ytZP8PHx860orV+SbTGKFzfU3Pg==}
     engines: {node: '>=14.18'}
     dependencies:
       '@sentry/types': 8.19.0
+    dev: false
+
+  /@sentry/utils/8.22.0:
+    resolution: {integrity: sha512-0ITG2+3EtyMtyc/nQG8aB9z9eIQ4L43nM/KuNgYSnM1vPl/zegbaLT0Ek/xkQB1OLIOLkEPQ6x9GWe+248/n3g==}
+    engines: {node: '>=14.18'}
+    dependencies:
+      '@sentry/types': 8.22.0
     dev: false
 
   /@sentry/vercel-edge/8.19.0:
