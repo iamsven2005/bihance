@@ -85,6 +85,7 @@ export async function POST(req: Request) {
             first_name: payload?.data?.first_name,
             last_name: payload?.data?.last_name,
             image_url: payload?.data?.profile_image_url,
+            credits: 300
           },
         });
 

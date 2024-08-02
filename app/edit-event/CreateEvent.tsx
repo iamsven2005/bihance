@@ -81,7 +81,7 @@ const CreateEventForm: React.FC = () => {
         <label htmlFor="image">Event Image:</label>
         <UploadImage onUploadComplete={(url: string) => setImage(url)} />
         {image && (
-          <img src={image} alt="Event Image" className="mt-4 w-full h-auto" />
+          <img src={image} alt="Event Image" className="m-5 mx-auto w-56 rounded-lg shadow-md" />
         )}
       </div>
       <Button type="submit">Create Event</Button>

@@ -1,20 +1,39 @@
 "use client";
-
-import { useState } from "react";
-import { event } from "@prisma/client";
+import React, { useState } from "react";
+import { attendance, event, files, user } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Ellipsis } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Ellipsis, Link2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-type EventListProps = {
-  events: event[];
+// Define a unified event type that includes attendances and files
+type UnifiedEventType = event & {
+  attendances: attendance[];
+  files: files[];
 };
 
-const EventList: React.FC<EventListProps> = ({ events }) => {
+// Define props interface for EventList
+interface EventListProps {
+  events: UnifiedEventType[];
+  user: user;
+}
+
+const EventList = ({ events, user }: EventListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,11 +42,14 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
 
   const handleCopyLink = (eventId: string) => {
     const uploadLink = `https://www.bihance.app/event/${eventId}`;
-    navigator.clipboard.writeText(uploadLink).then(() => {
-      toast.success("Copied Link!");
-    }).catch(err => {
-      toast.error('Failed to copy: ', err);
-    });
+    navigator.clipboard
+      .writeText(uploadLink)
+      .then(() => {
+        toast.success("Copied Link!");
+      })
+      .catch((err) => {
+        toast.error("Failed to copy: ", err);
+      });
   };
 
   const filteredEvents = events.filter((event) =>
@@ -37,17 +59,36 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
   return (
     <div className="flex flex-col p-5">
       <div className="flex flex-col mb-4 gap-5">
-      <h1 className="font-bold text-2xl">Analytics</h1>
-        <h1 className="font-bold text-2xl">All events:</h1>
-        <div className="flex-wrap flex gap-5">
-        <Button asChild>
-          <Link href="/edit-event">
-            Create event
-          </Link>
-        </Button>
+        <h1 className="font-bold text-2xl">Analytics</h1>
+        <p>Credits Left: {user ? user.credits : "Loading..."}</p>
+        <div>
+          <h1 className="font-bold text-xl">
+            Images
+          </h1>
+
+          {events.map((images) => (
+            <div key={images.eventid} className="flex flex-col gap-5">
+              <a href={images.image} download><img src={images.image} className="rounded-lg w-48"/></a>
+
+              {images.attendances.map((atd) => (
+                <a href={atd.imageurl} download key={atd.id}><img src={atd.imageurl} className="rounded-lg w-48"/></a>
+              ))}
+              <h1>
+                Event Files
+              </h1>
+              {images.files.map((file) => (
+                <a key={file.id} href={file.url} className="flex"><Link2/>{file.name}</a>
+              ))}
+            </div>
+          ))}
         </div>
+        <h1 className="font-bold text-2xl">All events:</h1>
 
-
+        <div className="flex-wrap flex gap-5">
+          <Button asChild>
+            <Link href="/edit-event">Create event</Link>
+          </Button>
+        </div>
       </div>
       <Input
         type="text"
@@ -57,23 +98,25 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
       />
 
       <div className="flex flex-wrap m-5">
-        {filteredEvents.map((item: event) => (
+        {filteredEvents.map((item: UnifiedEventType) => (
           <Card key={item.eventid} className="w-56">
             <CardHeader>
               <DropdownMenu>
-                <DropdownMenuTrigger>    <Ellipsis />
+                <DropdownMenuTrigger>
+                  <Ellipsis />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <Link href={`/edit-event/${item.eventid}`} className="w-full"> <DropdownMenuItem>
-                    Edit
-                  </DropdownMenuItem>
+                  <Link href={`/edit-event/${item.eventid}`} className="w-full">
+                    <DropdownMenuItem>Edit</DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem>
-                    <Link href={`/view/${item.eventid}`} className="w-full">Employees
+                    <Link href={`/view/${item.eventid}`} className="w-full">
+                      Employees
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link href={`/payment/${item.eventid}`} className="w-full">Shifts
+                    <Link href={`/payment/${item.eventid}`} className="w-full">
+                      Shifts
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
@@ -85,16 +128,13 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
               </DropdownMenu>
             </CardHeader>
             <CardContent>
-              <img src={item.image} />
+              <img src={item.image} alt={item.name} /> {/* Add alt for accessibility */}
               <CardTitle>{item.name}</CardTitle>
-              <CardDescription>
-                {item.location}
-              </CardDescription>
+              <CardDescription>{item.location}</CardDescription>
             </CardContent>
             <CardFooter>
               <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
             </CardFooter>
-
           </Card>
         ))}
       </div>

@@ -61,7 +61,7 @@ const UploadFile: React.FC<UploadFileProps> = ({ eventId, onUploadComplete }) =>
         />
       </div>
       <UploadDropzone
-        endpoint="imageUploader"
+        endpoint="fileUploader"
         onClientUploadComplete={handleUploadComplete}
         onUploadError={handleUploadError}
       />

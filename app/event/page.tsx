@@ -1,23 +1,33 @@
 import { db } from "@/lib/db";
-import { currentUser } from "@clerk/nextjs/server"; // Correct import for server-side authentication
+import { auth } from "@clerk/nextjs/server"; // Correct import for server-side authentication
 import EventList from "./EventList"; // Client component
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
-const EventPage = async () => {
-  const user = await currentUser();
-
-  if (!user) {
+const Page = async () => {
+  const { userId } = auth();
+  if (!userId) {
     redirect("/");
-    return null;
+  }
+  const creds = await db.user.findFirst({
+    where: {
+      clerkId: userId,
+    },
+  });
+  if (!creds) {
+    redirect("/")
   }
 
   const events = await db.event.findMany({
     where: {
-      managerId: user.id,
+      managerId: userId,
+    },
+    include: {
+      attendances: true,
+      files: true,
     },
   });
 
-  return <EventList events={events} />;
+  return <EventList events={events} user={creds} />;
 };
 
-export default EventPage;
+export default Page;

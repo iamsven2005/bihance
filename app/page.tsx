@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import ShimmerButton from "@/components/magicui/shimmer-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 const MainPage = async () => {
   const useSubcriptionData = getUserSubscription()
   const [userSubcription] = await Promise.all([useSubcriptionData

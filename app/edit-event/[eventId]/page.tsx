@@ -16,6 +16,7 @@ import UploadImage from "./upload";
 import UploadFile from "./UploadFile";
 import { File } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
 
 type Props = {
   params: {
@@ -161,7 +162,7 @@ const EventForm = ({ params }: Props) => {
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium">
+            <label htmlFor="name" className="block text-sm font-medium m-2">
               Event Name:
             </label>
             <Input
@@ -174,7 +175,7 @@ const EventForm = ({ params }: Props) => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="location" className="block text-sm font-medium">
+            <label htmlFor="location" className="block text-sm font-medium m-2">
               Event Location:
             </label>
             <Input
@@ -204,14 +205,14 @@ const EventForm = ({ params }: Props) => {
               <img
                 src={image}
                 alt="Event"
-                className="mt-4 w-full h-auto rounded-lg shadow-md"
+                className="m-5 mx-auto w-56 rounded-lg shadow-md"
               />
             )}
           </div>
           <div className="mb-4">
-            <label htmlFor="files" className="block text-sm font-medium">
+            <Label htmlFor="files"  className="m-2">
               Upload Files:
-            </label>
+            </Label>
             <UploadFile eventId={eventId} onUploadComplete={handleFileUpload} />
           </div>
           <Button type="submit" className="w-full">
