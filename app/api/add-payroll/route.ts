@@ -35,9 +35,8 @@ export async function POST(req: Request) {
     await db.payroll.create({
       data: {
         userId: user.clerkId,
-        weekday,
-        weekend,
         eventid: eventId,
+        rolltype: "custom"
       },
     });
 

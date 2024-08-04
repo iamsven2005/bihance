@@ -66,28 +66,6 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId }) => {
           required
         />
       </div>
-      <div>
-        <label htmlFor="weekday">Weekday Payment:</label>
-        <Input
-          type="number"
-          id="weekday"
-          name="weekday"
-          value={weekday}
-          onChange={(e) => setWeekday(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="weekend">Weekend Payment:</label>
-        <Input
-          type="number"
-          id="weekend"
-          name="weekend"
-          value={weekend}
-          onChange={(e) => setWeekend(e.target.value)}
-          required
-        />
-      </div>
       <Button type="submit">Add Shift</Button>
     </form>
   );

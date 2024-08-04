@@ -7,21 +7,32 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
 
-  const { userId: updateUserId, weekday, weekend } = await req.json();
+  const { updateUserId, typepayId, day, shift, pay } = await req.json();
 
   try {
-    await db.payroll.updateMany({
+    // Update typepay entries based on typepayId
+    const updatedTypepay = await db.typepay.updateMany({
       where: {
-        userId: updateUserId,
+        payroll: {
+          userId: updateUserId, // Ensure it matches the user's payroll
+        },
+        typeid: typepayId, // Update specific typepay entry
       },
       data: {
-        weekday,
-        weekend,
+        day,    // Example of updating the day field
+        shift,  // Example of updating the shift field
+        pay,    // Example of updating the pay amount
       },
     });
 
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    // Check if any records were updated
+    if (updatedTypepay.count === 0) {
+      return new Response(JSON.stringify({ error: "No records found to update" }), { status: 404 });
+    }
+
+    return new Response(JSON.stringify({ success: true, updatedTypepay }), { status: 200 });
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Failed to update payroll" }), { status: 500 });
+    console.error(error);
+    return new Response(JSON.stringify({ error: "Failed to update typepay" }), { status: 500 });
   }
 }

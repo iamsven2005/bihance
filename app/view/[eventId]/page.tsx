@@ -24,12 +24,15 @@ const View = async ({ params }: Props) => {
     where: {
       eventid: params.eventId,
     },
+    include:{
+      typepay: true
+    }
   });
 
   const event = await db.event.findUnique({
     where: {
       eventid: params.eventId,
-    },
+    }
   });
   if(!event){
     return <Redirect/>
@@ -59,7 +62,7 @@ const View = async ({ params }: Props) => {
         </Link>
       </Button>
       </div>
-      <div className="m-5 p-5 rounded-xl">
+      <div className="p-5 rounded-xl">
       <AddPayroll eventId={params.eventId} />
       <PayrollList members={members} userMap={userMap} />
       </div>

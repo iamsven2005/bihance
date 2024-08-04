@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { attendance, payroll } from "@prisma/client";
+import { attendance, payroll, typepay } from "@prisma/client"; // Ensure typepay is imported
 import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
 
@@ -17,7 +17,6 @@ const AttendPage = async ({ params }: Props) => {
   const { userId } = auth();
   if (!userId) {
     redirect("/");
-    return null;
   }
 
   const attendances: attendance[] = await db.attendance.findMany({
@@ -26,9 +25,12 @@ const AttendPage = async ({ params }: Props) => {
     },
   });
 
-  const payrolls: payroll[] = await db.payroll.findMany({
+  const payrolls: (payroll & { typepay: typepay[] })[] = await db.payroll.findMany({
     where: {
-      userId: userId,
+      eventid: params.eventId,
+    },
+    include: {
+      typepay: true,
     },
   });
 
