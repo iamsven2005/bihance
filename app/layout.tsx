@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { ClerkProvider, OrganizationSwitcher, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/sonner";
@@ -12,8 +12,9 @@ import { ModeToggle } from "@/components/ui/theme";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+import { dark } from '@clerk/themes';
+
+import { useTheme } from "next-themes";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -26,7 +27,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <ClerkProvider>
       <html lang="en" className="min-h-100">
@@ -43,8 +43,8 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <header className="shadow-md">
-              <div className="container mx-auto flex justify-between items-center py-4 px-8">
+            <header className="sticky top-0 z-50 flex items-center justify-between w-full h-16 px-4 border-b shrink-0 bg-gradient-to-b from-background/10 via-background/50 to-background/80 backdrop-blur-xl">
+              <div className="container mx-auto flex justify-between items-center p-2">
 
                 <Sheet >
                   <SheetTrigger><Menu /></SheetTrigger>
@@ -75,7 +75,10 @@ export default function RootLayout({
                       <Link href="/vote"><Button className="w-full">
                         Vote For Features
                       </Button>
-                      </Link>                    </SheetHeader>
+                      </Link>
+                      
+                      
+                                         </SheetHeader>
                   </SheetContent>
                 </Sheet>
 
@@ -84,6 +87,24 @@ export default function RootLayout({
                     <SignInButton />
                   </SignedOut>
                   <SignedIn>
+                    <div className="bg-white p-2 rounded-sm">
+                    <OrganizationSwitcher
+                  hidePersonal
+                      afterCreateOrganizationUrl="/workspace/:id"
+                      afterLeaveOrganizationUrl="/event"
+                      afterSelectOrganizationUrl="/workspace/:id"
+                      appearance={{
+                        elements:{
+                          rootBox:{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            colorScheme:"dark"
+                          },
+                        }
+                      }}/>
+                    </div>
+                   
                     <UserButton />
                   </SignedIn>
                   <ModeToggle />

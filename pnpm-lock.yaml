@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@clerk/nextjs': ^5.1.6
+  '@clerk/themes': ^2.1.16
   '@hookform/resolvers': ^3.6.0
   '@prisma/client': ^5.16.0
   '@radix-ui/react-accordion': ^1.2.0
@@ -36,6 +37,7 @@ specifiers:
   clsx: ^2.1.1
   cmdk: ^1.0.0
   date-fns: ^3.6.0
+  embla-carousel-react: ^8.1.8
   eslint: ^8
   eslint-config-next: 14.2.3
   framer-motion: ^11.2.12
@@ -63,11 +65,13 @@ specifiers:
   tailwindcss-animate: ^1.0.7
   ts-node: ^10.9.2
   typescript: ^5.4.5
+  unsplash-js: ^7.0.19
   uploadthing: ^6.13.2
   zod: ^3.23.8
 
 dependencies:
   '@clerk/nextjs': 5.1.6_ltovtef2igdo24amj746kuxosm
+  '@clerk/themes': 2.1.16
   '@hookform/resolvers': 3.6.0_react-hook-form@7.52.0
   '@prisma/client': 5.16.0_prisma@5.16.0
   '@radix-ui/react-accordion': 1.2.0_iv3fbzfqanoonyhoyrhhflyvgy
@@ -97,6 +101,7 @@ dependencies:
   clsx: 2.1.1
   cmdk: 1.0.0_iv3fbzfqanoonyhoyrhhflyvgy
   date-fns: 3.6.0
+  embla-carousel-react: 8.1.8_react@18.3.1
   framer-motion: 11.2.12_nnrd3gsncyragczmpvfhocinkq
   fs: 0.0.1-security
   leaflet: 1.9.4
@@ -117,6 +122,7 @@ dependencies:
   svix: 1.25.0
   tailwind-merge: 2.3.0
   tailwindcss-animate: 1.0.7_tailwindcss@3.4.3
+  unsplash-js: 7.0.19
   uploadthing: 6.13.2_h2lq23wu4zbaco6kxuoliaveoq
   zod: 3.23.8
 
@@ -421,6 +427,21 @@ packages:
       react-dom: 18.3.1_react@18.3.1
       std-env: 3.7.0
       swr: 2.2.5_react@18.3.1
+    dev: false
+
+  /@clerk/themes/2.1.16:
+    resolution: {integrity: sha512-ln+Un52L3ibx0Y0PUIDhYwUeCjdkTEL5vPfPxs78rTskCal9orVZ52YXwEs1+I/GIUBstFVB4cOLsuMKdkpdCw==}
+    engines: {node: '>=18.17.0'}
+    dependencies:
+      '@clerk/types': 4.11.0
+      tslib: 2.4.1
+    dev: false
+
+  /@clerk/types/4.11.0:
+    resolution: {integrity: sha512-sMp3ATIH5ZoZ9veu9/LNH68GvahDm7sPLJf8xYyjc9hJYILz85xzI0JbwS6iFJw2NpTssvyl9viL7tgBrw46iA==}
+    engines: {node: '>=18.17.0'}
+    dependencies:
+      csstype: 3.1.1
     dev: false
 
   /@clerk/types/4.6.1:
@@ -3772,6 +3793,28 @@ packages:
 
   /electron-to-chromium/1.4.832:
     resolution: {integrity: sha512-cTen3SB0H2SGU7x467NRe1eVcQgcuS6jckKfWJHia2eo0cHIGOqHoAxevIYZD4eRHcWjkvFzo93bi3vJ9W+1lA==}
+    dev: false
+
+  /embla-carousel-react/8.1.8_react@18.3.1:
+    resolution: {integrity: sha512-b8DcmC+j1vqVWSM6rU/GYGyY6Kp9LX8OoikZPBKmV6qL8s94sSPGl6jtDLLUtV8TTIQGMYOlOKUgoMAt/0TwOQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.1 || ^18.0.0
+    dependencies:
+      embla-carousel: 8.1.8
+      embla-carousel-reactive-utils: 8.1.8_embla-carousel@8.1.8
+      react: 18.3.1
+    dev: false
+
+  /embla-carousel-reactive-utils/8.1.8_embla-carousel@8.1.8:
+    resolution: {integrity: sha512-bwV/23WD3Ecm0YuQ4I6Syzs3tdVJw0Oj3VCZlEODv1kH8LZ5kNDLgX2Uvx5brvoe2hpifBHPBQ8gYlxNL5kMPA==}
+    peerDependencies:
+      embla-carousel: 8.1.8
+    dependencies:
+      embla-carousel: 8.1.8
+    dev: false
+
+  /embla-carousel/8.1.8:
+    resolution: {integrity: sha512-KuHPA8qcAts6YE6ELtt38XYAb26hnKw8Ga0lSXmrhm1oI97t6oACFkqSsy33dfeZQEhaZB6VwWvaWQJRJVgSgA==}
     dev: false
 
   /emoji-regex/8.0.0:
@@ -7294,6 +7337,11 @@ packages:
       chokidar: 3.6.0
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.5.0
+    dev: false
+
+  /unsplash-js/7.0.19:
+    resolution: {integrity: sha512-j6qT2floy5Q2g2d939FJpwey1yw/GpQecFiSouyJtsHQPj3oqmqq3K4rI+GF8vU1zwGCT7ZwIGQd2dtCQLjYJw==}
+    engines: {node: '>=10'}
     dev: false
 
   /update-browserslist-db/1.1.0_browserslist@4.23.2:
