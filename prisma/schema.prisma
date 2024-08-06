@@ -129,18 +129,47 @@ model List {
   title   String
   order   Int
   boardId String
-  card Card[]
+  card    Card[]
   board   board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
   @@index([boardId])
 }
+
 model Card {
-  id      String @id @default(cuid())
-  title   String
-  order   Int
+  id          String   @id @default(cuid())
+  title       String
+  order       Int
   description String?
-  listId  String
-  list  List @relation(fields: [listId], references: [id], onDelete: Cascade)
-  create  DateTime @default(now())
-  update  DateTime @updatedAt
+  listId      String
+  list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  create      DateTime @default(now())
+  update      DateTime @updatedAt
+
   @@index([listId])
+}
+
+enum ACTION {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum TYPE {
+  board
+  list
+  card
+}
+
+model Audit {
+  id        String   @id @default(cuid())
+  orgId     String
+  action    ACTION
+  entity    String
+  type      TYPE
+  userId    String
+  title     String
+  userImage String
+  username  String
+  created   DateTime @default(now())
+  update    DateTime @updatedAt
 }

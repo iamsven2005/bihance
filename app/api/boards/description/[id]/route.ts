@@ -1,21 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from "@/lib/db";
-import { Auditlog } from '@/lib/create-audit-log';
 import { ACTION, TYPE } from '@prisma/client';
+import { Auditlog } from '@/lib/create-audit-log';
 import { revalidatePath } from 'next/cache';
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const { title } = await req.json();  // Parse JSON from the request body
+  const { description } = await req.json();
 
   try {
-    const board = await db.board.update({
+    const card = await db.card.update({
       where: { id: params.id },
-      data: { title },
+      data: { description },
     });
     await Auditlog({
-      Id: board.id,
-      title: board.title,
-      type: TYPE.board,
+      Id: card.id,
+      title: card.title,
+      type: TYPE.card,
       action: ACTION.UPDATE
     })
     revalidatePath("/board")

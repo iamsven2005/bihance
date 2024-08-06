@@ -64,6 +64,10 @@ export default function RootLayout({
                         Dashboard
                       </Button>
                       </Link>
+                      <Link href="/board"><Button className="w-full">
+                        Workspace
+                      </Button>
+                      </Link>
                       <Link href="/event"><Button className="w-full">
                         Create Event
                       </Button>

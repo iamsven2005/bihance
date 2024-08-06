@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { auth } from "@clerk/nextjs/server";
 import { db } from '@/lib/db';
+import { Auditlog } from '@/lib/create-audit-log';
+import { ACTION, TYPE } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
 
 export async function GET(request: Request) {
   const { orgId } = auth();
@@ -37,7 +40,13 @@ export async function POST(request: Request) {
         link,
       },
     });
-  
+    await Auditlog({
+      Id: board.id,
+      title: board.title,
+      type: TYPE.board,
+      action: ACTION.CREATE
+    })
+    revalidatePath("/board")
     return NextResponse.json(board);
   }
   

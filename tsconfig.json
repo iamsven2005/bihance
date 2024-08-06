@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/payment/[eventId]/ExportButton.tsx", "app/api/upload-file"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/payment/[eventId]/ExportButton.tsx", "app/api/upload-file", "app/blog/posts/SocialMedia.mdx"],
   "exclude": ["node_modules"]
 }
