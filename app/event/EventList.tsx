@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { OrganizationList } from "@clerk/nextjs";
 
 // Define a unified event type that includes attendances and files
 type UnifiedEventType = event & {
@@ -61,11 +62,11 @@ const EventList = ({ events, user }: EventListProps) => {
       <div className="flex flex-col mb-4 gap-5">
         <h1 className="font-bold text-2xl">Analytics</h1>
         <p>Credits Left: {user ? user.credits : "Loading..."}</p>
-        <div>
+        {/* <div>
           <h1 className="font-bold text-xl">
             Images
           </h1>
-
+          
           {events.map((images) => (
             <div key={images.eventid} className="flex flex-col gap-5">
               <a href={images.image} download><img src={images.image} className="rounded-lg w-48"/></a>
@@ -81,7 +82,7 @@ const EventList = ({ events, user }: EventListProps) => {
               ))}
             </div>
           ))}
-        </div>
+        </div> */}
         <h1 className="font-bold text-2xl">All events:</h1>
 
         <div className="flex-wrap flex gap-5">

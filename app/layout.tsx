@@ -65,6 +65,10 @@ export default function RootLayout({
                       </Button>
                       </Link>
                       <Link href="/board"><Button className="w-full">
+                        Board
+                      </Button>
+                      </Link>
+                      <Link href="/workspace"><Button className="w-full">
                         Workspace
                       </Button>
                       </Link>
