@@ -62,27 +62,7 @@ const EventList = ({ events, user }: EventListProps) => {
       <div className="flex flex-col mb-4 gap-5">
         <h1 className="font-bold text-2xl">Analytics</h1>
         <p>Credits Left: {user ? user.credits : "Loading..."}</p>
-        {/* <div>
-          <h1 className="font-bold text-xl">
-            Images
-          </h1>
-          
-          {events.map((images) => (
-            <div key={images.eventid} className="flex flex-col gap-5">
-              <a href={images.image} download><img src={images.image} className="rounded-lg w-48"/></a>
 
-              {images.attendances.map((atd) => (
-                <a href={atd.imageurl} download key={atd.id}><img src={atd.imageurl} className="rounded-lg w-48"/></a>
-              ))}
-              <h1>
-                Event Files
-              </h1>
-              {images.files.map((file) => (
-                <a key={file.id} href={file.url} className="flex"><Link2/>{file.name}</a>
-              ))}
-            </div>
-          ))}
-        </div> */}
         <h1 className="font-bold text-2xl">All events:</h1>
 
         <div className="flex-wrap flex gap-5">
