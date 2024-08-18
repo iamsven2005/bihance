@@ -17,6 +17,7 @@ export async function GET(request: Request) {
       orgId: orgId,
     },
   });
+  revalidatePath("/board")
 
   return NextResponse.json(boards);
 }
@@ -64,7 +65,7 @@ export async function DELETE(request: Request) {
       id: boardId,
     },
   });
-
+  revalidatePath("/board")
   return NextResponse.json({ success: true });
 }
 
@@ -86,7 +87,7 @@ export async function PATCH(request: Request) {
         link,
       },
     });
-  
+    revalidatePath("/board")
     return NextResponse.json(updatedBoard);
   }
   

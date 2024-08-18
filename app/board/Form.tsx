@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
 import { ElementRef, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 interface Props {
@@ -60,10 +61,9 @@ const ListForm = ({ id }: Props) => {
 
       setTitle("");
       disableEdit();
-
+      toast.success("Added list, refresh to update")
     } catch (error) {
-      console.error(error);
-      alert("There was an error adding the list.");
+      toast.error("There was an error adding the list.");
     } finally {
       setLoading(false); 
     }

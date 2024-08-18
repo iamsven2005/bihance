@@ -1,6 +1,7 @@
 // File: C:\bihance\app\api\boards\reorderCards\route.ts
 
 import { db } from '@/lib/db';
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server'; // Use the new imports for Request and Response
 
 export async function PATCH(req: NextRequest) {
@@ -21,7 +22,6 @@ export async function PATCH(req: NextRequest) {
           })
         )
       );
-      
     } else {
       // Move card to a different list
       await db.$transaction([
@@ -41,6 +41,7 @@ export async function PATCH(req: NextRequest) {
         ),
       ]);
     }
+    revalidatePath("/board")
 
     return NextResponse.json({ message: 'Card order updated successfully' }, { status: 200 });
   } catch (error) {

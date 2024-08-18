@@ -3,8 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { ElementRef, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
 
 interface Props {
@@ -12,12 +13,12 @@ interface Props {
 }
 
 const CardForm = ({ id }: Props) => {
+  const router = useRouter();
   const formRef = useRef<ElementRef<"form">>(null);
   const inputRef = useRef<ElementRef<"input">>(null);
   const textAreaRef = useRef<ElementRef<"textarea">>(null);
   const [isEdit, setEdit] = useState(false);
   const [title, setTitle] = useState("");
-
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false); 
 
@@ -38,12 +39,9 @@ const CardForm = ({ id }: Props) => {
     }
   };
 
-  // Add an event listener for keydown events
   useEventListener("keydown", handleKeydown);
-  // Close the form when clicking outside
   useOnClickOutside(formRef, disableEdit);
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); 
     if (!title.trim()) return;
@@ -55,7 +53,7 @@ const CardForm = ({ id }: Props) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ listId: id, title,description }),
+        body: JSON.stringify({ listId: id, title, description }),
       });
 
       if (!response.ok) {
@@ -63,42 +61,45 @@ const CardForm = ({ id }: Props) => {
       }
 
       setTitle("");
+      setDescription("");
       disableEdit();
+      toast.success("Card added, refresh to update/")
 
     } catch (error) {
-      console.error(error);
-      alert("There was an error adding the list.");
+      toast.error("There was an error adding the list.");
     } finally {
       setLoading(false); 
+      router.refresh();
+
     }
   };
 
   return (
     <form
-    ref={formRef}
-    onSubmit={handleSubmit}
-   className="m-2 flex flex-col gap-2">
-    <Input
-      ref={inputRef}
-      id="title"
-      value={title} 
-      onChange={(e) => setTitle(e.target.value)}
-      placeholder="Enter List Title"
-    />
-    <Textarea
-      ref={textAreaRef}
-      id="description"
-      value={description} 
-      onChange={(e) => setDescription(e.target.value)}
-      placeholder="Enter List Description"
-    />
-    <input hidden value={id} name="boardId" />
-    <div className="flex items-center gap-x-1">
-      <Button type="submit" disabled={loading}>
-        {loading ? "Adding..." : "Add Card"}
-      </Button>
-    </div>
-  </form>
+      ref={formRef}
+      onSubmit={handleSubmit}
+      className="m-2 flex flex-col gap-2">
+      <Input
+        ref={inputRef}
+        id="title"
+        value={title} 
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Enter List Title"
+      />
+      <Textarea
+        ref={textAreaRef}
+        id="description"
+        value={description} 
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Enter List Description"
+      />
+      <input hidden value={id} name="boardId" />
+      <div className="flex items-center gap-x-1">
+        <Button type="submit" disabled={loading}>
+          {loading ? "Adding..." : "Add Card"}
+        </Button>
+      </div>
+    </form>
   );
 };
 

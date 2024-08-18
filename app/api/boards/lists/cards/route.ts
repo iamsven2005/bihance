@@ -46,10 +46,11 @@ export async function POST(req: NextRequest) {
       type: TYPE.card,
       action: ACTION.CREATE
     })
-    revalidatePath("/board")
     return NextResponse.json(newList, { status: 200 });
   } catch (error) {
     console.error('Error creating list:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+  } finally{
+    revalidatePath("/board")
   }
 }

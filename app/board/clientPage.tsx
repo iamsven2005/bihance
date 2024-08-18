@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import ListForm from "./Form";
 import ListTitle from "./listcards";
@@ -20,13 +20,11 @@ const PageClient = ({ board, lists: initialLists }: PageClientProps) => {
     if (!destination) return;
 
     if (type === "list") {
-      // Reorder lists
       const reorderedLists = [...lists];
       const [movedList] = reorderedLists.splice(source.index, 1);
       reorderedLists.splice(destination.index, 0, movedList);
       setLists(reorderedLists);
 
-      // Update server with the new list order
       try {
         await fetch(`/api/boards/reorderLists`, {
           method: "PATCH",
@@ -44,17 +42,14 @@ const PageClient = ({ board, lists: initialLists }: PageClientProps) => {
         toast.error("Failed to update list order");
       }
     } else if (type === "card") {
-      // Reorder cards
-      const sourceListIndex = lists.findIndex((list: { id: string; }) => list.id === source.droppableId);
-      const destinationListIndex = lists.findIndex((list: { id: string; }) => list.id === destination.droppableId);
+      const sourceListIndex = lists.findIndex((list: { id: string }) => list.id === source.droppableId);
+      const destinationListIndex = lists.findIndex((list: { id: string }) => list.id === destination.droppableId);
 
       const sourceList = lists[sourceListIndex];
       const destinationList = lists[destinationListIndex];
 
-      // Extract the moved card
       const [movedCard] = sourceList.card.splice(source.index, 1);
 
-      // Insert card into new position
       destinationList.card.splice(destination.index, 0, movedCard);
 
       const updatedLists = [...lists];
@@ -62,16 +57,6 @@ const PageClient = ({ board, lists: initialLists }: PageClientProps) => {
       updatedLists[destinationListIndex] = destinationList;
       setLists(updatedLists);
 
-      // Log payload for debugging
-      console.log({
-        boardId: board,
-        sourceListId: source.droppableId,
-        destinationListId: destination.droppableId,
-        sourceCardOrder: sourceList.card.map((card: { id: any; }) => card.id),
-        destinationCardOrder: destinationList.card.map((card: { id: any; }) => card.id),
-      });
-
-      // Update server with the new card order
       try {
         await fetch(`/api/boards/reorderCards`, {
           method: "PATCH",
@@ -82,8 +67,8 @@ const PageClient = ({ board, lists: initialLists }: PageClientProps) => {
             boardId: board,
             sourceListId: source.droppableId,
             destinationListId: destination.droppableId,
-            sourceCardOrder: sourceList.card.map((card: { id: any; }) => card.id),
-            destinationCardOrder: destinationList.card.map((card: { id: any; }) => card.id),
+            sourceCardOrder: sourceList.card.map((card: { id: any }) => card.id),
+            destinationCardOrder: destinationList.card.map((card: { id: any }) => card.id),
           }),
         });
         toast.success("Card order updated successfully");

@@ -41,13 +41,13 @@ const DescTitle = ({ initialTitle, boardId }:BoardTitleProps) => {
           onKeyDown={(e) => {
             if (e.key === "Enter") saveTitle(); 
           }}
-          className="text-white bg-transparent border-none outline-none"
+          className="bg-transparent border-none outline-none"
           autoFocus 
         />
       ) : (
         
         <p
-          className="text-xl cursor-pointer"
+          className="text-md cursor-pointer"
           onClick={() => setIsEditing(true)}
         >
           {description}

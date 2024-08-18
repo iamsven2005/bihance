@@ -1,9 +1,6 @@
-"use client";
-
-import { MoreHorizontal, X, Trash2 } from "lucide-react"; // Import Trash icon
+import { MoreHorizontal, X, Trash2 } from "lucide-react";
 import { useState } from "react";
 import CardForm from "./Form2";
-
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
@@ -14,9 +11,8 @@ import CardTitle from "./BoardTitle2";
 import DescTitle from "./BoardTitle3";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 
-// Define the ListTitle component props
 interface BoardTitleProps {
-  initialTitle: string | null | undefined; // Updated to allow null
+  initialTitle: string | null | undefined;
   boardId: string;
   id: string;
   onDelete?: (listId: string) => void;
@@ -24,7 +20,7 @@ interface BoardTitleProps {
 }
 
 const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDelete, card }) => {
-  const [title, setTitle] = useState(initialTitle || ""); // Default to empty string if null
+  const [title, setTitle] = useState(initialTitle || "");
   const [isEditing, setIsEditing] = useState(false);
   const [cards, setCards] = useState(card);
 
@@ -49,7 +45,6 @@ const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDel
     }
   };
 
-  // Function to handle list deletion
   const deleteList = async () => {
     try {
       const response = await fetch(`/api/boards/lists/${boardId}`, {
@@ -62,7 +57,7 @@ const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDel
       if (response.ok) {
         console.log("List deleted successfully");
         toast.success("List deleted successfully");
-        if (onDelete) onDelete(id); // Call the onDelete callback if provided
+        if (onDelete) onDelete(id);
       } else {
         console.error("Failed to delete list:", await response.text());
         toast.error("Failed to delete list");
@@ -73,7 +68,6 @@ const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDel
     }
   };
 
-  // Function to handle card deletion
   const deleteCard = async (cardId: string) => {
     try {
       const response = await fetch(`/api/boards/cards/${cardId}`, {
@@ -86,7 +80,6 @@ const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDel
       if (response.ok) {
         console.log("Card deleted successfully");
         toast.success("Card deleted successfully");
-        // Update the cards state to remove the deleted card
         setCards(cards.filter((card) => card.id !== cardId));
       } else {
         console.error("Failed to delete card:", await response.text());
@@ -98,7 +91,6 @@ const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDel
     }
   };
 
-  // Function to handle copying the list
   const copyList = async () => {
     try {
       const response = await fetch(`/api/boards/lists/${boardId}`, {
@@ -186,38 +178,46 @@ const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDel
             </PopoverContent>
           </Popover>
           <Droppable droppableId={boardId} type="card">
-            {(provided) => (
+            {(provided, snapshot) => (
               <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                className="flex flex-col gap-y-3"
+                className={`flex flex-col gap-y-3 p-2 ${
+                  snapshot.isDraggingOver ? "bg-gray-200 dark:bg-gray-700" : ""
+                }`}
               >
-                {cards.map((cardItem, index) => (
-                  <Draggable draggableId={cardItem.id} index={index} key={cardItem.id}>
-                    {(provided) => (
-                      <div
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        ref={provided.innerRef}
-                        className="border-t border-gray-200 pt-2"
-                      >
-                        <div className="flex justify-between items-center">
-                          <CardTitle initialTitle={cardItem.title} boardId={cardItem.id} />
-                          <Button
-                            variant={"ghost"}
-                            className="p-1"
-                            onClick={() => deleteCard(cardItem.id)}
-                          >
-                            <Trash2 className="size-4" />
-                          </Button>
+                {cards.length > 0 ? (
+                  cards.map((cardItem, index) => (
+                    <Draggable draggableId={cardItem.id} index={index} key={cardItem.id}>
+                      {(provided) => (
+                        <div
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          ref={provided.innerRef}
+                          className="flex w-full p-3 rounded-md space-y-4 shadow-md bg-white dark:bg-black flex-col"
+                        >
+                          <div className="flex justify-between items-center">
+                            <CardTitle initialTitle={cardItem.title} boardId={cardItem.id} />
+                            <Button
+                              variant={"ghost"}
+                              className="p-1"
+                              onClick={() => deleteCard(cardItem.id)}
+                            >
+                              <Trash2 className="size-4" />
+                            </Button>
+                          </div>
+                          {cardItem.description && (
+                            <DescTitle initialTitle={cardItem.description} boardId={cardItem.id} />
+                          )}
                         </div>
-                        {cardItem.description && (
-                          <DescTitle initialTitle={cardItem.description} boardId={cardItem.id} />
-                        )}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
+                      )}
+                    </Draggable>
+                  ))
+                ) : (
+                  <div className="text-center text-gray-500 dark:text-gray-400">
+                    No cards available
+                  </div>
+                )}
                 {provided.placeholder}
               </div>
             )}
