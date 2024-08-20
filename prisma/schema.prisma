@@ -33,6 +33,7 @@ model event {
   users       user[]       @relation("UserEvents")
   attendances attendance[]
   payrolls    payroll[]
+  orgId String?
 }
 
 model userSubcription {

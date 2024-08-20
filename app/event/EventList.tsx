@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, Link2 } from "lucide-react";
+import { Ellipsis } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { OrganizationList } from "@clerk/nextjs";
+import AssignEventModal from "./AssignEventModal"; // Import the modal component
 
 // Define a unified event type that includes attendances and files
 type UnifiedEventType = event & {
@@ -36,9 +37,14 @@ interface EventListProps {
 
 const EventList = ({ events, user }: EventListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState<UnifiedEventType | null>(null);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleAssignWorkspace = (event: UnifiedEventType) => {
+    setSelectedEvent(event);
   };
 
   const handleCopyLink = (eventId: string) => {
@@ -105,6 +111,11 @@ const EventList = ({ events, user }: EventListProps) => {
                       Copy Invite
                     </Button>
                   </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button onClick={() => handleAssignWorkspace(item)}>
+                      Assign to Workspace
+                    </Button>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </CardHeader>
@@ -119,6 +130,13 @@ const EventList = ({ events, user }: EventListProps) => {
           </Card>
         ))}
       </div>
+
+      {selectedEvent && (
+        <AssignEventModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
     </div>
   );
 };
