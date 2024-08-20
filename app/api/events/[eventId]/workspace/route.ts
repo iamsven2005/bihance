@@ -18,7 +18,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { eventId: s
       data: { orgId: workspaceId },
     });
 
-    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/event`);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to assign workspace:", error);
@@ -40,7 +40,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { eventId: 
       data: { orgId: null },
     });
 
-    revalidatePath(`/events/${eventId}`);
+    revalidatePath(`/event`);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to remove workspace:", error);

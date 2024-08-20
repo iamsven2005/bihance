@@ -1,9 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { event } from "@prisma/client";
+import { useUser } from "@clerk/nextjs";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AssignEventModalProps {
   event: event;
@@ -11,8 +27,27 @@ interface AssignEventModalProps {
 }
 
 const AssignEventModal = ({ event, onClose }: AssignEventModalProps) => {
+  const { user } = useUser();
+  const [organizationIds, setOrganizationIds] = useState<string[]>([]);
+  const [orgNames, setOrgNames] = useState<string[]>([]);
   const [workspaceId, setWorkspaceId] = useState(event.orgId || "");
+  const [selectedOrg, setSelectedOrg] = useState(workspaceId);
+  const [open, setOpen] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      if (user) {
+        const organizations = user?.organizationMemberships;
+        const orgIds = organizations.map((org) => org.organization.id);
+        const orgNames = organizations.map((org) => org.organization.name);
+        setOrganizationIds(orgIds);
+        setOrgNames(orgNames);
+      }
+    };
+
+    fetchOrganizations();
+  }, [user]);
 
   const handleSave = async () => {
     try {
@@ -21,7 +56,7 @@ const AssignEventModal = ({ event, onClose }: AssignEventModalProps) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ workspaceId }),
+        body: JSON.stringify({ workspaceId: selectedOrg }),
       });
 
       if (!response.ok) {
@@ -60,13 +95,51 @@ const AssignEventModal = ({ event, onClose }: AssignEventModalProps) => {
         <DialogHeader>
           <DialogTitle>Assign to Workspace</DialogTitle>
         </DialogHeader>
-        <input
-          type="text"
-          value={workspaceId}
-          onChange={(e) => setWorkspaceId(e.target.value)}
-          placeholder="Enter Workspace ID"
-          className="mb-4"
-        />
+
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-full justify-between"
+            >
+              {selectedOrg
+                ? orgNames[organizationIds.indexOf(selectedOrg)] || "Select organization..."
+                : "Select organization..."}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0">
+            <Command>
+              <CommandInput placeholder="Search organization..." />
+              <CommandList>
+                <CommandEmpty>No organization found.</CommandEmpty>
+                <CommandGroup>
+                  {organizationIds.map((orgId, index) => (
+                    <CommandItem
+                      key={orgId}
+                      value={orgId}
+                      onSelect={(currentValue) => {
+                        setSelectedOrg(currentValue === selectedOrg ? "" : currentValue);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          selectedOrg === orgId ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {orgNames[index]}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
         <DialogFooter>
           <Button onClick={handleSave}>Save</Button>
           {event.orgId && (
