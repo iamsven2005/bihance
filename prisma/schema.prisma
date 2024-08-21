@@ -93,6 +93,12 @@ model files {
 
   @@index([eventId])
 }
+model sharedfiles{
+    id      String @id @default(cuid())
+    orgId   String?
+    url     String
+    name    String
+}
 
 model Feature {
   id          String @id @default(cuid())
