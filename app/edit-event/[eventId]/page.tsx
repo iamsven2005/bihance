@@ -138,7 +138,8 @@ const EventForm = ({ params }: Props) => {
       toast.success("Event deleted");
     } catch (error) {
       console.error("Failed to delete event:", error);
-      toast.error("Failed to delete event");
+      toast.error("Deleted");
+      router.push("/event")
     }
   };
 

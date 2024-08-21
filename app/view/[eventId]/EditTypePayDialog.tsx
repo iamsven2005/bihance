@@ -7,10 +7,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList, CommandInput } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 
-type AddTypePayDialogProps = {
-  payrollId: string;
+type EditTypePayDialogProps = {
+  typepayId: string;
+  initialDay: string;
+  initialShift: string;
+  initialPay: number;
+  onClose: () => void;
+  onUpdate: () => void;
 };
 
 const dayOptions = [
@@ -25,37 +29,36 @@ const payTypeOptions = [
   { value: "minute", label: "Per Minute" },
 ];
 
-const AddTypePayDialog: React.FC<AddTypePayDialogProps> = ({ payrollId }) => {
-  const [day, setDay] = useState("");
-  const [pay, setPay] = useState<number | "">("");
-  const [payType, setPayType] = useState(""); // New state for pay type combobox
+const EditTypePayDialog: React.FC<EditTypePayDialogProps> = ({ typepayId, initialDay, initialShift, initialPay, onClose, onUpdate }) => {
+  const [day, setDay] = useState(initialDay);
+  const [shift, setShift] = useState(initialShift);
+  const [pay, setPay] = useState<number | "">(initialPay);
   const [isDayOpen, setIsDayOpen] = useState(false);
-  const [isPayTypeOpen, setIsPayTypeOpen] = useState(false);
-  const router = useRouter();
 
-  const handleAdd = async () => {
-    if (!day || !payType || pay === "") {
+  const handleEdit = async () => {
+    if (!day || !shift || pay === "") {
       toast.error("All fields are required");
       return;
     }
 
     try {
-      const response = await fetch("/api/add-typepay", {
-        method: "POST",
+    const typeid = typepayId
+      const response = await fetch(`/api/add-payroll/${typeid}`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          payrollId,
           day,
-          shift: payType, // Use payType as the shift value
+          shift,
           pay: Number(pay),
         }),
       });
 
       if (response.ok) {
-        toast.success("Added new typepay entry");
-        router.refresh();
+        toast.success("Typepay entry updated");
+        onUpdate();  // Notify parent component about the update
+        onClose();   // Close the dialog
       } else {
         const data = await response.json();
         toast.error(data.error);
@@ -66,13 +69,10 @@ const AddTypePayDialog: React.FC<AddTypePayDialogProps> = ({ payrollId }) => {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Add Pay Type</Button>
-      </DialogTrigger>
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Type Pay</DialogTitle>
+          <DialogTitle>Edit Type Pay</DialogTitle>
         </DialogHeader>
 
         {/* Day Selection Combobox */}
@@ -112,42 +112,13 @@ const AddTypePayDialog: React.FC<AddTypePayDialogProps> = ({ payrollId }) => {
           </PopoverContent>
         </Popover>
 
-        {/* Pay Type Selection Combobox */}
-        <Popover open={isPayTypeOpen} onOpenChange={setIsPayTypeOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={isPayTypeOpen}
-              className="w-full justify-between mb-4"
-            >
-              {payType ? payTypeOptions.find(option => option.value === payType)?.label : "Select Pay Type..."}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
-            <Command>
-              <CommandInput placeholder="Search pay type..." />
-              <CommandList>
-                <CommandEmpty>No pay type found.</CommandEmpty>
-                <CommandGroup>
-                  {payTypeOptions.map(option => (
-                    <CommandItem
-                      key={option.value}
-                      onSelect={() => {
-                        setPayType(option.value);
-                        setIsPayTypeOpen(false);
-                      }}
-                    >
-                      <Check className={cn("mr-2 h-4 w-4", payType === option.value ? "opacity-100" : "opacity-0")} />
-                      {option.label}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <Input
+          type="text"
+          placeholder="Shift"
+          value={shift}
+          onChange={(e) => setShift(e.target.value)}
+          className="mb-4"
+        />
 
         <Input
           type="number"
@@ -158,22 +129,14 @@ const AddTypePayDialog: React.FC<AddTypePayDialogProps> = ({ payrollId }) => {
         />
 
         <DialogFooter>
-          <Button 
-            variant="secondary" 
-            onClick={() => {
-              setDay("");
-              setPay("");
-              setPayType("");
-            }}
-          >
+          <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-
-          <Button onClick={handleAdd}>Add</Button>
+          <Button onClick={handleEdit}>Save Changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default AddTypePayDialog;
+export default EditTypePayDialog;

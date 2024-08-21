@@ -76,7 +76,7 @@ export default function RootLayout({
                         Create Event
                       </Button>
                       </Link>
-                      <Link href="/blog/faq"><Button className="w-full">
+                      <Link href="/blog/FAQ"><Button className="w-full">
                         FAQ
                       </Button>
                       </Link>
