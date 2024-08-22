@@ -9,9 +9,11 @@ import { FormPicker } from '@/components/form-picker';
 import { toast } from 'sonner';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Link from 'next/link';
-import { ClipboardCheck } from 'lucide-react';
+import { ClipboardCheck, VideoIcon } from 'lucide-react';
 import EventList from './EventList';
 import UploadFile from './UploadFile';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+
 
 interface Props {
     orgId: string;
@@ -219,17 +221,27 @@ const Page = ({ orgId }: Props) => {
     
 
     return (
-        <div>
-            <h1 className='text-xl font-bold'>Boards</h1>
+        <div className='flex flex-col gap-2'>
+            <div className='flex gap-2'>
+                    
+                    <Button asChild>
+                        <Link href={`/room/${orgId}`}>
+                        Start Call <VideoIcon/>
+                        </Link>
+                    </Button>
+            </div>
+            <Card>
+                <CardHeader className='flex '>
+                <CardTitle>Boards</CardTitle>
             <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search boards"
                 className="mb-4"
             />
+            </CardHeader>
             <FormPicker id="image" onSelectImage={setSelectedImage} />
-
-            <div className="mt-4">
+            <div className="flex m-2 gap-2">
                 <Input
                     value={newBoardTitle}
                     onChange={(e) => setNewBoardTitle(e.target.value)}
@@ -237,7 +249,6 @@ const Page = ({ orgId }: Props) => {
                 />
                 <Button onClick={handleAddBoard}>Add Board</Button>
             </div>
-
             <div className="w-full mx-auto m-5">
                 <Carousel className="rounded-lg overflow-hidden">
                     <CarouselContent>
@@ -273,14 +284,14 @@ const Page = ({ orgId }: Props) => {
                     <CarouselNext />
                 </Carousel>
             </div>
-
-            <div className="w-full mx-auto m-5">
-                <div className='flex gap-2'>
-                <h1 className='text-xl font-bold'>
+            </Card>
+            <Card>
+                <CardHeader>
+                <CardTitle>
                     Shared Files
-                </h1>
+                </CardTitle>
                 <Button onClick={() => setIsUploadModalOpen(true)}>Upload New File</Button>
-                </div>
+                </CardHeader>
                 
 
                 <div className="m-2 flex flex-wrap gap-2">
@@ -296,11 +307,11 @@ const Page = ({ orgId }: Props) => {
                         <p>No files shared yet.</p>
                     )}
                 </div>
-            </div>
+            </Card>
 
-            <div className="w-full mx-auto m-5">
+            <Card>
                 <EventList events={events} />
-            </div>
+            </Card>
 
             {editingBoard && (
                 <Dialog open={Boolean(editingBoard)} onOpenChange={() => setEditingBoard(null)}>
