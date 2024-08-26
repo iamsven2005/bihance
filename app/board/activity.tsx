@@ -4,6 +4,7 @@ import { Avatar, AvatarImage } from "../../components/ui/avatar";
 import { gen_log_msg } from "../../lib/gen-log";
 import { format } from "date-fns";  // Use date-fns for formatting dates
 import { db } from "@/lib/db";
+import { ScrollArea } from "@/components/ui/scroll-area";
 interface Props{
   id: string
 }
@@ -18,9 +19,8 @@ const ActivityAudit = async ({id}: Props) => {
     <div className="flex items-start gap-x-3 w-full">
       <div className="w-full">
         <p className="font-semibold text-neutral-700 mb-2">Activity</p>
-        <div className="mt-2 space-y-4">
+        <ScrollArea className="h-72 w-full rounded-md border">
           {items.map((item) => (
-            // Add a key prop to each item for React's reconciliation
             <div className="flex items-center gap-x-2" key={item.id}>
               <Avatar>
                 <AvatarImage src={item.userImage || "/default-avatar.png"} alt="User Avatar" />
@@ -38,7 +38,7 @@ const ActivityAudit = async ({id}: Props) => {
               </div>
             </div>
           ))}
-        </div>
+        </ScrollArea>
       </div>
     </div>
   );

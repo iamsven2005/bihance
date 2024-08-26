@@ -47,7 +47,7 @@ const BoardTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId }) => {
       ) : (
         
         <h1
-          className="text-xl cursor-pointer"
+          className="text-xl cursor-pointer text-white"
           onClick={() => setIsEditing(true)}
         >
           {title}
