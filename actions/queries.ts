@@ -22,3 +22,4 @@ export const getUserSubscription = cache(async () => {
         isActive: !!isActive,
     };
 });
+

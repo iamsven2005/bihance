@@ -9,6 +9,8 @@ import { formatTime } from "./formatTime"; // Import the time formatting functio
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import GetUser from "./GetUser";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"; // Import Shadcn components
 
 interface AttendListProps {
   attendances: attendance[];
@@ -37,7 +39,10 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
   );
 
   // Calculate time difference between check-in and check-out
-  const calculateTimeDifference = (checkIn: Date, checkOut: Date): { hours: number; minutes: number } => {
+  const calculateTimeDifference = (
+    checkIn: Date,
+    checkOut: Date
+  ): { hours: number; minutes: number } => {
     const differenceInMilliseconds = checkOut.getTime() - checkIn.getTime();
     const differenceInMinutes = Math.floor(differenceInMilliseconds / (1000 * 60));
     const hours = Math.floor(differenceInMinutes / 60);
@@ -45,27 +50,27 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
     return { hours, minutes };
   };
 
-  // Find payroll entry for the event
-  const getPayroll = (userId: string): (payroll & { typepay: typepay[] }) | undefined => {
+  const getPayroll = (
+    userId: string
+  ): (payroll & { typepay: typepay[] }) | undefined => {
     return payrolls.find((p) => p.userId === userId);
   };
-  
 
   // Get pay rate based on typepay entry
-  const getPayRate = (payroll: payroll & { typepay: typepay[] } | undefined, time: Date): number => {
+  const getPayRate = (
+    payroll: payroll & { typepay: typepay[] } | undefined,
+    time: Date
+  ): number => {
     if (!payroll || !payroll.typepay) {
       return 0;
     }
 
-    // Determine shift type (e.g., morning, evening) or any other logic needed
     const shiftType = determineShiftType(time);
 
-    // Find the relevant pay rate from typepay entries
     const typePayEntry = payroll.typepay.find((tp) => tp.shift === shiftType);
     return typePayEntry ? typePayEntry.pay : 0;
   };
 
-  // Dummy function to determine shift type based on time
   const determineShiftType = (time: Date): string => {
     const hour = time.getHours();
     if (hour < 12) return "morning";
@@ -75,7 +80,6 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
 
   const rows: AttendanceRow[] = [];
 
-  // Populate rows for export
   Object.keys(groupedAttendances).forEach((date) => {
     const items = groupedAttendances[date];
     items.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
@@ -83,9 +87,11 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
     for (let i = 0; i < items.length; i += 2) {
       const checkIn = new Date(items[i].time);
       const checkOut = items[i + 1] ? new Date(items[i + 1].time) : null;
-      const payroll = getPayroll(items[i].userId); // Use the correct function to retrieve payroll
+      const payroll = getPayroll(items[i].userId);
       const payRate = getPayRate(payroll, checkIn);
-      const { hours, minutes } = checkOut ? calculateTimeDifference(checkIn, checkOut) : { hours: 0, minutes: 0 };
+      const { hours, minutes } = checkOut
+        ? calculateTimeDifference(checkIn, checkOut)
+        : { hours: 0, minutes: 0 };
 
       rows.push({
         Date: checkIn.toISOString().split("T")[0],
@@ -122,7 +128,9 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
         <div className="flex flex-wrap gap-5">
           {filteredAttendances.map((date) => {
             const items = groupedAttendances[date];
-            items.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+            items.sort(
+              (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
+            );
             const pairs = [];
             for (let i = 0; i < items.length; i += 2) {
               const checkIn = new Date(items[i].time);
@@ -133,7 +141,9 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
             return pairs.map((pair, index) => {
               const payroll = getPayroll(items[index].userId);
               const payRate = getPayRate(payroll, pair.checkIn);
-              const { hours, minutes } = pair.checkOut ? calculateTimeDifference(pair.checkIn, pair.checkOut) : { hours: 0, minutes: 0 };
+              const { hours, minutes } = pair.checkOut
+                ? calculateTimeDifference(pair.checkIn, pair.checkOut)
+                : { hours: 0, minutes: 0 };
               const duePayment = payRate * hours + (payRate / 60) * minutes;
 
               return (
@@ -141,18 +151,60 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
                   key={`${date}-${index}`}
                   className="flex flex-col shadow-lg p-5 rounded-xl"
                 >
-                  <LocationMap location={items[index].location} />
-                  <p>Date: {pair.checkIn.toISOString().split("T")[index]}</p>
+                  <GetUser id={userId} />
+
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">Check-in Location</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <LocationMap location={items[0].location} />
+                    </DialogContent>
+                  </Dialog>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">Check-out Location</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <LocationMap location={items[1]?.location} />
+                    </DialogContent>
+                  </Dialog>
+
+                  {items[0].imageurl && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">View Check-in Image</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <img src={items[0].imageurl} alt="Check-in" className="w-96 h-auto rounded-lg" />
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                  {items[1].imageurl && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">View Check-out Image</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <img src={items[1].imageurl} alt="Check-in" className="w-96 h-auto rounded-lg" />
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                                      <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">View Details</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                      <p>Date: {pair.checkIn.toISOString().split("T")[index]}</p>
                   <p>Check-in Time: {formatTime(pair.checkIn)}</p>
                   {pair.checkOut && (
                     <>
                       <p>Check-out Time: {formatTime(pair.checkOut)}</p>
                       <p>Hour Difference: {hours} hours</p>
                       <p>Minute Difference: {minutes} minutes</p>
-                      <p>Pay (per hour): {payRate}</p>
-                      <p>Due Payment: {duePayment.toFixed(2)}</p>
+                     
                       <div>
-                        {payroll?.rolltype}
+                        Rolltpe: {payroll?.rolltype}
                         {payroll?.typepay.map((list) => (
                           <div key={list.typeid}>
                             <p>Shift: {list.shift}</p>
@@ -163,6 +215,9 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
                       </div>
                     </>
                   )}
+                      </DialogContent>
+                    </Dialog>
+                  
                 </div>
               );
             });
