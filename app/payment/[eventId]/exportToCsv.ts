@@ -5,6 +5,7 @@ export interface AttendanceRow {
   "Hour Difference": number; // New field for hours
   "Minute Difference": number; // New field for minutes
   Location: string;
+  "Name": string
 
 }
 

@@ -1,6 +1,5 @@
 import { db } from '@/lib/db';
 import { auth } from '@clerk/nextjs/server';
-import { PrismaClient } from '@prisma/client';
 import { cache } from 'react';
 
 const DAY_IN_MS = 86_400_400;

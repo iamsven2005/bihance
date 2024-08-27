@@ -100,6 +100,7 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
         "Hour Difference": hours,
         "Minute Difference": minutes,
         Location: items[i].location,
+        "Name": userId
       });
     }
   });
