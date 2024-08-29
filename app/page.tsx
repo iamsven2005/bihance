@@ -21,7 +21,7 @@ const MainPage = async () => {
           Enhancing your business
         </h1>
         <h2>
-          Bihance: Business Enhanced
+          Bihance: Enhancing Your Business
         </h2>
 
         <Link href="/upload" className="flex mx-auto">

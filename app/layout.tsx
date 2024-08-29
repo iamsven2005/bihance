@@ -13,7 +13,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Menu } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { dark } from '@clerk/themes';
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { useTheme } from "next-themes";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -162,6 +162,7 @@ export default function RootLayout({
           </ThemeProvider>
           <Toaster />
           <Analytics />
+          <SpeedInsights/>
         </body>
       </html>
     </ClerkProvider>
