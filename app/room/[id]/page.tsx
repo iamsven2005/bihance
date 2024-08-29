@@ -98,6 +98,7 @@ export default function Page({ params }: Props) {
       <RoomAudioRenderer />
       <ControlBar />
     </LiveKitRoom>
+    
   );
 }
 
