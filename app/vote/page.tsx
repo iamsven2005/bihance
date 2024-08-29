@@ -2,8 +2,31 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import FeatureForm from './FeatureForm';
 import FeatureList from './FeatureList';
+import { db } from '@/lib/db';
+import { auth } from '@clerk/nextjs/server';
+import { notFound } from 'next/navigation';
 
-const HomePage = () => {
+const HomePage = async() => {
+  const {userId} = auth()
+  if(!userId){
+    notFound()
+  }
+  const features = await db.feature.findMany({
+    include: {
+      _count: {
+        select: { votes: true },
+      },
+      votes: {
+        where: { userId: userId },
+        select: { id: true },
+      },
+    },
+  });
+
+  const formattedFeatures = features.map(feature => ({
+    ...feature,
+    userHasVoted: feature.votes.length > 0,
+  }));
   return (
     <Card className="home-page">
       <CardHeader>
@@ -13,7 +36,7 @@ const HomePage = () => {
       </CardDescription>
       <FeatureForm />
       </CardHeader>
-      <FeatureList />
+      <FeatureList features={formattedFeatures}/>
     </Card>
   );
 };

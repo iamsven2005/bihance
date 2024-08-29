@@ -30,22 +30,3 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
-    const { userId, orgId } = auth();
-    if (!userId) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-    }
-    try {
-      const file = await db.sharedfiles.findMany({
-        where:{
-            orgId
-        }
-      });
-      revalidatePath("/workspace")
-      return NextResponse.json(file, { status: 200 });
-    } catch (error) {
-      console.error('Failed to upload file:', error);
-      return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
-    }
-  }
-  

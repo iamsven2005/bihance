@@ -17,6 +17,8 @@ import UploadFile from "./UploadFile";
 import { File } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
+import { db } from "@/lib/db";
+import DeleteFile from "./DeleteFile";
 
 type Props = {
   params: {
@@ -91,22 +93,6 @@ const EventForm = ({ params }: Props) => {
 
   const handleFileUpload = (file: { id: string; url: string; name: string }) => {
     setFiles((prevFiles) => [...prevFiles, file]);
-  };
-
-  const handleFileDelete = async (fileId: string) => {
-    try {
-      const response = await fetch(`/api/files/${fileId}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete file");
-      }
-      setFiles((prevFiles) => prevFiles.filter(file => file.id !== fileId));
-      toast.success("File deleted successfully");
-    } catch (error) {
-      console.error("Failed to delete file", error);
-      toast.error("Failed to delete file");
-    }
   };
 
   if (loading) {
@@ -231,9 +217,7 @@ const EventForm = ({ params }: Props) => {
                   <File /> {file.name}
                 </Link>
                 </Button>
-                <Button onClick={() => handleFileDelete(file.id)} className="ml-2" variant="destructive">
-                  Delete
-                </Button>
+                <DeleteFile id={file.id}/>
               </li>
             ))}
           </ul>

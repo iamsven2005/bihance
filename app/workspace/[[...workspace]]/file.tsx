@@ -13,10 +13,12 @@ import { ClipboardCheck, VideoIcon } from 'lucide-react';
 import EventList from './EventList';
 import UploadFile from './UploadFile';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-
+import { event, files, sharedfiles } from '@prisma/client';
 
 interface Props {
     orgId: string;
+    events: event[];
+    files: sharedfiles[] | null;
 }
 
 interface Board {
@@ -48,18 +50,9 @@ interface ImageDetails {
     link: string;
 }
 
-interface SharedFile {
-    id: string;
-    orgId: string;
-    url: string;
-    name: string;
-}
-
-const Page = ({ orgId }: Props) => {
+const Page = ({ orgId, events, files }: Props) => {
     const [boards, setBoards] = useState<Board[]>([]);
     const [filteredBoards, setFilteredBoards] = useState<Board[]>([]);
-    const [events, setEvents] = useState<Event[]>([]);
-    const [sharedFiles, setSharedFiles] = useState<SharedFile[]>([]); // State for shared files
     const [newBoardTitle, setNewBoardTitle] = useState('');
     const [editingBoard, setEditingBoard] = useState<Board | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -83,40 +76,6 @@ const Page = ({ orgId }: Props) => {
         };
 
         fetchBoards();
-    }, [orgId]);
-
-    useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-                const response = await fetch(`/api/files`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch events');
-                }
-                const data = await response.json();
-                setEvents(data);
-            } catch (error) {
-                console.error('Error fetching events:', error);
-            }
-        };
-
-        fetchEvents();
-    }, [orgId]);
-
-    useEffect(() => {
-        const fetchSharedFiles = async () => {
-            try {
-                const response = await fetch(`/api/upload-share-files`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch shared files');
-                }
-                const data = await response.json();
-                setSharedFiles(data);
-            } catch (error) {
-                console.error('Error fetching shared files:', error);
-            }
-        };
-
-        fetchSharedFiles();
     }, [orgId]);
 
     useEffect(() => {
@@ -206,97 +165,84 @@ const Page = ({ orgId }: Props) => {
     };
 
     const handleFileUploadComplete = (file: { id: string; url: string; name: string }) => {
-        setSharedFiles((prevFiles) => [
-            ...prevFiles,
-            {
-                id: file.id,
-                url: file.url,
-                name: file.name,
-                orgId, // Include orgId in the new file object
-            },
-        ]);
         setIsUploadModalOpen(false); // Close the modal
         toast.success(`File ${file.name} uploaded successfully`);
     };
-    
 
     return (
         <div className='flex flex-col gap-2'>
             <div className='flex gap-2'>
-                    
-                    <Button asChild>
-                        <Link href={`/room/${orgId}`}>
-                        Start Call <VideoIcon/>
-                        </Link>
-                    </Button>
+                <Button asChild>
+                    <Link href={`/room/${orgId}`}>
+                        Start Call <VideoIcon />
+                    </Link>
+                </Button>
             </div>
             <Card>
                 <CardHeader className='flex '>
-                <CardTitle>Boards</CardTitle>
-            <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search boards"
-                className="mb-4"
-            />
-            </CardHeader>
-            <FormPicker id="image" onSelectImage={setSelectedImage} />
-            <div className="flex m-2 gap-2">
-                <Input
-                    value={newBoardTitle}
-                    onChange={(e) => setNewBoardTitle(e.target.value)}
-                    placeholder="New board title"
-                />
-                <Button onClick={handleAddBoard}>Add Board</Button>
-            </div>
-            <div className="w-full mx-auto m-5">
-                <Carousel className="rounded-lg overflow-hidden">
-                    <CarouselContent>
-                        {filteredBoards.map((board) => (
-                            <CarouselItem key={board.id} className="basis-1/2 md:basis-1/2 lg:basis-1/3">
-                                <div className="relative group">
-                                    <img
-                                        src={board.imageFullUrl}
-                                        alt="Board Image"
-                                        width={600}
-                                        height={400}
-                                        className="object-cover w-full aspect-[3/2]"
-                                    />
-                                    <div className="absolute inset-x-0 bottom-0 bg-black/70 group-hover:bg-black/80 transition-colors p-4 flex items-center justify-between flex-col">
-                                        <Link href={`/board/${board.id}`} className="text-white font-semibold text-lg m-5 flex">
-                                            <ClipboardCheck />
-                                            {board.title}
-                                        </Link>
-                                        <div className="flex">
-                                            <Button variant="outline" className="mr-2" onClick={() => setEditingBoard(board)}>
-                                                Rename
-                                            </Button>
-                                            <Button variant="outline" onClick={() => handleDeleteBoard(board.id)}>
-                                                Delete
-                                            </Button>
+                    <CardTitle>Boards</CardTitle>
+                    <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search boards"
+                        className="mb-4"
+                    />
+                </CardHeader>
+                <FormPicker id="image" onSelectImage={setSelectedImage} />
+                <div className="flex m-2 gap-2">
+                    <Input
+                        value={newBoardTitle}
+                        onChange={(e) => setNewBoardTitle(e.target.value)}
+                        placeholder="New board title"
+                    />
+                    <Button onClick={handleAddBoard}>Add Board</Button>
+                </div>
+                <div className="w-full mx-auto m-5">
+                    <Carousel className="rounded-lg overflow-hidden">
+                        <CarouselContent>
+                            {filteredBoards.map((board) => (
+                                <CarouselItem key={board.id} className="basis-1/2 md:basis-1/2 lg:basis-1/3">
+                                    <div className="relative group">
+                                        <img
+                                            src={board.imageFullUrl}
+                                            alt="Board Image"
+                                            width={600}
+                                            height={400}
+                                            className="object-cover w-full aspect-[3/2]"
+                                        />
+                                        <div className="absolute inset-x-0 bottom-0 bg-black/70 group-hover:bg-black/80 transition-colors p-4 flex items-center justify-between flex-col">
+                                            <Link href={`/board/${board.id}`} className="text-white font-semibold text-lg m-5 flex">
+                                                <ClipboardCheck />
+                                                {board.title}
+                                            </Link>
+                                            <div className="flex">
+                                                <Button variant="outline" className="mr-2" onClick={() => setEditingBoard(board)}>
+                                                    Rename
+                                                </Button>
+                                                <Button variant="outline" onClick={() => handleDeleteBoard(board.id)}>
+                                                    Delete
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                </Carousel>
-            </div>
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                    </Carousel>
+                </div>
             </Card>
             <Card>
                 <CardHeader>
-                <CardTitle>
-                    Shared Files
-                </CardTitle>
-                <Button onClick={() => setIsUploadModalOpen(true)}>Upload New File</Button>
+                    <CardTitle>
+                        Shared Files
+                    </CardTitle>
+                    <Button onClick={() => setIsUploadModalOpen(true)}>Upload New File</Button>
                 </CardHeader>
-                
-
                 <div className="m-2 flex flex-wrap gap-2">
-                    {sharedFiles.length > 0 ? (
-                        sharedFiles.map((file) => (
+                    {files && files.length > 0 ? (
+                        files.map((file) => (
                             <div key={file.id} className="mb-4">
                                 <Link href={file.url} target="_blank" className="text-blue-500 hover:underline">
                                     {file.name}
@@ -308,11 +254,9 @@ const Page = ({ orgId }: Props) => {
                     )}
                 </div>
             </Card>
-
             <Card>
                 <EventList events={events} />
             </Card>
-
             {editingBoard && (
                 <Dialog open={Boolean(editingBoard)} onOpenChange={() => setEditingBoard(null)}>
                     <DialogContent>
@@ -332,7 +276,6 @@ const Page = ({ orgId }: Props) => {
                     </DialogContent>
                 </Dialog>
             )}
-
             {/* Upload File Modal */}
             <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
                 <DialogContent>
