@@ -12,7 +12,7 @@ const GetUser = async ({ id }: GetUserProps) => {
         }
     })
     return ( 
-        <p>{user?.first_name}&nbsp;{user?.last_name}</p>
+        <p className="font-bold text-xl">{user?.first_name}&nbsp;{user?.last_name}</p>
     );
 }
  

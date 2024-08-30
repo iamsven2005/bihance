@@ -9,7 +9,7 @@ import { formatTime } from "./formatTime"; // Import the time formatting functio
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import GetUser from "./GetUser";
+import GetUser from "@/components/GetUser";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"; // Import Shadcn components
 
 interface AttendListProps {
@@ -100,7 +100,7 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
         "Hour Difference": hours,
         "Minute Difference": minutes,
         Location: items[i].location,
-        "Name": userId
+        Name: userId,
       });
     }
   });
@@ -162,14 +162,17 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
                       <LocationMap location={items[0].location} />
                     </DialogContent>
                   </Dialog>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline">Check-out Location</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <LocationMap location={items[1]?.location} />
-                    </DialogContent>
-                  </Dialog>
+
+                  {pair.checkOut && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">Check-out Location</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <LocationMap location={items[1]?.location} />
+                      </DialogContent>
+                    </Dialog>
+                  )}
 
                   {items[0].imageurl && (
                     <Dialog>
@@ -177,48 +180,55 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
                         <Button variant="outline">View Check-in Image</Button>
                       </DialogTrigger>
                       <DialogContent>
-                        <img src={items[0].imageurl} alt="Check-in" className="w-96 h-auto rounded-lg" />
+                        <img
+                          src={items[0].imageurl}
+                          alt="Check-in"
+                          className="w-96 h-auto rounded-lg"
+                        />
                       </DialogContent>
                     </Dialog>
                   )}
-                  {items[1].imageurl && (
+                  {pair.checkOut && items[1]?.imageurl && (
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button variant="outline">View Check-out Image</Button>
                       </DialogTrigger>
                       <DialogContent>
-                        <img src={items[1].imageurl} alt="Check-in" className="w-96 h-auto rounded-lg" />
+                        <img
+                          src={items[1].imageurl}
+                          alt="Check-out"
+                          className="w-96 h-auto rounded-lg"
+                        />
                       </DialogContent>
                     </Dialog>
                   )}
-                                      <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline">View Details</Button>
-                      </DialogTrigger>
-                      <DialogContent>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">View Details</Button>
+                    </DialogTrigger>
+                    <DialogContent>
                       <p>Date: {pair.checkIn.toISOString().split("T")[index]}</p>
-                  <p>Check-in Time: {formatTime(pair.checkIn)}</p>
-                  {pair.checkOut && (
-                    <>
-                      <p>Check-out Time: {formatTime(pair.checkOut)}</p>
-                      <p>Hour Difference: {hours} hours</p>
-                      <p>Minute Difference: {minutes} minutes</p>
-                     
-                      <div>
-                        Rolltpe: {payroll?.rolltype}
-                        {payroll?.typepay.map((list) => (
-                          <div key={list.typeid}>
-                            <p>Shift: {list.shift}</p>
-                            <p>Day: {list.day}</p>
-                            <p>Pay: {list.pay}</p>
+                      <p>Check-in Time: {formatTime(pair.checkIn)}</p>
+                      {pair.checkOut && (
+                        <>
+                          <p>Check-out Time: {formatTime(pair.checkOut)}</p>
+                          <p>Hour Difference: {hours} hours</p>
+                          <p>Minute Difference: {minutes} minutes</p>
+
+                          <div>
+                            Rolltype: {payroll?.rolltype}
+                            {payroll?.typepay.map((list) => (
+                              <div key={list.typeid}>
+                                <p>Shift: {list.shift}</p>
+                                <p>Day: {list.day}</p>
+                                <p>Pay: {list.pay}</p>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                      </DialogContent>
-                    </Dialog>
-                  
+                        </>
+                      )}
+                    </DialogContent>
+                  </Dialog>
                 </div>
               );
             });

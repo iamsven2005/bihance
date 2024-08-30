@@ -1,13 +1,12 @@
 import { db } from "@/lib/db";
 import { payroll, user } from "@prisma/client";
-import AddPayroll from "./Addpayroll";
 import PayrollList from "./PayrollList";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { toast } from "sonner";
 import { Redirect } from "@/components/redirect";
+import AddPayroll from "./Addpayroll";
+import AssignTemplatePage from "./assign";
 
 interface Props {
   params: {
@@ -16,27 +15,30 @@ interface Props {
 }
 
 const View = async ({ params }: Props) => {
-  const {userId} = auth()
-  if(!userId){
-    return <Redirect/>
+  const { userId } = auth();
+  if (!userId) {
+    return <Redirect />;
   }
+
   const members = await db.payroll.findMany({
     where: {
       eventid: params.eventId,
     },
-    include:{
-      typepay: true
-    }
+    include: {
+      typepay: true,
+    },
   });
 
   const event = await db.event.findUnique({
     where: {
       eventid: params.eventId,
-    }
+    },
   });
-  if(!event){
-    return <Redirect/>
+
+  if (!event) {
+    return <Redirect />;
   }
+
   const userIds = members.map((member) => member.userId);
 
   const users = await db.user.findMany({
@@ -54,21 +56,17 @@ const View = async ({ params }: Props) => {
 
   return (
     <div className="p-5">
-      <div className="flex justify-between m-5 ">
-      <h1 className="font-bold text-xl">Payroll for {event?.name}</h1>
-      <Button asChild>
-        <Link href="/event" >
-            Events
-        </Link>
-      </Button>
+      <div className="flex justify-between m-5">
+        <h1 className="font-bold text-xl">Payroll for {event?.name}</h1>
+        <Button asChild>
+          <Link href="/event">Events</Link>
+        </Button>
       </div>
       <div className="p-5 rounded-xl">
-      <AddPayroll eventId={params.eventId} />
-      <PayrollList members={members} userMap={userMap} />
+        <AddPayroll eventId={params.eventId} />
+        <PayrollList members={members} userMap={userMap} />
+        <AssignTemplatePage eventId={params.eventId} />
       </div>
-
-      
-
     </div>
   );
 };

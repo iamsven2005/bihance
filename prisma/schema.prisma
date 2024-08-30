@@ -59,15 +59,29 @@ model payroll {
   @@index([userId])
 }
 
+model typepayTemplate {
+  id        String   @id @default(cuid())
+  name      String   // Name of the template
+  day       String   // weekday or weekend
+  shift     String   // hr, min, day, location, shift
+  pay       Int      // The pay amount
+  typepays  typepay[] @relation("TemplateTypePays")
+
+  @@index([name])
+}
+
 model typepay {
-  typeid    String  @id @default(cuid())
-  payrollId String
-  day       String // weekday or weekend
-  shift     String // hr, min, day, location, shift
-  pay       Int
-  payroll   payroll @relation(fields: [payrollId], references: [payrollid], onDelete: Cascade)
+  typeid          String         @id @default(cuid())
+  payrollId       String
+  templateId      String?        // Optional reference to template
+  day             String         // weekday or weekend
+  shift           String         // hr, min, day, location, shift
+  pay             Int
+  payroll         payroll        @relation(fields: [payrollId], references: [payrollid], onDelete: Cascade)
+  template        typepayTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull, name: "TemplateTypePays")
 
   @@index([payrollId])
+  @@index([templateId])
 }
 
 model attendance {
