@@ -1,13 +1,28 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList, CommandInput } from "@/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  CommandInput,
+} from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 type AddTypePayDialogProps = {
   payrollId: string;
@@ -28,7 +43,7 @@ const payTypeOptions = [
 const AddTypePayDialog: React.FC<AddTypePayDialogProps> = ({ payrollId }) => {
   const [day, setDay] = useState("");
   const [pay, setPay] = useState<number | "">("");
-  const [payType, setPayType] = useState(""); // New state for pay type combobox
+  const [payType, setPayType] = useState("");
   const [isDayOpen, setIsDayOpen] = useState(false);
   const [isPayTypeOpen, setIsPayTypeOpen] = useState(false);
   const router = useRouter();
@@ -40,28 +55,21 @@ const AddTypePayDialog: React.FC<AddTypePayDialogProps> = ({ payrollId }) => {
     }
 
     try {
-      const response = await fetch("/api/add-typepay", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          payrollId,
-          day,
-          shift: payType, // Use payType as the shift value
-          pay: Number(pay),
-        }),
+      await axios.post("/api/add-typepay", {
+        payrollId,
+        day,
+        shift: payType,
+        pay: Number(pay),
       });
 
-      if (response.ok) {
-        toast.success("Added new typepay entry");
-        router.refresh();
-      } else {
-        const data = await response.json();
-        toast.error(data.error);
-      }
+      toast.success("Added new typepay entry");
+      router.refresh();
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.error || "An error occurred. Please try again.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
 

@@ -45,6 +45,9 @@ const EventForm = ({ params }: Props) => {
       setDescription(editor.getHTML());
     },
   });
+  const handleFileDelete = (id: string) => {
+    setFiles((prevFiles) => prevFiles.filter((file) => file.id !== id));
+  };
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -196,16 +199,17 @@ const EventForm = ({ params }: Props) => {
               />
             )}
           </div>
-          <div className="mb-4">
+
+          <Button type="submit" className="w-full">
+            Save
+          </Button>
+        </form>
+        <div className="mb-4">
             <Label htmlFor="files"  className="m-2">
               Upload Files:
             </Label>
             <UploadFile eventId={eventId} onUploadComplete={handleFileUpload} />
           </div>
-          <Button type="submit" className="w-full">
-            Save
-          </Button>
-        </form>
       </CardContent>
       <CardFooter>
         {files.length > 0 && (
@@ -217,8 +221,7 @@ const EventForm = ({ params }: Props) => {
                   <File /> {file.name}
                 </Link>
                 </Button>
-                <DeleteFile id={file.id}/>
-              </li>
+                <DeleteFile id={file.id} onDeleteComplete={handleFileDelete} />              </li>
             ))}
           </ul>
         )}

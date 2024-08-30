@@ -2,30 +2,27 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import axios from 'axios';
 
 const FeatureForm = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
-    const response = await fetch('/api/feature', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ title, description }),
-    });
-
-    if (response.ok) {
+    try {
+      await axios.post('/api/feature', { title, description });
       setTitle('');
       setDescription('');
       router.refresh();
-    } else {
-      const data = await response.json();
-      console.error(data.error);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.error(error.response.data.error || 'An error occurred. Please try again.');
+      } else {
+        console.error('An error occurred. Please try again.');
+      }
     }
   };
 

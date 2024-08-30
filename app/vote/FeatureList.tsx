@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Feature } from "@prisma/client";
+import axios from "axios";
 
 interface ExtendedFeature extends Feature {
   _count: {
@@ -22,23 +23,27 @@ const FeatureListClient: React.FC<Props> = ({ features }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleVote = async (featureId: string) => {
-    const response = await fetch(`/api/feature/${featureId}`, {
-      method: "POST",
-    });
-
-    if (response.ok) {
+    try {
+      await axios.post(`/api/feature/${featureId}`);
       const updatedFeatureList = await fetchFeatures();
       setFeatureList(updatedFeatureList);
-    } else {
-      const data = await response.json();
-      console.error(data.error);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.error(error.response.data.error || "An error occurred. Please try again.");
+      } else {
+        console.error("An error occurred. Please try again.");
+      }
     }
   };
 
   const fetchFeatures = async () => {
-    const response = await fetch("/api/feature");
-    const data: ExtendedFeature[] = await response.json();
-    return data;
+    try {
+      const { data } = await axios.get<ExtendedFeature[]>("/api/feature");
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch features:", error);
+      return [];
+    }
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

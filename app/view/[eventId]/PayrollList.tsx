@@ -7,9 +7,17 @@ import EditTypePayDialog from "./EditTypePayDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import AddTypePayDialog from "./AddType";
+import axios from "axios";
 
 type PayrollListProps = {
   members: (payroll & { typepay: typepay[] })[]; // Ensure that typepay is associated with each payroll
@@ -24,6 +32,9 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
     weekend: number;
   } | null>(null);
   const [editingTypePay, setEditingTypePay] = useState<typepay | null>(null);
+
+  const router = useRouter();
+
   const handleUpdate = () => {
     location.reload();
   };
@@ -31,52 +42,34 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
-  
-  const router = useRouter();
-  
+
   const handleDelete = async (userId: string, eventId: string) => {
     try {
-      const response = await fetch("/api/add-payroll", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userIdToDelete: userId,
-          eventId,
-        }),
+      await axios.delete("/api/add-payroll", {
+        data: { userIdToDelete: userId, eventId },
       });
-
-      if (response.ok) {
-        toast.success("Deleted payroll entry");
-        router.refresh();
-      } else {
-        const data = await response.json();
-        toast.error(data.error);
-      }
+      toast.success("Deleted payroll entry");
+      router.refresh();
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.error || "An error occurred. Please try again.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
 
-  const handletypeDelete = async (typeid: string) => {
+  const handleTypeDelete = async (typeid: string) => {
     try {
-      const response = await fetch(`/api/add-payroll/${typeid}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        }
-      });
-
-      if (response.ok) {
-        toast.success("Deleted typepay entry");
-        router.refresh();
-      } else {
-        const data = await response.json();
-        toast.error(data.error);
-      }
+      await axios.delete(`/api/add-payroll/${typeid}`);
+      toast.success("Deleted typepay entry");
+      router.refresh();
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.error || "An error occurred. Please try again.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -105,7 +98,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
                 {user?.first_name} {user?.last_name}
               </CardTitle>
             </CardHeader>
-            
+
             {payrollItem.typepay.map((typepayItem) => (
               <CardContent key={typepayItem.typeid}>
                 <CardDescription className="flex gap-5 flex-wrap items-center">
@@ -114,16 +107,22 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
                   <span>Pay: {typepayItem.pay}</span>
                 </CardDescription>
                 <div className="flex gap-2">
-                    <Button onClick={() => setEditingTypePay(typepayItem)}>Edit</Button>
-                    <Button variant="destructive" onClick={() => handletypeDelete(typepayItem.typeid)}>
-                      Delete
-                    </Button>
-                  </div>
+                  <Button onClick={() => setEditingTypePay(typepayItem)}>Edit</Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleTypeDelete(typepayItem.typeid)}
+                  >
+                    Delete
+                  </Button>
+                </div>
               </CardContent>
             ))}
-            
+
             <CardFooter>
-              <Button onClick={() => handleDelete(payrollItem.userId, payrollItem.eventid)}>
+              <Button
+                variant="destructive"
+                onClick={() => handleDelete(payrollItem.userId, payrollItem.eventid)}
+              >
                 Delete
               </Button>
               <AddTypePayDialog payrollId={payrollItem.payrollid} />

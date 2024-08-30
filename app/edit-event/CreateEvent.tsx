@@ -8,12 +8,14 @@ import UploadImage from "./upload";
 import { toast } from "sonner";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import axios from "axios";
 
 const CreateEventForm: React.FC = () => {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [image, setImage] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const editor = useEditor({
@@ -26,19 +28,20 @@ const CreateEventForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const response = await fetch("/api/create-event", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, location, description, image }),
+      const response = await axios.post("/api/create-event", {
+        name,
+        location,
+        description,
+        image,
       });
-      const data = await response.json();
-      if (response.ok) {
+
+      const data = response.data;
+      if (response.status === 200) {
         const eventId = data.eventid;
         router.push(`/edit-event/${eventId}`);
-        toast.success("Event added");
+        toast.success("Event created successfully");
       } else {
         console.error("Failed to create event", data.error);
         toast.error("Failed to create event");
@@ -46,6 +49,8 @@ const CreateEventForm: React.FC = () => {
     } catch (error) {
       console.error("Failed to create event", error);
       toast.error("Failed to create event");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,6 +65,7 @@ const CreateEventForm: React.FC = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
+          disabled={loading}
         />
       </div>
       <div>
@@ -71,6 +77,7 @@ const CreateEventForm: React.FC = () => {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           required
+          disabled={loading}
         />
       </div>
       <div>
@@ -84,7 +91,9 @@ const CreateEventForm: React.FC = () => {
           <img src={image} alt="Event Image" className="m-5 mx-auto w-56 rounded-lg shadow-md" />
         )}
       </div>
-      <Button type="submit">Create Event</Button>
+      <Button type="submit" disabled={loading}>
+        {loading ? "Creating Event..." : "Create Event"}
+      </Button>
     </form>
   );
 };

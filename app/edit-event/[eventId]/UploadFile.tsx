@@ -5,6 +5,7 @@ import { generateUploadDropzone } from "@uploadthing/react";
 import { OurFileRouter } from "@/app/api/uploadthing/core";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
 
 type UploadFileProps = {
   eventId: string;
@@ -21,21 +22,14 @@ const UploadFile: React.FC<UploadFileProps> = ({ eventId, onUploadComplete }) =>
     const url = urls[0];
 
     try {
-      const response = await fetch("/api/upload-file", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ eventId, url, name }),
+      const { data } = await axios.post("/api/upload-file", {
+        eventId,
+        url,
+        name,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to upload file");
-      }
-
-      const file = await response.json();
-      setUploadedUrl(file.url);
-      onUploadComplete({ id: file.id, url: file.url, name: file.name });
+      setUploadedUrl(data.url);
+      onUploadComplete({ id: data.id, url: data.url, name: data.name });
       toast.success("File uploaded successfully");
     } catch (error) {
       console.error("Failed to upload file", error);

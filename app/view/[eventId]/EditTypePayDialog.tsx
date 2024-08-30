@@ -1,12 +1,20 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList, CommandInput } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import axios from "axios";
 
 type EditTypePayDialogProps = {
   typepayId: string;
@@ -29,7 +37,14 @@ const payTypeOptions = [
   { value: "minute", label: "Per Minute" },
 ];
 
-const EditTypePayDialog: React.FC<EditTypePayDialogProps> = ({ typepayId, initialDay, initialShift, initialPay, onClose, onUpdate }) => {
+const EditTypePayDialog: React.FC<EditTypePayDialogProps> = ({
+  typepayId,
+  initialDay,
+  initialShift,
+  initialPay,
+  onClose,
+  onUpdate,
+}) => {
   const [day, setDay] = useState(initialDay);
   const [shift, setShift] = useState(initialShift);
   const [pay, setPay] = useState<number | "">(initialPay);
@@ -42,29 +57,21 @@ const EditTypePayDialog: React.FC<EditTypePayDialogProps> = ({ typepayId, initia
     }
 
     try {
-    const typeid = typepayId
-      const response = await fetch(`/api/add-payroll/${typeid}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          day,
-          shift,
-          pay: Number(pay),
-        }),
+      await axios.patch(`/api/add-payroll/${typepayId}`, {
+        day,
+        shift,
+        pay: Number(pay),
       });
 
-      if (response.ok) {
-        toast.success("Typepay entry updated");
-        onUpdate();  // Notify parent component about the update
-        onClose();   // Close the dialog
-      } else {
-        const data = await response.json();
-        toast.error(data.error);
-      }
+      toast.success("Typepay entry updated");
+      onUpdate();  // Notify parent component about the update
+      onClose();   // Close the dialog
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.error || "An error occurred. Please try again.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -84,7 +91,7 @@ const EditTypePayDialog: React.FC<EditTypePayDialogProps> = ({ typepayId, initia
               aria-expanded={isDayOpen}
               className="w-full justify-between mb-4"
             >
-              {day ? dayOptions.find(option => option.value === day)?.label : "Select Day..."}
+              {day ? dayOptions.find((option) => option.value === day)?.label : "Select Day..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -94,7 +101,7 @@ const EditTypePayDialog: React.FC<EditTypePayDialogProps> = ({ typepayId, initia
               <CommandList>
                 <CommandEmpty>No day found.</CommandEmpty>
                 <CommandGroup>
-                  {dayOptions.map(option => (
+                  {dayOptions.map((option) => (
                     <CommandItem
                       key={option.value}
                       onSelect={() => {

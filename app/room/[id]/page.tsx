@@ -17,10 +17,16 @@ import {
 } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { Track } from "livekit-client";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
+import axios from "axios";
 
 interface Props {
   params: {
@@ -36,19 +42,20 @@ export default function Page({ params }: Props) {
 
   useEffect(() => {
     if (isUsernameSet && username !== "") {
-      (async () => {
+      const fetchToken = async () => {
         try {
-          const resp = await fetch(
+          const { data } = await axios.get(
             `/api/get-participant-token?room=${room}&username=${username}`
           );
-          const data = await resp.json();
           setToken(data.token);
-        } catch (e) {
-          console.error(e);
+        } catch (error) {
+          console.error("Failed to fetch participant token:", error);
         }
-      })();
+      };
+
+      fetchToken();
     }
-  }, [isUsernameSet, username]);
+  }, [isUsernameSet, username, room]);
 
   if (token === "") {
     if (!isUsernameSet) {
@@ -61,7 +68,7 @@ export default function Page({ params }: Props) {
             <Input
               type="text"
               value={username}
-              onChange={(e: { target: { value: SetStateAction<string>; }; }) => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your username"
             />
             <DialogFooter>
@@ -92,13 +99,12 @@ export default function Page({ params }: Props) {
       token={token}
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
-      className="m-5 w-full flex mx-auto flex-col "
+      className="m-5 w-full flex mx-auto flex-col"
     >
       <MyVideoConference />
       <RoomAudioRenderer />
       <ControlBar />
     </LiveKitRoom>
-    
   );
 }
 
@@ -113,8 +119,7 @@ function MyVideoConference() {
 
   return (
     <GridLayout tracks={tracks}>
-    <ParticipantTile />
-    
-  </GridLayout>
+      <ParticipantTile />
+    </GridLayout>
   );
 }

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ElementRef, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
+import axios from "axios";
 
 interface Props {
   id: string; 
@@ -31,6 +32,8 @@ const CardForm = ({ id }: Props) => {
 
   const disableEdit = () => {
     setEdit(false);
+    setTitle("");
+    setDescription("");
   };
 
   const handleKeydown = (e: KeyboardEvent) => {
@@ -48,29 +51,22 @@ const CardForm = ({ id }: Props) => {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/boards/lists/cards", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ listId: id, title, description }),
+      await axios.post("/api/boards/lists/cards", {
+        listId: id,
+        title,
+        description,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to add list");
-      }
 
       setTitle("");
       setDescription("");
       disableEdit();
-      toast.success("Card added, refresh to update/")
-
+      toast.success("Card added successfully. Refresh to update.");
     } catch (error) {
-      toast.error("There was an error adding the list.");
+      console.error("Error adding card:", error);
+      toast.error("There was an error adding the card.");
     } finally {
       setLoading(false); 
       router.refresh();
-
     }
   };
 
@@ -78,25 +74,36 @@ const CardForm = ({ id }: Props) => {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="m-2 flex flex-col gap-2">
+      className="m-2 flex flex-col gap-2"
+    >
       <Input
         ref={inputRef}
         id="title"
         value={title} 
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="Enter List Title"
+        placeholder="Enter Card Title"
+        disabled={loading} // Disable input during loading
       />
       <Textarea
         ref={textAreaRef}
         id="description"
         value={description} 
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="Enter List Description"
+        placeholder="Enter Card Description"
+        disabled={loading} // Disable textarea during loading
       />
-      <input hidden value={id} name="boardId" />
+      <input hidden value={id} name="listId" />
       <div className="flex items-center gap-x-1">
         <Button type="submit" disabled={loading}>
           {loading ? "Adding..." : "Add Card"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={disableEdit}
+          disabled={loading}
+        >
+          Cancel
         </Button>
       </div>
     </form>

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { event } from "@prisma/client";
@@ -20,6 +26,7 @@ import {
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import axios from "axios";
 
 interface AssignEventModalProps {
   event: event;
@@ -36,9 +43,9 @@ const AssignEventModal = ({ event, onClose }: AssignEventModalProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchOrganizations = async () => {
+    const fetchOrganizations = () => {
       if (user) {
-        const organizations = user?.organizationMemberships;
+        const organizations = user.organizationMemberships;
         const orgIds = organizations.map((org) => org.organization.id);
         const orgNames = organizations.map((org) => org.organization.name);
         setOrganizationIds(orgIds);
@@ -51,40 +58,28 @@ const AssignEventModal = ({ event, onClose }: AssignEventModalProps) => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`/api/events/${event.eventid}/workspace`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ workspaceId: selectedOrg }),
+      await axios.patch(`/api/events/${event.eventid}/workspace`, {
+        workspaceId: selectedOrg,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to assign workspace");
-      }
 
       toast.success("Workspace assigned successfully!");
       router.refresh(); // Revalidate the path to reflect changes
       onClose();
     } catch (error) {
+      console.error("Failed to assign workspace:", error);
       toast.error("Failed to assign workspace");
     }
   };
 
   const handleRemove = async () => {
     try {
-      const response = await fetch(`/api/events/${event.eventid}/workspace`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to remove workspace");
-      }
+      await axios.delete(`/api/events/${event.eventid}/workspace`);
 
       toast.success("Workspace removed successfully!");
       router.refresh(); // Revalidate the path to reflect changes
       onClose();
     } catch (error) {
+      console.error("Failed to remove workspace:", error);
       toast.error("Failed to remove workspace");
     }
   };

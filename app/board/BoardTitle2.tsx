@@ -1,13 +1,14 @@
-"use client"; 
+"use client";
 
 import { useState } from "react";
+import axios from "axios";
 
 interface BoardTitleProps {
   initialTitle: string | undefined;
   boardId: string;
 }
 
-const CardTitle = ({ initialTitle, boardId }:BoardTitleProps) => {
+const CardTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId }) => {
   const [title, setTitle] = useState(initialTitle || ""); 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -17,12 +18,8 @@ const CardTitle = ({ initialTitle, boardId }:BoardTitleProps) => {
 
   const saveTitle = async () => {
     try {
-      await fetch(`/api/boards/cards/${boardId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title }),
+      await axios.patch(`/api/boards/cards/${boardId}`, {
+        title,
       });
       setIsEditing(false); 
     } catch (error) {
@@ -45,14 +42,12 @@ const CardTitle = ({ initialTitle, boardId }:BoardTitleProps) => {
           autoFocus 
         />
       ) : (
-        
         <h1
           className="text-xl cursor-pointer"
           onClick={() => setIsEditing(true)}
         >
           {title}
         </h1>
-       
       )}
     </div>
   );

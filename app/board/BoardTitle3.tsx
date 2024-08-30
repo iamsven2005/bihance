@@ -1,32 +1,29 @@
-"use client"; 
+"use client";
 
 import { useState } from "react";
+import axios from "axios";
 
 interface BoardTitleProps {
   initialTitle: string | undefined;
   boardId: string;
 }
 
-const DescTitle = ({ initialTitle, boardId }:BoardTitleProps) => {
-  const [description, setdescription] = useState(initialTitle || ""); 
+const DescTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId }) => {
+  const [description, setDescription] = useState(initialTitle || ""); 
   const [isEditing, setIsEditing] = useState(false);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setdescription(e.target.value);
+    setDescription(e.target.value);
   };
 
   const saveTitle = async () => {
     try {
-      await fetch(`/api/boards/description/${boardId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ description }),
+      await axios.patch(`/api/boards/description/${boardId}`, {
+        description,
       });
       setIsEditing(false); 
     } catch (error) {
-      console.error("Failed to update title:", error);
+      console.error("Failed to update description:", error);
     }
   };
 
@@ -45,14 +42,12 @@ const DescTitle = ({ initialTitle, boardId }:BoardTitleProps) => {
           autoFocus 
         />
       ) : (
-        
         <p
           className="text-md cursor-pointer"
           onClick={() => setIsEditing(true)}
         >
           {description}
         </p>
-       
       )}
     </div>
   );

@@ -5,6 +5,7 @@ import ListTitle from "./listcards";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { useState } from "react";
 import { toast } from "sonner";
+import axios from "axios";
 
 interface PageClientProps {
   board: string;
@@ -26,15 +27,9 @@ const PageClient = ({ board, lists: initialLists }: PageClientProps) => {
       setLists(reorderedLists);
 
       try {
-        await fetch(`/api/boards/reorderLists`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            boardId: board,
-            listOrder: reorderedLists.map((list) => list.id),
-          }),
+        await axios.patch(`/api/boards/reorderLists`, {
+          boardId: board,
+          listOrder: reorderedLists.map((list) => list.id),
         });
         toast.success("List order updated successfully");
       } catch (error) {
@@ -49,7 +44,6 @@ const PageClient = ({ board, lists: initialLists }: PageClientProps) => {
       const destinationList = lists[destinationListIndex];
 
       const [movedCard] = sourceList.card.splice(source.index, 1);
-
       destinationList.card.splice(destination.index, 0, movedCard);
 
       const updatedLists = [...lists];
@@ -58,18 +52,12 @@ const PageClient = ({ board, lists: initialLists }: PageClientProps) => {
       setLists(updatedLists);
 
       try {
-        await fetch(`/api/boards/reorderCards`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            boardId: board,
-            sourceListId: source.droppableId,
-            destinationListId: destination.droppableId,
-            sourceCardOrder: sourceList.card.map((card: { id: any }) => card.id),
-            destinationCardOrder: destinationList.card.map((card: { id: any }) => card.id),
-          }),
+        await axios.patch(`/api/boards/reorderCards`, {
+          boardId: board,
+          sourceListId: source.droppableId,
+          destinationListId: destination.droppableId,
+          sourceCardOrder: sourceList.card.map((card: { id: any }) => card.id),
+          destinationCardOrder: destinationList.card.map((card: { id: any }) => card.id),
         });
         toast.success("Card order updated successfully");
       } catch (error) {

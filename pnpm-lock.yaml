@@ -21,6 +21,7 @@ specifiers:
   '@sentry/nextjs': ^8.19.0
   '@sentry/utils': ^8.22.0
   '@tailwindcss/typography': ^0.5.13
+  '@tanstack/react-query': ^5.52.3
   '@tiptap/extension-color': ^2.5.5
   '@tiptap/extension-highlight': ^2.5.5
   '@tiptap/extension-image': ^2.5.5
@@ -97,6 +98,7 @@ dependencies:
   '@sentry/cli': 2.32.2
   '@sentry/nextjs': 8.19.0_next@14.2.3+react@18.3.1
   '@sentry/utils': 8.22.0
+  '@tanstack/react-query': 5.52.3_react@18.3.1
   '@tiptap/extension-color': 2.5.5_nwa6eweontm4xp4avllgysdlga
   '@tiptap/extension-highlight': 2.5.5
   '@tiptap/extension-image': 2.5.5
@@ -2652,6 +2654,19 @@ packages:
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.4.3_ts-node@10.9.2
     dev: true
+
+  /@tanstack/query-core/5.52.3:
+    resolution: {integrity: sha512-+Gh7lXn+eoAsarvvnndgqBeJ5lOjup8qgQnrTsFuhNTEAo0H934DxEPro4s3TlmvITfDTJ3UDCy7kY8Azm0qsA==}
+    dev: false
+
+  /@tanstack/react-query/5.52.3_react@18.3.1:
+    resolution: {integrity: sha512-1K7l2hkqlWuh5SdaTYPSwMmHJF5dDk5INK+EtiEwUZW4+usWTXZx7QeHuk078oSzTzaVkEFyT3VquK7F0hYkUw==}
+    peerDependencies:
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-core': 5.52.3
+      react: 18.3.1
+    dev: false
 
   /@tiptap/core/2.5.4_@tiptap+pm@2.5.4:
     resolution: {integrity: sha512-Zs/hShr4+W02+0nOlpmr5cS2YjDRLqd+XMt+jsiQH0QNr3s1Lc82pfF6C3CjgLEZtdUzImZrW2ABtLlpvbogaA==}

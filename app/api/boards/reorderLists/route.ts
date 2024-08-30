@@ -1,4 +1,3 @@
-// File: C:\bihance\app\api\boards\reorderLists\route.ts
 
 import { Auditlog } from '@/lib/create-audit-log';
 import { db } from '@/lib/db';

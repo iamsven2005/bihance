@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import axios from "axios";
 
 type AddPayrollProps = {
   eventId: string;
@@ -18,27 +19,20 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/add-payroll", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          eventId,
-        }),
+      const { data } = await axios.post("/api/add-payroll", {
+        email,
+        eventId,
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        setEmail("");
-        router.refresh(); // Refresh the page to show the updated payroll
-        toast.success("Added payroll");
-      } else {
-        toast.error(data.error);
-      }
+      setEmail("");
+      router.refresh(); // Refresh the page to show the updated payroll
+      toast.success("Added payroll");
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.error || "An error occurred. Please try again.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     }
   };
 

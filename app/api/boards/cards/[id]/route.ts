@@ -1,4 +1,3 @@
-//rename list
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from "@/lib/db";
 import { Auditlog } from '@/lib/create-audit-log';
@@ -18,8 +17,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       title: card.title,
       type: TYPE.card,
       action: ACTION.UPDATE
-    })
-    revalidatePath("/board")
+    });
+
+    revalidatePath("/board");
 
     return new NextResponse(JSON.stringify({ message: "Title updated successfully" }), {
       status: 200,
@@ -44,16 +44,17 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       title: card.title,
       type: TYPE.card,
       action: ACTION.DELETE
-    })
-    revalidatePath("/board")
+    });
 
-    return new NextResponse(JSON.stringify({ message: "Title updated successfully" }), {
+    revalidatePath("/board");
+
+    return new NextResponse(JSON.stringify({ message: "Title deleted successfully" }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error("Failed to update title:", error);
-    return new NextResponse(JSON.stringify({ error: "Failed to update title" }), {
+    console.error("Failed to delete title:", error);
+    return new NextResponse(JSON.stringify({ error: "Failed to delete title" }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });

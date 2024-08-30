@@ -1,5 +1,6 @@
 import { MoreHorizontal, X, Trash2 } from "lucide-react";
 import { useState } from "react";
+import axios from "axios";
 import CardForm from "./Form2";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -30,86 +31,46 @@ const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDel
 
   const saveTitle = async () => {
     try {
-      await fetch(`/api/boards/lists/${boardId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title }),
-      });
+      await axios.patch(`/api/boards/lists/${boardId}`, { title });
       setIsEditing(false);
-      toast.success("Renamed List");
+      toast.success("List renamed successfully.");
     } catch (error) {
       console.error("Failed to update title:", error);
-      toast.error("Failed to update title");
+      toast.error("Failed to update title.");
     }
   };
 
   const deleteList = async () => {
     try {
-      const response = await fetch(`/api/boards/lists/${boardId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        console.log("List deleted successfully");
-        toast.success("List deleted successfully");
-        if (onDelete) onDelete(id);
-      } else {
-        console.error("Failed to delete list:", await response.text());
-        toast.error("Failed to delete list");
-      }
+      await axios.delete(`/api/boards/lists/${boardId}`);
+      toast.success("List deleted successfully.");
+      if (onDelete) onDelete(id);
     } catch (error) {
       console.error("Failed to delete list:", error);
-      toast.error("Failed to delete list");
+      toast.error("Failed to delete list.");
     }
   };
 
   const deleteCard = async (cardId: string) => {
     try {
-      const response = await fetch(`/api/boards/cards/${cardId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        console.log("Card deleted successfully");
-        toast.success("Card deleted successfully");
-        setCards(cards.filter((card) => card.id !== cardId));
-      } else {
-        console.error("Failed to delete card:", await response.text());
-        toast.error("Failed to delete card");
-      }
+      await axios.delete(`/api/boards/cards/${cardId}`);
+      toast.success("Card deleted successfully.");
+      setCards(cards.filter((card) => card.id !== cardId));
     } catch (error) {
       console.error("Failed to delete card:", error);
-      toast.error("Failed to delete card");
+      toast.error("Failed to delete card.");
     }
   };
 
   const copyList = async () => {
     try {
-      const response = await fetch(`/api/boards/lists/${boardId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        toast.success("List copied successfully");
-        if (onDelete) onDelete(id);
-      } else {
-        console.error("Failed to copy list:", await response.text());
-        toast.error("Failed to copy list");
-      }
+      await axios.post(`/api/boards/lists/${boardId}/copy`);
+      toast.success("List copied successfully.");
+      // Assuming onDelete triggers a refresh or similar after copy
+      if (onDelete) onDelete(id);
     } catch (error) {
       console.error("Failed to copy list:", error);
-      toast.error("Failed to copy list");
+      toast.error("Failed to copy list.");
     }
   };
 
@@ -149,31 +110,23 @@ const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDel
                 </Button>
               </PopoverClose>
               <Separator />
-              <form>
-                <input hidden name="id" id="id" value={boardId} />
-                <input hidden name="boardId" id="boardId" value={id} />
-                <Button
-                  variant={"ghost"}
-                  className="rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
-                  type="button"
-                  onClick={copyList}
-                >
-                  Copy List
-                </Button>
-              </form>
+              <Button
+                variant={"ghost"}
+                className="rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
+                type="button"
+                onClick={copyList}
+              >
+                Copy List
+              </Button>
               <Separator />
-              <form>
-                <input hidden name="id" id="id" value={boardId} />
-                <input hidden name="boardId" id="boardId" value={id} />
-                <Button
-                  variant={"ghost"}
-                  className="rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
-                  type="button"
-                  onClick={deleteList}
-                >
-                  Delete List
-                </Button>
-              </form>
+              <Button
+                variant={"ghost"}
+                className="rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
+                type="button"
+                onClick={deleteList}
+              >
+                Delete List
+              </Button>
               <CardForm id={boardId} />
             </PopoverContent>
           </Popover>

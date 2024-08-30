@@ -1,6 +1,7 @@
-"use client"; 
+"use client";
 
 import { useState } from "react";
+import axios from "axios";
 
 interface BoardTitleProps {
   initialTitle: string | undefined;
@@ -17,13 +18,7 @@ const BoardTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId }) => {
 
   const saveTitle = async () => {
     try {
-      await fetch(`/api/boards/${boardId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title }),
-      });
+      await axios.patch(`/api/boards/${boardId}`, { title });
       setIsEditing(false); 
     } catch (error) {
       console.error("Failed to update title:", error);

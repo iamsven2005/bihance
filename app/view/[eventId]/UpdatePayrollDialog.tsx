@@ -10,10 +10,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import axios from "axios";
 
 type UpdatePayrollDialogProps = {
   userId: string;
@@ -36,34 +36,28 @@ const UpdatePayrollDialog: React.FC<UpdatePayrollDialogProps> = ({
 
   const handleUpdatePayroll = async () => {
     try {
-      const response = await fetch("/api/update-payroll", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          weekday,
-          weekend,
-        }),
+      await axios.post("/api/update-payroll", {
+        userId,
+        weekday,
+        weekend,
       });
 
-      if (response.ok) {
-        setError("");
-        onUpdate();
-        onClose();
-      } else {
-        const data = await response.json();
-        setError(data.error);
-      }
-      toast.success("Updated Shift")
+      setError("");
+      toast.success("Updated payroll successfully");
+      onUpdate();
+      onClose();
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      if (axios.isAxiosError(error) && error.response) {
+        setError(error.response.data.error || "An error occurred. Please try again.");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+      toast.error("Failed to update payroll");
     }
   };
 
   return (
-    <Dialog open={true} onOpenChange={onClose} >
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="p-5">
         <DialogHeader>
           <DialogTitle>Update Shift</DialogTitle>
@@ -104,7 +98,7 @@ const UpdatePayrollDialog: React.FC<UpdatePayrollDialogProps> = ({
         {error && <p className="text-red-500">{error}</p>}
         <DialogFooter>
           <Button onClick={handleUpdatePayroll}>Save changes</Button>
-          <Button onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
         </DialogFooter>
