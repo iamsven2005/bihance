@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@clerk/nextjs/server";
 import { Redirect } from "@/components/redirect";
 import AddPayroll from "./Addpayroll";
-import AssignTemplatePage from "./assign";
 
 interface Props {
   params: {
@@ -61,11 +60,13 @@ const View = async ({ params }: Props) => {
         <Button asChild>
           <Link href="/event">Events</Link>
         </Button>
+        <Button asChild>
+          <Link href="/template">Template</Link>
+        </Button>
       </div>
       <div className="p-5 rounded-xl">
         <AddPayroll eventId={params.eventId} />
         <PayrollList members={members} userMap={userMap} />
-        <AssignTemplatePage eventId={params.eventId} />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { payroll, typepay, user } from "@prisma/client";
 import UpdatePayrollDialog from "./UpdatePayrollDialog";
 import EditTypePayDialog from "./EditTypePayDialog";
@@ -24,6 +24,11 @@ type PayrollListProps = {
   userMap: Record<string, user>;
 };
 
+interface Template {
+  id: string;
+  name: string;
+}
+
 const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<{
@@ -32,8 +37,23 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
     weekend: number;
   } | null>(null);
   const [editingTypePay, setEditingTypePay] = useState<typepay | null>(null);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedTemplates, setSelectedTemplates] = useState<Record<string, string>>({});
 
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const { data: templateData } = await axios.get("/api/typepay-template");
+        setTemplates(templateData.templates);
+      } catch (error) {
+        toast.error("Failed to fetch templates");
+      }
+    };
+
+    fetchTemplates();
+  }, []);
 
   const handleUpdate = () => {
     location.reload();
@@ -71,6 +91,27 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
         toast.error("An error occurred. Please try again.");
       }
     }
+  };
+
+  const handleAssignTemplate = async (payrollId: string, userId: string) => {
+    try {
+      await axios.post("/api/assign-template", {
+        payrollId,
+        templateId: selectedTemplates[userId],
+      });
+
+      toast.success("Template assigned successfully");
+      router.refresh();
+    } catch (error) {
+      toast.error("Failed to assign template");
+    }
+  };
+
+  const handleTemplateChange = (userId: string, templateId: string) => {
+    setSelectedTemplates((prevSelectedTemplates) => ({
+      ...prevSelectedTemplates,
+      [userId]: templateId,
+    }));
   };
 
   const filteredMembers = members.filter((item) => {
@@ -119,6 +160,31 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
             ))}
 
             <CardFooter>
+              <div className="flex items-center gap-2">
+                <select
+                  value={selectedTemplates[payrollItem.userId] || ""}
+                  onChange={(e) =>
+                    handleTemplateChange(payrollItem.userId, e.target.value)
+                  }
+                  className="border rounded p-1"
+                >
+                  <option value="" disabled>
+                    Select Template
+                  </option>
+                  {templates.map((template) => (
+                    <option key={template.id} value={template.id}>
+                      {template.name}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  onClick={() =>
+                    handleAssignTemplate(payrollItem.payrollid, payrollItem.userId)
+                  }
+                >
+                  Assign Template
+                </Button>
+              </div>
               <Button
                 variant="destructive"
                 onClick={() => handleDelete(payrollItem.userId, payrollItem.eventid)}
