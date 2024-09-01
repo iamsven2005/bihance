@@ -18,7 +18,7 @@ const MainPage = async () => {
     <div className="flex flex-col items-center justify-center mx-auto gap-5">
       <section className="z-10 text-center m-10 text-black dark:text-white gap-5 flex flex-col">
         <h1 className=" whitespace-pre-wrap text-5xl font-medium tracking-tighter">
-          Enhancing your business
+        Automate your event now
         </h1>
         <h2>
           Bihance: Enhancing Your Business

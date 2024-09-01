@@ -4,8 +4,8 @@ import PayrollList from "./PayrollList";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { auth } from "@clerk/nextjs/server";
-import { Redirect } from "@/components/redirect";
 import AddPayroll from "./Addpayroll";
+import { notFound, redirect } from "next/navigation";
 
 interface Props {
   params: {
@@ -16,7 +16,7 @@ interface Props {
 const View = async ({ params }: Props) => {
   const { userId } = auth();
   if (!userId) {
-    return <Redirect />;
+    return notFound();
   }
 
   const members = await db.payroll.findMany({
@@ -35,7 +35,7 @@ const View = async ({ params }: Props) => {
   });
 
   if (!event) {
-    return <Redirect />;
+    return redirect("/edit-event");
   }
 
   const userIds = members.map((member) => member.userId);

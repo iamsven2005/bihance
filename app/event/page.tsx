@@ -26,8 +26,9 @@ const Page = async () => {
       files: true,
     },
   });
+  const polls = await db.polling.findMany();
 
-  return <EventList events={events} user={creds} />;
+  return <EventList events={events} user={creds} polls={polls}/>;
 };
 
 export default Page;

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { attendance, event, files, user } from "@prisma/client";
+import { attendance, event, files, Polling, user } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -22,6 +22,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { OrganizationList } from "@clerk/nextjs";
 import AssignEventModal from "./AssignEventModal"; // Import the modal component
+import AddEvent from "./addEvent";
+import EventManager from "./edit";
 
 // Define a unified event type that includes attendances and files
 type UnifiedEventType = event & {
@@ -33,9 +35,10 @@ type UnifiedEventType = event & {
 interface EventListProps {
   events: UnifiedEventType[];
   user: user;
+  polls: Polling[]
 }
 
-const EventList = ({ events, user }: EventListProps) => {
+const EventList = ({ events, user, polls }: EventListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<UnifiedEventType | null>(null);
 
@@ -68,7 +71,21 @@ const EventList = ({ events, user }: EventListProps) => {
       <div className="flex flex-col mb-4 gap-5">
         <h1 className="font-bold text-2xl">Analytics</h1>
         <p>Credits Left: {user ? user.credits : "Loading..."}</p>
-
+        <Card>
+      <CardHeader>
+        <CardTitle>Events</CardTitle>
+        <AddEvent />
+      </CardHeader>
+      <CardContent>
+        {polls.map((event) => (
+          <Card key={event.id} className="m-5 p-5">
+            <CardContent className="flex flex-col gap-2">
+              <EventManager id={event.id} currentTitle={event.title} />
+            </CardContent>
+          </Card>
+        ))}
+      </CardContent>
+    </Card>
         <h1 className="font-bold text-2xl">All events:</h1>
 
         <div className="flex-wrap flex gap-5">

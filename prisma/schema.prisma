@@ -194,3 +194,23 @@ model Audit {
   created   DateTime @default(now())
   update    DateTime @updatedAt
 }
+
+model Polling {
+  id      String     @id @default(cuid())
+  title   String
+  images  Image[]
+  orgId   String?
+  userId  String
+}
+
+model Image {
+  id      String  @id @default(cuid())
+  url     String
+  name    String
+  votes   Int     @default(0)
+  order   Int     @default(0)  // Order field to store the image position
+  eventId String
+  event   Polling @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+}
