@@ -72,7 +72,7 @@ export default function RootLayout({
                         Workspace
                       </Button>
                       </Link>
-                      <Link href="/event"><Button className="w-full">
+                      <Link href="/edit-event"><Button className="w-full">
                         Create Event
                       </Button>
                       </Link>
