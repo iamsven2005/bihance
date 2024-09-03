@@ -20,13 +20,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { QRCodeCanvas } from "qrcode.react";
+import { saveAs } from 'file-saver';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface EventListProps {
-  events: event[]; // Corrected typing: events is an array of event objects
+  events: event[];
 }
 
 const EventList = ({ events }: EventListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [qrCodePreviewEventId, setQrCodePreviewEventId] = useState<string | null>(null);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -41,6 +46,15 @@ const EventList = ({ events }: EventListProps) => {
       .catch((err) => {
         toast.error("Failed to copy: ", err);
       });
+  };
+
+  const handleDownloadQRCode = (eventId: string) => {
+    const canvas = document.getElementById(`qr-code-${eventId}`) as HTMLCanvasElement;
+    canvas.toBlob((blob) => {
+      if (blob) {
+        saveAs(blob, `event-${eventId}-qrcode.png`);
+      }
+    });
   };
 
   const filteredEvents = events.filter((event) =>
@@ -82,15 +96,20 @@ const EventList = ({ events }: EventListProps) => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Button onClick={() => handleCopyLink(item.eventid)}>
+                    <Button variant={"ghost"} onClick={() => handleCopyLink(item.eventid)}>
                       Copy Invite
+                    </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button variant={"ghost"} onClick={() => setQrCodePreviewEventId(item.eventid)}>
+                      QR Code
                     </Button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </CardHeader>
             <CardContent>
-              <img src={item.image} alt={item.name} /> {/* Add alt for accessibility */}
+              <img src={item.image} alt={item.name} />
               <CardTitle>{item.name}</CardTitle>
               <CardDescription>{item.location}</CardDescription>
             </CardContent>
@@ -100,6 +119,29 @@ const EventList = ({ events }: EventListProps) => {
           </Card>
         ))}
       </div>
+
+      {qrCodePreviewEventId && (
+        <Dialog open={qrCodePreviewEventId !== null} onOpenChange={() => setQrCodePreviewEventId(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>QR Code Preview</DialogTitle>
+            </DialogHeader>
+            <QRCodeCanvas
+              id={`qr-code-preview`}
+              value={`https://www.bihance.app/event/${qrCodePreviewEventId}`}
+              size={256}
+            />
+            <DialogFooter>
+              <Button onClick={() => handleDownloadQRCode(qrCodePreviewEventId)}>
+                Download QR Code
+              </Button>
+              <Button variant="ghost" onClick={() => setQrCodePreviewEventId(null)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

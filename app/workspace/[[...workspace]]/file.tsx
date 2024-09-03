@@ -26,12 +26,15 @@ import EventList from './EventList';
 import UploadFile from './UploadFile';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import axios from 'axios';
-import { event, files, sharedfiles } from '@prisma/client';
+import { event, files, sharedfiles, user } from '@prisma/client';
+import App from './chat';
 
 interface Props {
   orgId: string;
   events: event[];
   files: sharedfiles[] | null;
+  user: user
+  orgname: string
 }
 
 interface Board {
@@ -63,7 +66,7 @@ interface ImageDetails {
   link: string;
 }
 
-const Page = ({ orgId, events, files }: Props) => {
+const Page = ({ orgId, events, files, user, orgname }: Props) => {
   const [boards, setBoards] = useState<Board[]>([]);
   const [filteredBoards, setFilteredBoards] = useState<Board[]>([]);
   const [newBoardTitle, setNewBoardTitle] = useState('');
@@ -153,16 +156,18 @@ const Page = ({ orgId, events, files }: Props) => {
     setIsUploadModalOpen(false);
     toast.success(`File ${file.name} uploaded successfully`);
   };
-
+  const username = user.first_name + " " + user.last_name
   return (
     <div className="flex flex-col gap-2">
       <div className="flex gap-2">
+        {orgname}
         <Button asChild>
           <Link href={`/room/${orgId}`}>
             Start Call <VideoIcon />
           </Link>
         </Button>
       </div>
+      <App NAME={username} orgId={orgId}/>
       <Card>
         <CardHeader className="flex">
           <CardTitle>Boards</CardTitle>

@@ -99,7 +99,32 @@ export async function POST(req: Request) {
           message: error.message,
         });
       }
+    case "organizationMembership.created":
+    try {
 
+      return NextResponse.json({
+        status: 200,
+        message: "User info updated",
+      });
+    } catch (error: any) {
+      return NextResponse.json({
+        status: 400,
+        message: error.message,
+      });
+    }
+    case "organizationMembership.deleted":
+      try {
+  
+        return NextResponse.json({
+          status: 200,
+          message: "User info updated",
+        });
+      } catch (error: any) {
+        return NextResponse.json({
+          status: 400,
+          message: error.message,
+        });
+      }
     default:
       return new Response("Error occurred -- unhandled event type", {
         status: 400,

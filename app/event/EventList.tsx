@@ -20,27 +20,28 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { OrganizationList } from "@clerk/nextjs";
-import AssignEventModal from "./AssignEventModal"; // Import the modal component
+import AssignEventModal from "./AssignEventModal";
 import AddEvent from "./addEvent";
 import EventManager from "./edit";
+import { QRCodeCanvas } from "qrcode.react";
+import { saveAs } from 'file-saver';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
-// Define a unified event type that includes attendances and files
 type UnifiedEventType = event & {
   attendances: attendance[];
   files: files[];
 };
 
-// Define props interface for EventList
 interface EventListProps {
   events: UnifiedEventType[];
   user: user;
-  polls: Polling[]
+  polls: Polling[];
 }
 
 const EventList = ({ events, user, polls }: EventListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<UnifiedEventType | null>(null);
+  const [qrCodePreviewEventId, setQrCodePreviewEventId] = useState<string | null>(null);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -62,6 +63,15 @@ const EventList = ({ events, user, polls }: EventListProps) => {
       });
   };
 
+  const handleDownloadQRCode = (eventId: string) => {
+    const canvas = document.getElementById(`qr-code-${eventId}`) as HTMLCanvasElement;
+    canvas.toBlob((blob) => {
+      if (blob) {
+        saveAs(blob, `event-${eventId}-qrcode.png`);
+      }
+    });
+  };
+
   const filteredEvents = events.filter((event) =>
     event.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -72,20 +82,20 @@ const EventList = ({ events, user, polls }: EventListProps) => {
         <h1 className="font-bold text-2xl">Analytics</h1>
         <p>Credits Left: {user ? user.credits : "Loading..."}</p>
         <Card>
-      <CardHeader>
-        <CardTitle>Events</CardTitle>
-        <AddEvent />
-      </CardHeader>
-      <CardContent>
-        {polls.map((event) => (
-          <Card key={event.id} className="m-5 p-5">
-            <CardContent className="flex flex-col gap-2">
-              <EventManager id={event.id} currentTitle={event.title} />
-            </CardContent>
-          </Card>
-        ))}
-      </CardContent>
-    </Card>
+          <CardHeader>
+            <CardTitle>Events</CardTitle>
+            <AddEvent />
+          </CardHeader>
+          <CardContent>
+            {polls.map((event) => (
+              <Card key={event.id} className="m-5 p-5">
+                <CardContent className="flex flex-col gap-2">
+                  <EventManager id={event.id} currentTitle={event.title} />
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
         <h1 className="font-bold text-2xl">All events:</h1>
 
         <div className="flex-wrap flex gap-5">
@@ -124,12 +134,17 @@ const EventList = ({ events, user, polls }: EventListProps) => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Button onClick={() => handleCopyLink(item.eventid)}>
+                    <Button variant={"ghost"} onClick={() => handleCopyLink(item.eventid)}>
                       Copy Invite
                     </Button>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Button onClick={() => handleAssignWorkspace(item)}>
+                    <Button variant={"ghost"} onClick={() => setQrCodePreviewEventId(item.eventid)}>
+                      QR Code
+                    </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button variant={"ghost"} onClick={() => handleAssignWorkspace(item)}>
                       Assign to Workspace
                     </Button>
                   </DropdownMenuItem>
@@ -137,9 +152,10 @@ const EventList = ({ events, user, polls }: EventListProps) => {
               </DropdownMenu>
             </CardHeader>
             <CardContent>
-              <img src={item.image} alt={item.name} /> {/* Add alt for accessibility */}
+              <img src={item.image} alt={item.name} />
               <CardTitle>{item.name}</CardTitle>
               <CardDescription>{item.location}</CardDescription>
+              
             </CardContent>
             <CardFooter>
               <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
@@ -153,6 +169,29 @@ const EventList = ({ events, user, polls }: EventListProps) => {
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
         />
+      )}
+
+      {qrCodePreviewEventId && (
+        <Dialog open={qrCodePreviewEventId !== null} onOpenChange={() => setQrCodePreviewEventId(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>QR Code Preview</DialogTitle>
+            </DialogHeader>
+            <QRCodeCanvas
+              id={`qr-code-preview`}
+              value={`https://www.bihance.app/event/${qrCodePreviewEventId}`}
+              size={256}
+            />
+            <DialogFooter>
+              <Button onClick={() => handleDownloadQRCode(qrCodePreviewEventId)}>
+                Download QR Code
+              </Button>
+              <Button variant="ghost" onClick={() => setQrCodePreviewEventId(null)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

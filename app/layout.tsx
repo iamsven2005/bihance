@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { dark } from '@clerk/themes';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { useTheme } from "next-themes";
+import ConvexClientProvider from "./ConvexClientProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -28,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ConvexClientProvider>
       <html lang="en" className="min-h-100">
         <head>
           <meta name="robots" content="index, follow" />
@@ -165,6 +166,6 @@ export default function RootLayout({
           <SpeedInsights/>
         </body>
       </html>
-    </ClerkProvider>
+    </ConvexClientProvider>
   );
 }
