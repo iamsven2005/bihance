@@ -9,6 +9,7 @@ import ShimmerButton from "@/components/magicui/shimmer-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 const MainPage = async () => {
   const useSubcriptionData = getUserSubscription()
   const [userSubcription] = await Promise.all([useSubcriptionData
@@ -23,7 +24,17 @@ const MainPage = async () => {
         <h2>
           Bihance: Enhancing Your Business
         </h2>
+        <SignedOut>
+        <Link href="https://accounts.bihance.app/sign-in?redirect_url=https://www.bihance.app/" className="flex mx-auto">
+          <ShimmerButton className="shadow-2xl">
+            <span className="text-white">
+              Login
+            </span>
+          </ShimmerButton>
 
+        </Link>
+        </SignedOut>
+        <SignedIn>
         <Link href="/upload" className="flex mx-auto">
           <ShimmerButton className="shadow-2xl">
             <span className="text-white">
@@ -32,11 +43,17 @@ const MainPage = async () => {
           </ShimmerButton>
 
         </Link>
+        </SignedIn>
+        
       </section>
       <section className="z-10 flex flex-col gap-5">
         <Card>
           <CardHeader>
+          <SignedOut>
+            <p className="text-center">Login to continue</p>
+            </SignedOut>
             <CardDescription className="flex gap-5">
+              
               <Link href={"/event"}>
               <Button>
               Dashboard

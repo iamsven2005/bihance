@@ -145,6 +145,7 @@ const UploadPage = () => {
       {submitError && <p className="mt-4 text-red-500">{submitError}</p>}
       {submitSuccess && <p className="mt-4 text-green-500">{submitSuccess}</p>}
       <div className="flex flex-wrap gap-5">
+        <p>Upload a photo of your workarea</p>
         <ComboboxDemo events={events} onSelect={setSelectedEvent} />
         <Button onClick={handleSubmit}>
           Submit

@@ -1,18 +1,17 @@
+//@ts-nocheck
+
 import { NextResponse } from 'next/server';
 import Tesseract from 'tesseract.js';
 import Busboy from 'busboy';
 
-export const config = {
-  api: {
-    bodyParser: false, // Disable default body parser to handle file uploads manually
-  },
-};
+// Use the new API route segment config
+export const runtime = 'nodejs'; // Ensure the API runs in a Node.js environment
 
-export const POST = async (req) => {
+export const POST = async (req: any): Promise<Response> => {
   try {
     return new Promise((resolve, reject) => {
       const busboy = new Busboy({ headers: req.headers });
-      const fileChunks = [];
+      const fileChunks: Buffer[] = [];
 
       busboy.on('file', (fieldname, file) => {
         file.on('data', (data) => {

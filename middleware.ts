@@ -3,7 +3,8 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 const isProtectedRoute = createRouteMatcher([
   '/event(.*)',
   '/vote(.*)',
-  '/workspace(.*)'
+  '/workspace(.*)',
+  '/edit-event(.*)'
 ]);
 export default clerkMiddleware((auth, req) => {
   if (isProtectedRoute(req)) auth().protect();
