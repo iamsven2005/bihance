@@ -53,7 +53,6 @@ export async function DELETE(req: Request) {
   }
 
   const { userIdToDelete, eventId } = await req.json();
-
   try {
     await db.payroll.deleteMany({
       where: {

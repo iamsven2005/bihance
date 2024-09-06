@@ -13,63 +13,69 @@ interface Props {
   };
 }
 
-const View = async ({ params }: Props) => {
-  const { userId } = auth();
-  if (!userId) {
-    return notFound();
-  }
+const View = ({ params }: Props) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { userId } = auth();
+      if (!userId) {
+        return reject(notFound());
+      }
 
-  const members = await db.payroll.findMany({
-    where: {
-      eventid: params.eventId,
-    },
-    include: {
-      typepay: true,
-    },
+      const members = await db.payroll.findMany({
+        where: {
+          eventid: params.eventId,
+        },
+        include: {
+          typepay: true,
+        },
+      });
+
+      const event = await db.event.findUnique({
+        where: {
+          eventid: params.eventId,
+        },
+      });
+
+      if (!event) {
+        return resolve(redirect("/edit-event"));
+      }
+
+      const userIds = members.map((member) => member.userId);
+
+      const users = await db.user.findMany({
+        where: {
+          clerkId: {
+            in: userIds,
+          },
+        },
+      });
+
+      const userMap: Record<string, user> = {};
+      users.forEach((user) => {
+        userMap[user.clerkId] = user;
+      });
+
+      return resolve(
+        <div className="p-5">
+          <div className="flex justify-between m-5">
+            <h1 className="font-bold text-xl">Payroll for {event?.name}</h1>
+            <Button asChild>
+              <Link href="/event">Events</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/template">Template</Link>
+            </Button>
+          </div>
+          <div className="p-5 rounded-xl">
+            <AddPayroll eventId={params.eventId} />
+            <PayrollList members={members} userMap={userMap} />
+          </div>
+        </div>
+      );
+    } catch (error) {
+      return reject(error);
+    }
   });
-
-  const event = await db.event.findUnique({
-    where: {
-      eventid: params.eventId,
-    },
-  });
-
-  if (!event) {
-    return redirect("/edit-event");
-  }
-
-  const userIds = members.map((member) => member.userId);
-
-  const users = await db.user.findMany({
-    where: {
-      clerkId: {
-        in: userIds,
-      },
-    },
-  });
-
-  const userMap: Record<string, user> = {};
-  users.forEach((user) => {
-    userMap[user.clerkId] = user;
-  });
-
-  return (
-    <div className="p-5">
-      <div className="flex justify-between m-5">
-        <h1 className="font-bold text-xl">Payroll for {event?.name}</h1>
-        <Button asChild>
-          <Link href="/event">Events</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/template">Template</Link>
-        </Button>
-      </div>
-      <div className="p-5 rounded-xl">
-        <AddPayroll eventId={params.eventId} />
-        <PayrollList members={members} userMap={userMap} />
-      </div>
-    </div>
-  );
 };
 
 export default View;

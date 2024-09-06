@@ -12,31 +12,38 @@ interface Props {
   };
 }
 
-export default async function Page({ params }: Props) {
-  const { userId } = auth();
-  if (!userId) {
-    return redirect("/");
-  }
+export default function Page({ params }: Props) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { userId } = auth();
 
-  const files = await db.files.findMany({ where: { eventId: params.id } });
+      if (!userId) {
+        return resolve(redirect("/")); // Early resolve if user is not authenticated
+      }
 
-  const existingPayroll = await db.payroll.findFirst({
-    where: {
-      userId,
-      eventid: params.id,
-    },
+      const files = await db.files.findMany({ where: { eventId: params.id } });
+
+      const existingPayroll = await db.payroll.findFirst({
+        where: {
+          userId,
+          eventid: params.id,
+        },
+      });
+
+      if (!existingPayroll) {
+        await db.payroll.create({
+          data: {
+            userId,
+            eventid: params.id,
+            rolltype: "invited",
+          },
+        });
+
+        revalidatePath(`/view/${params.id}`);
+      }
+      resolve(<UploadPage event={params.id} files={files} />);
+    } catch (error) {
+      reject(error);
+    }
   });
-
-  if (!existingPayroll) {
-    await db.payroll.create({
-      data: {
-        userId,
-        eventid: params.id,
-        rolltype: "invited",
-      },
-    });
-    revalidatePath(`/view/${params.id}`)
-  }
-
-  return <UploadPage event={params.id} files={files} />;
 }

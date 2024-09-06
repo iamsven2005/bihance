@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { toast } from "sonner";
-import EditTemplate from "./EditTemplate";
 
 interface Template {
   id: string;
@@ -17,14 +15,17 @@ interface Template {
 }
 
 const TemplatesPage = () => {
-  const [templates, setTemplates] = useState<Template[]>([]); // State for templates
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [name, setName] = useState("");
   const [day, setDay] = useState("weekday");
   const [shift, setShift] = useState("hour");
   const [pay, setPay] = useState<number | "">("");
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // State to manage modal visibility
-  const [currentTemplateId, setCurrentTemplateId] = useState<string | null>(null); // Current template being edited
-  const router = useRouter(); // Initialize the router
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentTemplateId, setCurrentTemplateId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editDay, setEditDay] = useState("weekday");
+  const [editShift, setEditShift] = useState("hour");
+  const [editPay, setEditPay] = useState<number | "">("");
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -69,29 +70,46 @@ const TemplatesPage = () => {
     }
   };
 
-  const handleEditClick = (templateId: string) => {
-    setCurrentTemplateId(templateId); // Set the current template ID
-    setIsEditModalOpen(true); // Open the modal
+  const handleEditClick = async (templateId: string) => {
+    setCurrentTemplateId(templateId);
+    try {
+      const { data } = await axios.get(`/api/typepay-template/${templateId}`);
+      const template = data.template;
+      setEditName(template.name);
+      setEditDay(template.day);
+      setEditShift(template.shift);
+      setEditPay(template.pay);
+      setIsEditModalOpen(true);
+    } catch (error) {
+      toast.error("Failed to load template");
+    }
+  };
+
+  const handleEditTemplate = async () => {
+    if (!currentTemplateId) return;
+
+    try {
+      await axios.patch(`/api/typepay-template/${currentTemplateId}`, {
+        name: editName,
+        day: editDay,
+        shift: editShift,
+        pay: editPay,
+      });
+
+      toast.success("Template updated successfully");
+      setIsEditModalOpen(false);
+      setCurrentTemplateId(null);
+
+      const { data } = await axios.get("/api/typepay-template");
+      setTemplates(data.templates);
+    } catch (error) {
+      toast.error("Failed to update template");
+    }
   };
 
   const handleCloseModal = () => {
-    setIsEditModalOpen(false); // Close the modal
-    setCurrentTemplateId(null); // Reset current template ID
-  };
-
-  const handleEditSuccess = () => {
-    setIsEditModalOpen(false); // Close the modal
-    setCurrentTemplateId(null); // Reset current template ID
-    const fetchTemplates = async () => {
-      try {
-        const { data } = await axios.get("/api/typepay-template");
-        setTemplates(data.templates);
-      } catch (error) {
-        toast.error("Failed to fetch templates");
-      }
-    };
-
-    fetchTemplates(); // Refresh the template list after edit
+    setIsEditModalOpen(false);
+    setCurrentTemplateId(null);
   };
 
   return (
@@ -149,12 +167,48 @@ const TemplatesPage = () => {
         ))}
       </ul>
 
-      {isEditModalOpen && currentTemplateId && (
-        <EditTemplate
-          params={{ Id: currentTemplateId }}
-          onEditSuccess={handleEditSuccess}
-          onClose={handleCloseModal} // Pass the function to close the modal
-        />
+      {isEditModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="p-5 bg-white rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold mb-3">Edit Template</h2>
+
+            <Input
+              type="text"
+              placeholder="Template Name"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="mb-4"
+            />
+            <Input
+              type="text"
+              placeholder="Day"
+              value={editDay}
+              onChange={(e) => setEditDay(e.target.value)}
+              className="mb-4"
+            />
+            <Input
+              type="text"
+              placeholder="Shift"
+              value={editShift}
+              onChange={(e) => setEditShift(e.target.value)}
+              className="mb-4"
+            />
+            <Input
+              type="number"
+              placeholder="Pay"
+              value={editPay}
+              onChange={(e) => setEditPay(e.target.value === "" ? "" : Number(e.target.value))}
+              className="mb-4"
+            />
+
+            <div className="flex justify-end space-x-2">
+              <Button onClick={handleEditTemplate}>Save Changes</Button>
+              <Button onClick={handleCloseModal} variant="secondary">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

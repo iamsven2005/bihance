@@ -69,21 +69,3 @@ export async function PATCH(req: Request, { params }: { params: { templateId: st
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { templateId: string } }) {
-  const { userId } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    // Delete the template and nullify the templateId in typepay entries
-    await db.typepayTemplate.delete({
-      where: { id: params.templateId },
-    });
-
-    return NextResponse.json({ message: "Template deleted successfully" }, { status: 200 });
-  } catch (error) {
-    console.error("Failed to delete template:", error);
-    return NextResponse.json({ error: "Failed to delete template" }, { status: 500 });
-  }
-}

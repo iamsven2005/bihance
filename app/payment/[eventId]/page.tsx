@@ -13,28 +13,36 @@ interface Props {
 // Dynamically import the AttendList component with no SSR
 const AttendList = dynamic(() => import("./AttendList"), { ssr: false });
 
-const AttendPage = async ({ params }: Props) => {
-  const { userId } = auth();
-  if (!userId) {
-    redirect("/");
-  }
+const AttendPage = ({ params }: Props) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { userId } = auth();
+      if (!userId) {
+        return resolve(redirect("/")); // Early resolve to handle redirect
+      }
 
-  const attendances: attendance[] = await db.attendance.findMany({
-    where: {
-      eventId: params.eventId,
-    },
+      const attendances: attendance[] = await db.attendance.findMany({
+        where: {
+          eventId: params.eventId,
+        },
+      });
+
+      const payrolls: (payroll & { typepay: typepay[] })[] = await db.payroll.findMany({
+        where: {
+          eventid: params.eventId,
+        },
+        include: {
+          typepay: true,
+        },
+      });
+
+      return resolve(
+        <AttendList attendances={attendances} payrolls={payrolls} userId={userId} />
+      );
+    } catch (error) {
+      return reject(error); // Handle errors by rejecting the promise
+    }
   });
-
-  const payrolls: (payroll & { typepay: typepay[] })[] = await db.payroll.findMany({
-    where: {
-      eventid: params.eventId,
-    },
-    include: {
-      typepay: true,
-    },
-  });
-
-  return <AttendList attendances={attendances} payrolls={payrolls} userId={userId} />;
 };
 
 export default AttendPage;
