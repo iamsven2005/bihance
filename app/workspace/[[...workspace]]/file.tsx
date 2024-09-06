@@ -72,7 +72,7 @@ export default function Page({ orgId, events, files, user, orgname }: Props) {
     const url = urls[0];
 
     try {
-      const { data } = await axios.post("/api/upload-share-files", {
+      const { data } = await axios.post("/api/sharedfiles", {
         orgId,
         url,
         name,
@@ -412,8 +412,9 @@ export default function Page({ orgId, events, files, user, orgname }: Props) {
                   </DropdownMenu>
                 </CardHeader>
                 <CardContent>
-                  <img src={item.image} alt={item.name} />
-                  <CardTitle>{item.name}</CardTitle>
+                  {item.image && item.image !== "" && (
+                    <img src={item.image} alt={item.name} />
+                  )}                  <CardTitle>{item.name}</CardTitle>
                   <CardDescription>{item.location}</CardDescription>
                 </CardContent>
                 <CardFooter>

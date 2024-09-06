@@ -152,10 +152,11 @@ const EventList = ({ events, user, polls }: EventListProps) => {
               </DropdownMenu>
             </CardHeader>
             <CardContent>
-              <img src={item.image} alt={item.name} />
-              <CardTitle>{item.name}</CardTitle>
+              {item.image && item.image !== "" && (
+                <img src={item.image} alt={item.name} />
+              )}              <CardTitle>{item.name}</CardTitle>
               <CardDescription>{item.location}</CardDescription>
-              
+
             </CardContent>
             <CardFooter>
               <div dangerouslySetInnerHTML={{ __html: item.description }}></div>

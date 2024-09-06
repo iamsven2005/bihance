@@ -76,7 +76,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
   ) => {
     try {
       const updatedValue = { [field]: value };
-      await axios.post("/api/update-payroll", {
+      await axios.patch("/api/typepay", {
         typeid,
         ...updatedValue,
       });
@@ -125,7 +125,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
     try {
       if (!selectedUser) return;
 
-      await axios.post("/api/update-payroll", {
+      await axios.patch("/api/typepay", {
         userId: selectedUser.userId,
         weekday,
         weekend,
@@ -147,7 +147,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
 
   const handleDelete = async (userId: string, eventId: string) => {
     try {
-      await axios.delete("/api/add-payroll", {
+      await axios.delete("/api/payroll", {
         data: { userIdToDelete: userId, eventId },
       });
       toast.success("Deleted payroll entry");
@@ -163,7 +163,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
 
   const handleTypeDelete = async (typeid: string) => {
     try {
-      await axios.delete(`/api/add-payroll/${typeid}`);
+      await axios.delete(`/api/payroll/${typeid}`);
       toast.success("Deleted typepay entry");
       router.refresh();
     } catch (error) {
@@ -177,7 +177,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
 
   const handleAssignTemplate = async (payrollId: string, userId: string) => {
     try {
-      await axios.post("/api/assign-template", {
+      await axios.post("/api/typepay", {
         payrollId,
         templateId: selectedTemplates[userId],
       });

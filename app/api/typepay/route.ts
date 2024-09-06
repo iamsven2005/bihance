@@ -35,3 +35,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to assign template" }, { status: 500 });
   }
 }
+export async function PATCH(req: Request) {
+  const { userId } = auth();
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+
+  const { typeid, day, shift, pay } = await req.json();
+
+  try {
+    const updatedTypepay = await db.typepay.update({
+      where: { typeid },
+      data: {
+        day,    
+        shift,  
+        pay,
+      },
+    });
+
+    return new Response(JSON.stringify({ success: true, updatedTypepay }), { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error: "Failed to update typepay" }), { status: 500 });
+  }
+}

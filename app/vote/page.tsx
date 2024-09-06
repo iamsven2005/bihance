@@ -1,4 +1,3 @@
-"use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import FeatureForm from './FeatureForm';
 import FeatureList from './FeatureList';
@@ -6,7 +5,7 @@ import { db } from '@/lib/db';
 import { auth } from '@clerk/nextjs/server';
 import { notFound } from 'next/navigation';
 
-const HomePage = () => {
+const HomePage = async() => {
   return new Promise(async (resolve, reject) => {
     try {
       const { userId } = auth();

@@ -19,7 +19,7 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId }) => {
     e.preventDefault();
 
     try {
-      const { data } = await axios.post("/api/add-payroll", {
+      const { data } = await axios.post("/api/payroll", {
         email,
         eventId,
       });

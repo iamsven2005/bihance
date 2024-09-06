@@ -30,7 +30,7 @@ const CreateEventForm: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("/api/create-event", {
+      const response = await axios.post("/api/events", {
         name,
         location,
         description,

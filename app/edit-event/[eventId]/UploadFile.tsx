@@ -22,7 +22,7 @@ const UploadFile: React.FC<UploadFileProps> = ({ eventId, onUploadComplete }) =>
     const url = urls[0];
 
     try {
-      const { data } = await axios.post("/api/upload-file", {
+      const { data } = await axios.post("/api/files", {
         eventId,
         url,
         name,

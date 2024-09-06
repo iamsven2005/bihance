@@ -92,7 +92,7 @@ const UploadPage = () => {
     const locationString = location ? `${location.latitude},${location.longitude}` : 'Unknown location';
 
     try {
-      const response = await axios.post('/api/saveAttendance', {
+      const response = await axios.post('/api/attendance', {
         imageurl: imageUrls[0],
         datetime: currentDatetime,
         location: locationString,
