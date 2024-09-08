@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { Card, CardTitle } from "@/components/ui/card";
 import { OrganizationList } from "@clerk/nextjs";
 import { db } from "@/lib/db";
+import { ChatComponent } from "./ChatComponent";
+import { EventsSection } from "./EventsSection";
+import { BoardsSection } from "./BoardsSection";
 
 const Page = () => {
   return new Promise(async (resolve, reject) => {
@@ -44,15 +47,19 @@ const Page = () => {
           orgId,
         },
       });
-
+      const username = `${user.first_name} ${user.last_name}`;
       return resolve(
-        <File
+        <div>
+                <ChatComponent orgId={orgId} orgname={response.slug || "Group Chat"} username={username} />
+                <BoardsSection orgId={orgId} />
+<File
           orgId={orgId}
-          events={events}
           files={files}
           user={user}
-          orgname={response.slug || "Group Chat"}
         />
+              <EventsSection orgId={orgId} events={events} />
+        </div>
+        
       );
     } catch (error) {
       reject(error);

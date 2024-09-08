@@ -64,7 +64,7 @@ const ListTitle: React.FC<BoardTitleProps> = ({ initialTitle, boardId, id, onDel
 
   const copyList = async () => {
     try {
-      await axios.post(`/api/boards/lists/${boardId}/copy`);
+      await axios.post(`/api/boards/lists/${boardId}`);
       toast.success("List copied successfully.");
       // Assuming onDelete triggers a refresh or similar after copy
       if (onDelete) onDelete(id);

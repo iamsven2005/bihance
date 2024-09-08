@@ -8,31 +8,18 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { FormPicker } from "@/components/form-picker";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+
 import Link from "next/link";
-import { ClipboardCheck, Ellipsis, VideoIcon } from "lucide-react";
-import { QRCodeCanvas } from "qrcode.react";
 import axios from "axios";
 import { saveAs } from "file-saver";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { board, event, files, sharedfiles, user } from "@prisma/client";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { UploadDropzone } from "@/lib/uploadthing";
 
 interface Props {
   orgId: string;
-  events: event[];
   files: sharedfiles[] | null;
   user: user;
-  orgname: string;
 }
 
 interface ImageDetails {
@@ -43,7 +30,7 @@ interface ImageDetails {
   link: string;
 }
 
-export default function Page({ orgId, events, files, user, orgname }: Props) {
+export default function Page({ orgId, files, user }: Props) {
   const [boards, setBoards] = useState<board[]>([]);
   const [filteredBoards, setFilteredBoards] = useState<board[]>([]);
   const [newBoardTitle, setNewBoardTitle] = useState('');
@@ -194,9 +181,7 @@ export default function Page({ orgId, events, files, user, orgname }: Props) {
     });
   };
 
-  const filteredEvents = events.filter((event) =>
-    event.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
 
   const filteredFiles = files?.filter((file) =>
     file.name.toLowerCase().includes(fileSearchTerm.toLowerCase())
@@ -210,120 +195,6 @@ export default function Page({ orgId, events, files, user, orgname }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Chat Component */}
-      <Card>
-        <CardContent>
-          <div className="flex">
-            <CardTitle>{orgname}</CardTitle>
-            <Button
-              onClick={() => {
-                const callWindow = window.open(
-                  `/room/${orgId}`,
-                  'callWindow',
-                  'width=1200,height=800,left=200,top=100'
-                );
-                if (callWindow) {
-                  callWindow.focus();
-                }
-              }}
-              className="flex-end"
-            >
-              Start Call <VideoIcon />
-            </Button>
-          </div>
-          <CardDescription>Connected as {username}</CardDescription>
-        </CardContent>
-        {messages?.map((message) => (
-          <div key={message._id} className={message.author === username ? "message-mine" : ""}>
-            <div>{message.author}: {message.body}</div>
-          </div>
-        ))}
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            await sendMessage({ body: newMessageText, author: username, orgId });
-            setNewMessageText("");
-          }}
-          className="flex gap-2"
-        >
-          <Input
-            value={newMessageText}
-            onChange={(e) => setNewMessageText(e.target.value)}
-            placeholder="Write a message…"
-          />
-          <Button type="submit" disabled={!newMessageText}>Send</Button>
-        </form>
-      </Card>
-
-      {/* Boards Section */}
-      <Card>
-        <CardHeader className="flex">
-          <CardTitle>Boards</CardTitle>
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search boards"
-            className="mb-4"
-          />
-        </CardHeader>
-        <FormPicker id="image" onSelectImage={setSelectedImage} />
-        <div className="flex m-2 gap-2">
-          <Input
-            value={newBoardTitle}
-            onChange={(e) => setNewBoardTitle(e.target.value)}
-            placeholder="New board title"
-          />
-          <Button onClick={handleAddBoard}>Add Board</Button>
-        </div>
-        <div className="w-full mx-auto m-5">
-          <Carousel className="rounded-lg overflow-hidden">
-            <CarouselContent>
-              {filteredBoards.map((board) => (
-                <CarouselItem key={board.id} className="basis-1/2 md:basis-1/2 lg:basis-1/3">
-                  <div className="relative group">
-                    <img src={board.imageFullUrl} alt="Board Image" width={600} height={400} className="object-cover w-full aspect-[3/2]" />
-                    <div className="absolute inset-x-0 bottom-0 bg-black/70 group-hover:bg-black/80 transition-colors p-4 flex items-center justify-between flex-col">
-                      <Link href={`/board/${board.id}`} className="text-white font-semibold text-lg m-5 flex">
-                        <ClipboardCheck />
-                        {board.title}
-                      </Link>
-                      <div className="flex">
-                        <Button variant="outline" className="mr-2" onClick={() => openRenameDialog(board)}>Rename</Button>
-                        <Button variant="outline" onClick={() => handleDeleteBoard(board.id)}>Delete</Button>
-                      </div>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
-      </Card>
-
-      {/* Rename Dialog */}
-      {editingBoard && (
-        <Dialog open={showRenameDialog} onOpenChange={() => setShowRenameDialog(false)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Rename Board</DialogTitle>
-            </DialogHeader>
-            <Input
-              value={renamingBoardTitle}
-              onChange={(e) => setRenamingBoardTitle(e.target.value)}
-              placeholder="New board title"
-              className="mb-4"
-            />
-            <DialogFooter>
-              <Button onClick={handleEditBoard}>Save</Button>
-              <Button variant="ghost" onClick={() => setShowRenameDialog(false)}>Cancel</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Shared Files Section */}
       <Card>
         <CardHeader>
           <CardTitle>Shared Files</CardTitle>
@@ -348,8 +219,6 @@ export default function Page({ orgId, events, files, user, orgname }: Props) {
             <p>No files match your search.</p>
           )}
         </div>
-
-        {/* File Upload Section */}
         <CardContent>
           <div>
             <div className="mb-4">
@@ -372,79 +241,6 @@ export default function Page({ orgId, events, files, user, orgname }: Props) {
         </CardContent>
       </Card>
 
-      {/* Events Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All events:</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Input
-            type="text"
-            placeholder="Search for an event..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <div className="flex flex-wrap m-5">
-            {filteredEvents.map((item) => (
-              <Card key={item.eventid} className="w-56">
-                <CardHeader>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Ellipsis />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <Link href={`/edit-event/${item.eventid}`} className="w-full">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                      </Link>
-                      <DropdownMenuItem>
-                        <Link href={`/view/${item.eventid}`} className="w-full">Employees</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Link href={`/payment/${item.eventid}`} className="w-full">Shifts</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Button variant={"ghost"} onClick={() => handleCopyLink(item.eventid)}>Copy Invite</Button>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Button variant={"ghost"} onClick={() => setQrCodePreviewEventId(item.eventid)}>QR Code</Button>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </CardHeader>
-                <CardContent>
-                  {item.image && item.image !== "" && (
-                    <img src={item.image} alt={item.name} />
-                  )}                  <CardTitle>{item.name}</CardTitle>
-                  <CardDescription>{item.location}</CardDescription>
-                </CardContent>
-                <CardFooter>
-                  <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* QR Code Preview Dialog */}
-      {qrCodePreviewEventId && (
-        <Dialog open={qrCodePreviewEventId !== null} onOpenChange={() => setQrCodePreviewEventId(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>QR Code Preview</DialogTitle>
-            </DialogHeader>
-            <QRCodeCanvas
-              id={`qr-code-preview`}
-              value={`https://www.bihance.app/event/${qrCodePreviewEventId}`}
-              size={256}
-            />
-            <DialogFooter>
-              <Button onClick={() => handleDownloadQRCode(qrCodePreviewEventId)}>Download QR Code</Button>
-              <Button variant="ghost" onClick={() => setQrCodePreviewEventId(null)}>Close</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }
