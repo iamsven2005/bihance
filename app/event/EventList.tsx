@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { attendance, event, files, Polling, user } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -43,6 +43,8 @@ const EventList = ({ events, user, polls }: EventListProps) => {
   const [selectedEvent, setSelectedEvent] = useState<UnifiedEventType | null>(null);
   const [qrCodePreviewEventId, setQrCodePreviewEventId] = useState<string | null>(null);
 
+  const qrCodeRef = useRef<HTMLCanvasElement>(null);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -63,14 +65,24 @@ const EventList = ({ events, user, polls }: EventListProps) => {
       });
   };
 
-  const handleDownloadQRCode = (eventId: string) => {
-    const canvas = document.getElementById(`qr-code-${eventId}`) as HTMLCanvasElement;
-    canvas.toBlob((blob) => {
-      if (blob) {
-        saveAs(blob, `event-${eventId}-qrcode.png`);
-      }
-    });
+  const handleDownloadQRCode = () => {
+    const canvas = qrCodeRef.current;
+    if (canvas) {
+      // Ensure the QR Code is fully rendered before trying to download
+      setTimeout(() => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            saveAs(blob, `event-${qrCodePreviewEventId}-qrcode.png`);
+          } else {
+            toast.error("Failed to generate QR code file.");
+          }
+        });
+      }, 100); 
+    } else {
+      toast.error("QR code not rendered yet.");
+    }
   };
+  
 
   const filteredEvents = events.filter((event) =>
     event.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -154,9 +166,9 @@ const EventList = ({ events, user, polls }: EventListProps) => {
             <CardContent>
               {item.image && item.image !== "" && (
                 <img src={item.image} alt={item.name} />
-              )}              <CardTitle>{item.name}</CardTitle>
+              )}              
+              <CardTitle>{item.name}</CardTitle>
               <CardDescription>{item.location}</CardDescription>
-
             </CardContent>
             <CardFooter>
               <div dangerouslySetInnerHTML={{ __html: item.description }}></div>
@@ -179,16 +191,16 @@ const EventList = ({ events, user, polls }: EventListProps) => {
               <DialogTitle>QR Code Preview</DialogTitle>
             </DialogHeader>
             <QRCodeCanvas
-              id={`qr-code-preview`}
+              ref={qrCodeRef}
               value={`https://www.bihance.app/event/${qrCodePreviewEventId}`}
               size={256}
             />
             <DialogFooter>
-              <Button onClick={() => handleDownloadQRCode(qrCodePreviewEventId)}>
-                Download QR Code
-              </Button>
               <Button variant="ghost" onClick={() => setQrCodePreviewEventId(null)}>
                 Close
+              </Button>
+              <Button onClick={handleDownloadQRCode}>
+                Download QR Code
               </Button>
             </DialogFooter>
           </DialogContent>
