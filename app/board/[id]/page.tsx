@@ -16,16 +16,6 @@ const Page = async ({ params }: Props) => {
     redirect("/");
   }
 
-  const board = await db.board.findFirst({
-    where: {
-      id: params.id,
-    },
-  });
-
-  if (!board) {
-    redirect("/"); 
-  }
-
   try {
     await db.user.update({
       where: {
@@ -42,4 +32,3 @@ const Page = async ({ params }: Props) => {
 };
 
 export default Page;
-//this for data collection only no content

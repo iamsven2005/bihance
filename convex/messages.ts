@@ -2,9 +2,8 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const list = query({
-    args: { orgId: v.string() },  // Add orgId as an argument
+    args: { orgId: v.string() },  
     handler: async (ctx, { orgId }) => {
-      // Filter messages by orgId
       const messages = await ctx.db.query("messages")
         .withIndex("by_orgId", (q) => q.eq("orgId", orgId))
         .order("desc")

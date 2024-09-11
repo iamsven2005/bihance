@@ -8,11 +8,26 @@ import { FormPicker } from "@/components/form-picker";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ClipboardCheck } from "lucide-react";
 import Link from "next/link";
-import axios from "axios";
 import { toast } from "sonner";
-import { board } from "@prisma/client";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+
+interface Board {
+  _id: Id<"boards">;  // Make sure this uses Id<"boards"> from Convex
+  _creationTime: number;
+  title: string;
+  link: string;
+  orgId: string;
+  imageId: string;
+  imageThumbUrl: string;
+  imageFullUrl: string;
+  username: string;
+  created: bigint;
+  updated: bigint;
+}
 
 interface ImageDetails {
   id: string;
@@ -27,30 +42,28 @@ interface BoardsSectionProps {
 }
 
 export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
-  const [boards, setBoards] = useState<board[]>([]);
-  const [filteredBoards, setFilteredBoards] = useState<board[]>([]);
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [filteredBoards, setFilteredBoards] = useState<Board[]>([]);
   const [newBoardTitle, setNewBoardTitle] = useState('');
-  const [editingBoard, setEditingBoard] = useState<board | null>(null);
+  const [editingBoard, setEditingBoard] = useState<Board | null>(null);
   const [renamingBoardTitle, setRenamingBoardTitle] = useState('');
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedImage, setSelectedImage] = useState<ImageDetails | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchBoards = async () => {
-      try {
-        const { data } = await axios.get("/api/boards");
-        setBoards(data);
-        setFilteredBoards(data);
-      } catch (error) {
-        console.error("Error fetching boards:", error);
-        toast.error("Failed to fetch boards");
-      }
-    };
+  // Convex Queries and Mutations
+  const boardsData = useQuery(api.boards.listBoards, { orgId });  // Fetch boards
+  const createBoard = useMutation(api.boards.createBoard);
+  const updateBoardTitle = useMutation(api.boards.updateBoardTitle);
+  const deleteBoard = useMutation(api.boards.deleteBoard);
 
-    fetchBoards();
-  }, [orgId]);
+  useEffect(() => {
+    if (boardsData) {
+      setBoards(boardsData);
+      setFilteredBoards(boardsData);
+    }
+  }, [boardsData]);
 
   useEffect(() => {
     setFilteredBoards(
@@ -61,9 +74,13 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
   }, [searchQuery, boards]);
 
   const handleAddBoard = async () => {
-    if (!newBoardTitle || !selectedImage) return toast.error('Image not selected');
+    if (!newBoardTitle || !selectedImage) {
+      return toast.error('Image not selected');
+    }
+
     try {
-      const { data: board } = await axios.post('/api/boards', {
+      // Step 1: Create the board and get the board ID
+      const boardId: Id<"boards"> = await createBoard({
         title: newBoardTitle,
         orgId,
         imageId: selectedImage.id,
@@ -73,22 +90,37 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
         link: selectedImage.link,
       });
 
-      setBoards((prevBoards) => [...prevBoards, board]);
+      // Step 2: Update the board list directly
+      const newBoard = {
+        _id: boardId,
+        _creationTime: Date.now(),
+        title: newBoardTitle,
+        link: `/workspace/${orgId}/${boardId}`,
+        orgId,
+        imageId: selectedImage.id,
+        imageThumbUrl: selectedImage.thumbUrl,
+        imageFullUrl: selectedImage.fullUrl,
+        username: selectedImage.user,
+        created: BigInt(Date.now()),
+        updated: BigInt(Date.now()),
+      };
+
+      setBoards((prevBoards) => [...prevBoards, newBoard]);
       setNewBoardTitle('');
       setSelectedImage(null);
       toast.success('Board Created');
-      router.push(`/workspace/${orgId}/${board.id}`);
+      router.push(`/workspace/${orgId}/${boardId}`);
     } catch (error) {
       console.error('Error adding board:', error);
       toast.error('Failed to create board');
     }
   };
 
-  const handleDeleteBoard = async (id: string) => {
+  const handleDeleteBoard = async (id: Id<"boards">) => {
     try {
-      await axios.delete(`/api/boards`, { params: { id } });
+      await deleteBoard({ boardId: id });
 
-      setBoards((prevBoards) => prevBoards.filter((board) => board.id !== id));
+      setBoards((prevBoards) => prevBoards.filter((board) => board._id !== id));
       toast.success('Board deleted');
     } catch (error) {
       console.error('Error deleting board:', error);
@@ -100,11 +132,10 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
     if (!editingBoard) return;
 
     try {
-      const updatedBoard = { ...editingBoard, title: renamingBoardTitle };
-      const { data: board } = await axios.patch('/api/boards', updatedBoard);
+      await updateBoardTitle({ boardId: editingBoard._id, title: renamingBoardTitle });
 
       setBoards((prevBoards) =>
-        prevBoards.map((b) => (b.id === board.id ? board : b))
+        prevBoards.map((b) => (b._id === editingBoard._id ? { ...b, title: renamingBoardTitle } : b))
       );
       setEditingBoard(null);
       setShowRenameDialog(false);
@@ -115,7 +146,7 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
     }
   };
 
-  const openRenameDialog = (board: board) => {
+  const openRenameDialog = (board: Board) => {
     setEditingBoard(board);
     setRenamingBoardTitle(board.title);
     setShowRenameDialog(true);
@@ -145,17 +176,17 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
         <Carousel className="rounded-lg overflow-hidden">
           <CarouselContent>
             {filteredBoards.map((board) => (
-              <CarouselItem key={board.id} className="basis-1/2 md:basis-1/2 lg:basis-1/3">
+              <CarouselItem key={board._id} className="basis-1/2 md:basis-1/2 lg:basis-1/3">
                 <div className="relative group">
                   <img src={board.imageFullUrl} alt="Board Image" width={600} height={400} className="object-cover w-full aspect-[3/2]" />
                   <div className="absolute inset-x-0 bottom-0 bg-black/70 group-hover:bg-black/80 transition-colors p-4 flex items-center justify-between flex-col">
-                    <Link href={`/board/${board.id}`} className="text-white font-semibold text-lg m-5 flex">
+                    <Link href={`/board/${board._id}`} className="text-white font-semibold text-lg m-5 flex">
                       <ClipboardCheck />
                       {board.title}
                     </Link>
                     <div className="flex">
                       <Button variant="outline" className="mr-2" onClick={() => openRenameDialog(board)}>Rename</Button>
-                      <Button variant="outline" onClick={() => handleDeleteBoard(board.id)}>Delete</Button>
+                      <Button variant="outline" onClick={() => handleDeleteBoard(board._id)}>Delete</Button>
                     </div>
                   </div>
                 </div>
@@ -167,7 +198,6 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
         </Carousel>
       </div>
 
-      {/* Rename Dialog */}
       {editingBoard && (
         <Dialog open={showRenameDialog} onOpenChange={() => setShowRenameDialog(false)}>
           <DialogContent>

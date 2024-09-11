@@ -1,5 +1,3 @@
-// File: C:\bihance\app\api\boards\reorderCards\route.ts
-
 import { db } from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server'; // Use the new imports for Request and Response
