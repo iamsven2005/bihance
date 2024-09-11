@@ -1,73 +1,83 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
-// Mutation to update a card's title and description
-export const updateCard = mutation({
-  args: { id: v.id("cards"), title: v.string(), description: v.optional(v.string()) },
-  handler: async (ctx, { id, title, description }) => {
-    await ctx.db.patch(id, { title, description });
+
+export const createCard = mutation({
+  args: {
+    listId: v.id('lists'),
+    title: v.string(),
+    description: v.optional(v.string()),
+    order: v.bigint(),
   },
-});
-
-// Mutation to delete a card
-export const deleteCard = mutation({
-  args: { id: v.id("cards") },
-  handler: async (ctx, { id }) => {
-    await ctx.db.delete(id);
-  },
-});
-
-// Mutation to log card actions
-export const auditCardAction = mutation({
-  args: { id: v.id("cards"), orgId: v.string(), title: v.string(), action: v.union(v.literal("CREATE"), v.literal("UPDATE"), v.literal("DELETE")), userId: v.string() },
-  handler: async (ctx, { id, orgId, title, action, userId }) => {
-    await ctx.db.insert("audit", {
-      orgId,
-      action,
-      type: "card",
-      entity: id,
+  handler: async ({ db }, { listId, title, description, order }) => {
+    // Create a new card with the provided data
+    const newCard = await db.insert('cards', {
+      listId,
       title,
-      userId,
-      created: BigInt(Date.now()),
+      description,
+      order,
     });
+    return newCard;
   },
 });
 
-// Mutation to reorder cards within or between lists
+export const updateCard = mutation({
+  args: { cardId: v.id("cards"), title: v.optional(v.string()), description: v.optional(v.string()) },
+  handler: async ({ db }, { cardId, title, description }) => {
+    return await db.patch(cardId, { title, description });
+  },
+});
+
+// Delete card
+export const deleteCard = mutation({
+  args: { cardId: v.id("cards") },
+  handler: async ({ db }, { cardId }) => {
+    return await db.delete(cardId);
+  },
+});
+
 export const reorderCards = mutation({
   args: {
+    boardId: v.id("boards"),
     sourceListId: v.id("lists"),
     destinationListId: v.id("lists"),
     sourceCardOrder: v.array(v.id("cards")),
     destinationCardOrder: v.array(v.id("cards")),
   },
-  handler: async (ctx, { sourceListId, destinationListId, sourceCardOrder, destinationCardOrder }) => {
-    if (sourceListId === destinationListId) {
-      for (const [index, cardId] of sourceCardOrder.entries()) {
-        await ctx.db.patch(cardId, { order: BigInt(index) });
-      }
-    } else {
-      for (const [index, cardId] of sourceCardOrder.entries()) {
-        await ctx.db.patch(cardId, { order: BigInt(index) });
-      }
-      for (const [index, cardId] of destinationCardOrder.entries()) {
-        await ctx.db.patch(cardId, { order: BigInt(index), listId: destinationListId });
-      }
+  handler: async ({ db }, { boardId, sourceListId, destinationListId, sourceCardOrder, destinationCardOrder }) => {
+    const board = await db.get(boardId);
+    if (!board) throw new Error("Board not found");
+
+    // Update the card order in the source list
+    for (let index = 0; index < sourceCardOrder.length; index++) {
+      const cardId = sourceCardOrder[index];
+      await db.patch(cardId, { order: BigInt(index) });
     }
+
+    // Update the card order in the destination list
+    for (let index = 0; index < destinationCardOrder.length; index++) {
+      const cardId = destinationCardOrder[index];
+      await db.patch(cardId, { order: BigInt(index) });
+    }
+
+    return { success: true };
   },
 });
+export const updateCardDescription = mutation({
+  args: { cardId: v.id("cards"), description: v.string() },
+  handler: async ({ db }, { cardId, description }) => {
+    const card = await db.patch(cardId, { description });
 
-// Mutation to create a card in a list
-export const createCard = mutation({
-  args: { listId: v.id("lists"), title: v.string(), description: v.optional(v.string()) },
-  handler: async (ctx, { listId, title, description }) => {
-    const lastCard = await ctx.db.query("cards")
-      .withIndex("by_listId", (q) => q.eq("listId", listId))
-      .order("desc")
-      .take(1);
+    // You can add an audit log here if needed
+    return card;
+  },
+});
+export const updateCardTitle = mutation({
+  args: { cardId: v.id("cards"), title: v.string() },
+  handler: async ({ db }, { cardId, title }) => {
+    const card = await db.patch(cardId, { title });
 
-    const order = lastCard.length > 0 ? lastCard[0].order + BigInt(1) : BigInt(1);
-
-    await ctx.db.insert("cards", { title, description, listId, order });
+    // You can add an audit log here if needed
+    return card;
   },
 });

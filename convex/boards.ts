@@ -58,3 +58,13 @@ export const getBoardById = query({
     return board;
   },
 });
+
+export const getBoardDetails = query({
+  args: { boardId: v.id('boards') },
+  handler: async ({ db }, { boardId }) => {
+    const board = await db.get(boardId);
+    if (!board) throw new Error("Board not found");
+
+    return board;
+  },
+});

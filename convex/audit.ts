@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 export const auditListAction = mutation({
     args: { 
@@ -24,3 +24,13 @@ export const auditListAction = mutation({
     },
   });
   
+
+  export const getAuditLogs = query({
+    args: { orgId: v.string() },  // orgId is treated as a string
+    handler: async ({ db }, { orgId }) => {
+      return await db.query("audit")
+        .withIndex("by_orgId", q => q.eq("orgId", orgId))
+        .order("desc")  // Use order instead of orderBy
+        .collect();
+    },
+  });
