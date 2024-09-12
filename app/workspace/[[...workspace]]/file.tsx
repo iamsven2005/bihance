@@ -4,16 +4,12 @@ import { useState, useEffect } from "react";
 import { generateUploadDropzone } from "@uploadthing/react";
 import { OurFileRouter } from "@/app/api/uploadthing/core";
 import { toast } from "sonner";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import axios from "axios";
-import { saveAs } from "file-saver";
-
 import { board, event, files, sharedfiles, user } from "@prisma/client";
 
 interface Props {
@@ -43,12 +39,7 @@ export default function Page({ orgId, files, user }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
   const [fileSearchTerm, setFileSearchTerm] = useState('');
 
-  const router = useRouter();
-
-  const messages = useQuery(api.messages.list, { orgId });
-  const sendMessage = useMutation(api.messages.send);
-  const [newMessageText, setNewMessageText] = useState("");
-
+  const router = useRouter()
   const username = `${user.first_name} ${user.last_name}`;
   const [name, setName] = useState("");
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
@@ -81,7 +72,7 @@ export default function Page({ orgId, files, user }: Props) {
   useEffect(() => {
     const fetchBoards = async () => {
       try {
-        const { data } = await axios.get("/api/boards");
+        const { data } = await axios.get("/api/board");
         setBoards(data);
         setFilteredBoards(data);
       } catch (error) {

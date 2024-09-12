@@ -1,38 +1,40 @@
-"use client";
+"use client"; 
 
-import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
+import { ElementRef, useRef, useState } from "react";
 import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { api } from "@/convex/_generated/api"; // Adjust the path to your Convex API
 import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
 import { useEventListener, useOnClickOutside } from "usehooks-ts";
+import axios from "axios";
 
 interface ListFormProps {
-  id: Id<"boards">;
+  id: Id<"boards">; // Use Convex's Id type for boardId
 }
 
 const ListForm = ({ id }: ListFormProps) => {
+  const formRef = useRef<ElementRef<"form">>(null);
+  const inputRef = useRef<ElementRef<"input">>(null);
   const [isEdit, setEdit] = useState(false);
-  const [title, setTitle] = useState("");
-  const [loading, setLoading] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [title, setTitle] = useState(""); // State for the list title
+  const [loading, setLoading] = useState(false); // State for form submission
 
+  // Convex mutation for creating a new list
   const createList = useMutation(api.lists.createList);
 
   const enableEdit = () => {
     setEdit(true);
     setTimeout(() => {
       inputRef.current?.focus();
-    }, 100);
+    });
   };
 
   const disableEdit = () => {
     setEdit(false);
-    setTitle("");
+    setTitle(""); // Clear the input when disabling edit mode
   };
 
   const handleKeydown = (e: KeyboardEvent) => {
@@ -41,9 +43,12 @@ const ListForm = ({ id }: ListFormProps) => {
     }
   };
 
+  // Add an event listener for keydown events
   useEventListener("keydown", handleKeydown);
+  // Close the form when clicking outside
   useOnClickOutside(formRef, disableEdit);
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!title.trim()) return;
@@ -51,12 +56,13 @@ const ListForm = ({ id }: ListFormProps) => {
     setLoading(true);
     try {
       await createList({ boardId: id, title });
+      await axios.get("/api/board");
       setTitle("");
       disableEdit();
       toast.success("List added successfully!");
     } catch (error) {
       console.error("Error adding list:", error);
-      toast.error("Error adding list.");
+      toast.error("There was an error adding the list.");
     } finally {
       setLoading(false);
     }

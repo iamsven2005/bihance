@@ -1,32 +1,40 @@
+"use client"; 
+
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api"; // Adjust the path to your Convex API
 import { Id } from "@/convex/_generated/dataModel";
 
 interface CardTitleProps {
-  initialTitle: string | undefined;
-  cardId: Id<"cards">; 
+  cardId: Id<"cards">; // Use Convex's Id type for cards
 }
 
-const CardTitle: React.FC<CardTitleProps> = ({ initialTitle, cardId }) => {
-  const [title, setTitle] = useState(initialTitle || "");
+const CardTitle: React.FC<CardTitleProps> = ({ cardId }) => {
+  const cardData = useQuery(api.cards.getCardTitle, { cardId }); // Real-time subscription to the card title
+  const updateTitle = useMutation(api.cards.updateCardTitle); // Mutation for updating the title
   const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState("");
 
-  // Convex mutation for updating the title
-  const updateTitle = useMutation(api.cards.updateCardTitle);
-
+  // Handle input change
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
 
+  // Handle saving the title
   const saveTitle = async () => {
     try {
-      await updateTitle({ cardId, title }); // Use Convex mutation to update the card title
-      setIsEditing(false);
+      // Use the Convex mutation to update the card title
+      await updateTitle({ cardId, title });
+      setIsEditing(false); // Exit edit mode
     } catch (error) {
       console.error("Failed to update title:", error);
     }
   };
+
+  // Handle loading state
+  if (!cardData) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div>
@@ -43,8 +51,14 @@ const CardTitle: React.FC<CardTitleProps> = ({ initialTitle, cardId }) => {
           autoFocus
         />
       ) : (
-        <h1 className="text-xl cursor-pointer" onClick={() => setIsEditing(true)}>
-          {title}
+        <h1
+          className="text-xl cursor-pointer"
+          onClick={() => {
+            setIsEditing(true);
+            setTitle(cardData.title); // Set current title in the input field
+          }}
+        >
+          {cardData.title} {/* Display the real-time title */}
         </h1>
       )}
     </div>

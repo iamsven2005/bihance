@@ -1,33 +1,40 @@
+"use client"; 
+
 import { useState } from "react";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api"; // Adjust path to your Convex API
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api"; // Adjust the path to your Convex API
 import { Id } from "@/convex/_generated/dataModel";
 
 interface DescTitleProps {
-  initialTitle: string | undefined;
-  boardId: string;
-  cardId: Id<"cards">
+  cardId: Id<"cards">; // Use Convex's Id type for cards
 }
 
-const DescTitle: React.FC<DescTitleProps> = ({ initialTitle, boardId, cardId }) => {
-  const [description, setDescription] = useState(initialTitle || "");
+const DescTitle: React.FC<DescTitleProps> = ({ cardId }) => {
+  const cardData = useQuery(api.cards.getCardDescription, { cardId }); // Real-time subscription to the card description
+  const updateDescription = useMutation(api.cards.updateCardDescription); // Mutation to update the description
   const [isEditing, setIsEditing] = useState(false);
+  const [description, setDescription] = useState("");
 
-  // Convex mutation for updating the description
-  const updateDescription = useMutation(api.cards.updateCardDescription);
-
+  // Handle change in input
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDescription(e.target.value);
   };
 
+  // Handle saving the description
   const saveDescription = async () => {
     try {
-      await updateDescription({ cardId, description }); // Use Convex mutation
-      setIsEditing(false);
+      // Use the Convex mutation to update the card description
+      await updateDescription({ cardId, description });
+      setIsEditing(false); // Exit edit mode
     } catch (error) {
       console.error("Failed to update description:", error);
     }
   };
+
+  // Handle loading state
+  if (!cardData) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div>
@@ -44,8 +51,14 @@ const DescTitle: React.FC<DescTitleProps> = ({ initialTitle, boardId, cardId }) 
           autoFocus
         />
       ) : (
-        <p className="text-md cursor-pointer" onClick={() => setIsEditing(true)}>
-          {description}
+        <p
+          className="text-md cursor-pointer"
+          onClick={() => {
+            setIsEditing(true);
+            setDescription(cardData.description || ""); // Set current description in the input field
+          }}
+        >
+          {cardData.description || "No description"} {/* Display the real-time description */}
         </p>
       )}
     </div>

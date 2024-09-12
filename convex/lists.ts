@@ -33,7 +33,6 @@ import { mutation, query } from "./_generated/server";
   });
 
   
-  // Delete list
   export const deleteList = mutation({
     args: { listId: v.id("lists") },
     handler: async ({ db }, { listId }) => {
@@ -121,6 +120,17 @@ import { mutation, query } from "./_generated/server";
           };
         })
       );
+    },
+  });
+  
+
+  export const getListDetails = query({
+    args: { boardId: v.id("boards") },
+    handler: async (ctx, { boardId }) => {
+      const list = await ctx.db.query("lists")
+      .withIndex("by_boardId", (q) => q.eq("boardId", boardId))
+      .collect();
+    return list;
     },
   });
   

@@ -51,18 +51,22 @@ export const reorderCards = mutation({
     // Update the card order in the source list
     for (let index = 0; index < sourceCardOrder.length; index++) {
       const cardId = sourceCardOrder[index];
-      await db.patch(cardId, { order: BigInt(index) });
+      await db.patch(cardId, { order: BigInt(index), listId: sourceListId });
     }
 
     // Update the card order in the destination list
     for (let index = 0; index < destinationCardOrder.length; index++) {
       const cardId = destinationCardOrder[index];
-      await db.patch(cardId, { order: BigInt(index) });
+      await db.patch(cardId, { order: BigInt(index), listId: destinationListId });
     }
 
     return { success: true };
   },
 });
+
+
+
+
 export const updateCardDescription = mutation({
   args: { cardId: v.id("cards"), description: v.string() },
   handler: async ({ db }, { cardId, description }) => {
@@ -81,3 +85,41 @@ export const updateCardTitle = mutation({
     return card;
   },
 });
+export const getCardsByList = query({
+  args: { listId: v.id("lists") },
+  handler: async (ctx, { listId }) => {
+    const cards = await ctx.db.query("cards")
+      .withIndex("by_listId", (q) => q.eq("listId", listId))
+      .order("asc");
+    return cards;
+  },
+});
+
+export const getCardTitle = query({
+  args: { cardId: v.id("cards") },
+  handler: async (ctx, { cardId }) => {
+    const card = await ctx.db.get(cardId);
+    if (!card) throw new Error("Card not found");
+    return { title: card.title };
+  },
+});
+
+export const getCardDescription = query({
+  args: { cardId: v.id("cards") },
+  handler: async (ctx, { cardId }) => {
+    const card = await ctx.db.get(cardId);
+    if (!card) throw new Error("Card not found");
+    return { description: card.description };
+  },
+});
+
+export const getCardsForList = query({
+  args: { listId: v.id("lists") },
+  handler: async (ctx, { listId }) => {
+    const cards = await ctx.db.query("cards")
+      .withIndex("by_listId", (q) => q.eq("listId", listId))
+      .collect();
+    return cards;
+  },
+});
+
