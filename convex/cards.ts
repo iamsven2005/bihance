@@ -36,6 +36,7 @@ export const deleteCard = mutation({
   },
 });
 
+
 export const reorderCards = mutation({
   args: {
     boardId: v.id("boards"),
@@ -63,9 +64,6 @@ export const reorderCards = mutation({
     return { success: true };
   },
 });
-
-
-
 
 export const updateCardDescription = mutation({
   args: { cardId: v.id("cards"), description: v.string() },
@@ -120,6 +118,15 @@ export const getCardsForList = query({
       .withIndex("by_listId", (q) => q.eq("listId", listId))
       .collect();
     return cards;
+  },
+});
+export const getCardDetails = query({
+  args: { listId: v.id("lists") },
+  handler: async (ctx, { listId }) => {
+    const list = await ctx.db.query("cards")
+    .withIndex("by_listId", (q) => q.eq("listId", listId))
+    .collect();
+  return list;
   },
 });
 

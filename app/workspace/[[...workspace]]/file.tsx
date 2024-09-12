@@ -27,20 +27,10 @@ interface ImageDetails {
 }
 
 export default function Page({ orgId, files, user }: Props) {
-  const [boards, setBoards] = useState<board[]>([]);
-  const [filteredBoards, setFilteredBoards] = useState<board[]>([]);
-  const [newBoardTitle, setNewBoardTitle] = useState('');
-  const [editingBoard, setEditingBoard] = useState<board | null>(null);
-  const [renamingBoardTitle, setRenamingBoardTitle] = useState(''); // Title for renaming the board
-  const [showRenameDialog, setShowRenameDialog] = useState(false); // Controls rename dialog visibility
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedImage, setSelectedImage] = useState<ImageDetails | null>(null);
-  const [qrCodePreviewEventId, setQrCodePreviewEventId] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+
   const [fileSearchTerm, setFileSearchTerm] = useState('');
 
   const router = useRouter()
-  const username = `${user.first_name} ${user.last_name}`;
   const [name, setName] = useState("");
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const UploadDropzone = generateUploadDropzone<OurFileRouter>();
@@ -69,41 +59,12 @@ export default function Page({ orgId, files, user }: Props) {
     toast.error("Unable to upload file");
   };
 
-  useEffect(() => {
-    const fetchBoards = async () => {
-      try {
-        const { data } = await axios.get("/api/board");
-        setBoards(data);
-        setFilteredBoards(data);
-      } catch (error) {
-        console.error("Error fetching boards:", error);
-        toast.error("Failed to fetch boards");
-      }
-    };
-
-    fetchBoards();
-  }, [orgId]);
-
-  useEffect(() => {
-    setFilteredBoards(
-      boards.filter((board) =>
-        board.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    );
-  }, [searchQuery, boards]);
-
-
-
 
   const filteredFiles = files?.filter((file) =>
     file.name.toLowerCase().includes(fileSearchTerm.toLowerCase())
   );
 
-  const openRenameDialog = (board: board) => {
-    setEditingBoard(board);
-    setRenamingBoardTitle(board.title);
-    setShowRenameDialog(true);
-  };
+ 
 
   return (
     <div className="flex flex-col gap-2">

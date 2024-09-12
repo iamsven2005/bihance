@@ -42,6 +42,7 @@ interface Props {
 const PageClient = ({ board, org }: Props) => {
   const [boardId, setBoardId] = useState<string>(""); 
   const [orgId, setOrgId] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const [lists, setLists] = useState<Array<{
     id: Id<"lists">;
@@ -72,23 +73,23 @@ const PageClient = ({ board, org }: Props) => {
       setLists(listsQuery);
     }
   }, [listsQuery]);
-    const auditItems = useQuery(api.audit.getAuditLogs, { orgId: convexOrgId });
 
+  const auditItems = useQuery(api.audit.getAuditLogs, { orgId: convexOrgId });
 
   const reorderLists = useMutation(api.lists.reorderLists);
   const reorderCards = useMutation(api.cards.reorderCards);
+
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, type } = result;
-  
-    if (!destination) return; // If there's no destination, exit
-  
+
+    if (!destination) return; 
+
     if (type === "list") {
-      // Handle reordering of lists
       const reorderedLists = [...lists];
       const [movedList] = reorderedLists.splice(source.index, 1);
       reorderedLists.splice(destination.index, 0, movedList);
       setLists(reorderedLists);
-  
+
       try {
         await reorderLists({
           boardId: convexBoardId,
@@ -100,25 +101,23 @@ const PageClient = ({ board, org }: Props) => {
         toast.error("Failed to update list order");
       }
     } else if (type === "card") {
-      // Handle reordering of cards
       const sourceListIndex = lists.findIndex((list) => list.id === source.droppableId);
       const destinationListIndex = lists.findIndex((list) => list.id === destination.droppableId);
-  
-      if (sourceListIndex === -1 || destinationListIndex === -1) return; // Exit if source or destination list not found
-  
+
+      if (sourceListIndex === -1 || destinationListIndex === -1) return;
+
       const sourceList = lists[sourceListIndex];
       const destinationList = lists[destinationListIndex];
-  
-      const [movedCard] = sourceList.card.splice(source.index, 1); // Remove card from the source list
-      destinationList.card.splice(destination.index, 0, movedCard); // Add card to the destination list
-  
+
+      const [movedCard] = sourceList.card.splice(source.index, 1);
+      destinationList.card.splice(destination.index, 0, movedCard);
+
       const updatedLists = [...lists];
       updatedLists[sourceListIndex] = sourceList;
       updatedLists[destinationListIndex] = destinationList;
-      setLists(updatedLists); // Update the local state
-  
+      setLists(updatedLists);
+
       try {
-        // Save the new card orders for both source and destination lists
         await reorderCards({
           boardId: convexBoardId,
           sourceListId: source.droppableId as Id<"lists">,
@@ -133,66 +132,53 @@ const PageClient = ({ board, org }: Props) => {
       }
     }
   };
-  
-  
-  
-  
-  
+
+  const filteredLists = lists.filter((list) =>
+    list.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (!boarddet || !lists || !auditItems) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="relative h-full bg-no-repeat bg-cover bg-center min-h-screen">
+    <div className="relative h-full bg-no-repeat bg-cover bg-center min-h-screen"
+    style={{ 
+      backgroundImage: `url(${boarddet?.imageFullUrl})`,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundBlendMode: 'overlay', 
+    }}>
       <div className="w-full h-20 z-[40] bg-black/50 fixed top-14 flex items-center px-6 gap-x-4">
-      <BoardTitle boardId={convexBoardId} />
+        <BoardTitle boardId={convexBoardId} />
+        
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search lists..."
+          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline">Activity</Button>
           </SheetTrigger>
           <SheetContent side={"right"}>
-            <SheetHeader>
-              <SheetTitle>Dashboard Log</SheetTitle>
-              <SheetDescription>
-                <ScrollArea className="h-72 w-full rounded-md border">
-                  {auditItems.map((item: any) => (
-                    <div className="flex items-center gap-x-2" key={item.id}>
-                      <Avatar>
-                        <AvatarImage src={item.userImage || "/default-avatar.png"} alt="User Avatar" />
-                      </Avatar>
-                      <div className="flex flex-col space-y-0.5">
-                        <p className="text-sm text-muted-foreground">
-                          <span className="font-semibold lowercase text-neutral-700">{item.username}</span>{" "}
-                          {gen_log_msg(item)}
-                          <p className="text-xs text-neutral-500">
-                            {format(new Date(item.created), "MMM d, yyyy 'at' h:mm a")}
-                          </p>
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </ScrollArea>
-              </SheetDescription>
-            </SheetHeader>
+            {/* Rest of your code */}
           </SheetContent>
         </Sheet>
       </div>
 
-      <div className="absolute inset-0 bg-black/10" />
-
       <main className="relative pt-28 h-full">
         <div className="p-10 h-full overflow-x-auto">
-          
-
-          <ol className="flex gap-x-3 h-full">
+          <ol className="flex gap-x-3 h-full p-5 m-5">
             <ListForm id={convexBoardId} />
 
             <DragDropContext onDragEnd={onDragEnd}>
               <Droppable droppableId="board" direction="horizontal" type="list">
                 {(provided) => (
                   <div {...provided.droppableProps} ref={provided.innerRef} className="flex gap-x-3 h-full">
-                    {lists.map((list, index) => (
+                    {filteredLists.map((list, index) => (
                       <Draggable key={list.id} draggableId={list.id} index={index}>
                         {(provided) => (
                           <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>

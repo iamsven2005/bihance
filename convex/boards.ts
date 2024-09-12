@@ -46,9 +46,23 @@ export const listBoards = query({
   export const deleteBoard = mutation({
     args: { boardId: v.id("boards") },
     handler: async (ctx, { boardId }) => {
-      await ctx.db.delete(boardId);
+      // Step 1: Fetch all lists associated with the board
+      const lists = await ctx.db.query("lists")
+        .withIndex("by_boardId", (q) => q.eq("boardId", boardId))
+        .collect();
+            for (const list of lists) {
+        const cards = await ctx.db.query("cards")
+          .withIndex("by_listId", (q) => q.eq("listId", list._id))
+          .collect();
+          for (const card of cards) {
+          await ctx.db.delete(card._id);
+        }
+          await ctx.db.delete(list._id);
+      }
+        await ctx.db.delete(boardId);
     },
   });
+  
   
   // Convex query to get a board by its ID
 export const getBoardById = query({

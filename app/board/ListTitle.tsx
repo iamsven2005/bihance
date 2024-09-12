@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -35,6 +33,8 @@ const ListTitle: React.FC<BoardTitleProps> = ({ boardId, id, initialTitle, onDel
 
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(initialTitle || "");
+  const [searchTerm, setSearchTerm] = useState(""); // Search state for filtering cards
+
   useEffect(() => {
     setTitle(initialTitle);
   }, [initialTitle]);
@@ -64,7 +64,6 @@ const ListTitle: React.FC<BoardTitleProps> = ({ boardId, id, initialTitle, onDel
       toast.error("Failed to delete card");
     }
   };
-  
 
   const deleteCard = async (cardId: Id<"cards">) => {
     try {
@@ -88,9 +87,13 @@ const ListTitle: React.FC<BoardTitleProps> = ({ boardId, id, initialTitle, onDel
     }
   };
 
-  if (!listData || !cardsData) {
+  if (!listData || !cardsData || !cardsData) {
     return <p>Loading...</p>;
   }
+  const filteredCards = cardsData.filter((card) =>
+    card.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
 
   return (
     <li className="shrink-0 h-full w-[272px] select-none">
@@ -114,6 +117,16 @@ const ListTitle: React.FC<BoardTitleProps> = ({ boardId, id, initialTitle, onDel
           >
             {title}
           </h1>
+
+          {/* Search Bar for Cards */}
+          <input
+            type="text"
+            placeholder="Search cards..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} // Update search term
+            className="p-2 mb-2 rounded-md border border-gray-300"
+          />
+
           <Popover>
             <PopoverTrigger asChild>
               <Button className="h-auto w-auto p-2" variant={"ghost"}>
@@ -139,12 +152,14 @@ const ListTitle: React.FC<BoardTitleProps> = ({ boardId, id, initialTitle, onDel
               <Button
                 variant={"ghost"}
                 className="rounded-none w-full h-auto p-2 px-5 justify-start font-normal text-sm"
-                onClick={() => deleteList(id)}              >
+                onClick={() => deleteList(id)}
+              >
                 Delete List
               </Button>
               <CardForm id={id} />
             </PopoverContent>
           </Popover>
+
           <Droppable droppableId={id.toString()} type="card">
             {(provided, snapshot) => (
               <div
@@ -154,33 +169,34 @@ const ListTitle: React.FC<BoardTitleProps> = ({ boardId, id, initialTitle, onDel
                   snapshot.isDraggingOver ? "bg-gray-200 dark:bg-gray-700" : ""
                 }`}
               >
-                {cardsData.length > 0 ? (
-                  cardsData.map((cardItem, index) => (
-                    <Draggable draggableId={cardItem._id.toString()} index={index} key={cardItem._id}>
-                      {(provided) => (
-                        <div
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          ref={provided.innerRef}
-                          className="flex w-full p-3 rounded-md space-y-4 shadow-md bg-white dark:bg-black flex-col"
-                        >
-                          <div className="flex justify-between items-center">
-                            <CardTitle cardId={cardItem._id} />
-                            <Button
-                              variant={"ghost"}
-                              className="p-1"
-                              onClick={() => deleteCard(cardItem._id)} // Hook up card deletion
-                            >
-                              <Trash2 className="size-4" />
-                            </Button>
+                {filteredCards.length > 0 ? (
+                  // Sort cards by the 'order' field before rendering them
+                  filteredCards
+                    .sort((a, b) => Number(a.order) - Number(b.order))
+                    .map((cardItem, index) => (
+                      <Draggable draggableId={cardItem._id.toString()} index={index} key={cardItem._id}>
+                        {(provided) => (
+                          <div
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            ref={provided.innerRef}
+                            className="flex w-full p-3 rounded-md space-y-4 shadow-md bg-white dark:bg-black flex-col"
+                          >
+                            <div className="flex justify-between items-center">
+                              <CardTitle cardId={cardItem._id} />
+                              <Button
+                                variant={"ghost"}
+                                className="p-1"
+                                onClick={() => deleteCard(cardItem._id)}
+                              >
+                                <Trash2 className="size-4" />
+                              </Button>
+                            </div>
+                            {cardItem.description && <DescTitle cardId={cardItem._id} />}
                           </div>
-                          {cardItem.description && (
-                            <DescTitle cardId={cardItem._id} />
-                          )}
-                        </div>
-                      )}
-                    </Draggable>
-                  ))
+                        )}
+                      </Draggable>
+                    ))
                 ) : (
                   <div className="text-center text-gray-500 dark:text-gray-400">
                     No cards available
