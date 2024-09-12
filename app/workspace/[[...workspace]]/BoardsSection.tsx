@@ -168,7 +168,7 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
         <Input
           value={newBoardTitle}
           onChange={(e) => setNewBoardTitle(e.target.value)}
-          placeholder="New board title"
+          placeholder="Create Board"
         />
         <Button onClick={handleAddBoard}>Add Board</Button>
       </div>

@@ -17,6 +17,7 @@ import { useMutation } from "convex/react";
 import BoardTitle from "./BoardTitle";
 import ListForm from "./ListForm";
 import ListTitle from "./ListTitle";
+import { useRouter } from "next/navigation";
 
 interface PageClientProps {
   board: Id<"boards">;
@@ -66,6 +67,10 @@ const PageClient = ({ board, org }: Props) => {
   const convexOrgId = orgId;
 
   const boarddet = useQuery(api.boards.getBoardDetails, { boardId: convexBoardId });
+  const router = useRouter()
+  if(!boarddet){
+    return router.push("/workspace")
+  }
   const listsQuery = useQuery(api.lists.getBoardLists, { boardId: convexBoardId });
 
   useEffect(() => {
