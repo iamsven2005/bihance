@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { attendance, payroll, typepay } from "@prisma/client"; // Ensure typepay is imported
 import LocationMap from "./LocationMap"; // Import the LocationMap component
 import ExportButton from "./ExportButton"; // Import the ExportButton component
@@ -19,20 +18,24 @@ interface AttendListProps {
 }
 
 interface GroupedAttendances {
-  [key: string]: attendance[];
+  [key: string]: { [userId: string]: attendance[] };
 }
 
 const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
   const [searchDate, setSearchDate] = useState("");
+  console.log(attendances);
 
-  // Group attendances by date
+  // Group attendances by date and userId
   const groupedAttendances: GroupedAttendances = attendances.reduce(
     (acc: GroupedAttendances, item: attendance) => {
       const date = new Date(item.time).toISOString().split("T")[0]; // Format date as YYYY-MM-DD
       if (!acc[date]) {
-        acc[date] = [];
+        acc[date] = {};
       }
-      acc[date].push(item);
+      if (!acc[date][item.userId]) {
+        acc[date][item.userId] = [];
+      }
+      acc[date][item.userId].push(item);
       return acc;
     },
     {}
@@ -81,28 +84,31 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
   const rows: AttendanceRow[] = [];
 
   Object.keys(groupedAttendances).forEach((date) => {
-    const items = groupedAttendances[date];
-    items.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    const users = groupedAttendances[date];
+    Object.keys(users).forEach((userId) => {
+      const items = users[userId];
+      items.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
-    for (let i = 0; i < items.length; i += 2) {
-      const checkIn = new Date(items[i].time);
-      const checkOut = items[i + 1] ? new Date(items[i + 1].time) : null;
-      const payroll = getPayroll(items[i].userId);
-      const payRate = getPayRate(payroll, checkIn);
-      const { hours, minutes } = checkOut
-        ? calculateTimeDifference(checkIn, checkOut)
-        : { hours: 0, minutes: 0 };
+      for (let i = 0; i < items.length; i += 2) {
+        const checkIn = new Date(items[i].time);
+        const checkOut = items[i + 1] ? new Date(items[i + 1].time) : null;
+        const payroll = getPayroll(items[i].userId);
+        const payRate = getPayRate(payroll, checkIn);
+        const { hours, minutes } = checkOut
+          ? calculateTimeDifference(checkIn, checkOut)
+          : { hours: 0, minutes: 0 };
 
-      rows.push({
-        Date: checkIn.toISOString().split("T")[0],
-        "Check-in Time": formatTime(checkIn),
-        "Check-out Time": checkOut ? formatTime(checkOut) : "",
-        "Hour Difference": hours,
-        "Minute Difference": minutes,
-        Location: items[i].location,
-        Name: userId,
-      });
-    }
+        rows.push({
+          Date: checkIn.toISOString().split("T")[0],
+          "Check-in Time": formatTime(checkIn),
+          "Check-out Time": checkOut ? formatTime(checkOut) : "",
+          "Hour Difference": hours,
+          "Minute Difference": minutes,
+          Location: items[i].location,
+          Name: userId,
+        });
+      }
+    });
   });
 
   const filteredAttendances = Object.keys(groupedAttendances).filter((date) =>
@@ -128,109 +134,117 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
         />
         <div className="flex flex-wrap gap-5">
           {filteredAttendances.map((date) => {
-            const items = groupedAttendances[date];
-            items.sort(
-              (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
-            );
-            const pairs = [];
-            for (let i = 0; i < items.length; i += 2) {
-              const checkIn = new Date(items[i].time);
-              const checkOut = items[i + 1] ? new Date(items[i + 1].time) : null;
-              pairs.push({ checkIn, checkOut });
-            }
+            const users = groupedAttendances[date];
 
-            return pairs.map((pair, index) => {
-              const payroll = getPayroll(items[index].userId);
-              const payRate = getPayRate(payroll, pair.checkIn);
-              const { hours, minutes } = pair.checkOut
-                ? calculateTimeDifference(pair.checkIn, pair.checkOut)
-                : { hours: 0, minutes: 0 };
-              const duePayment = payRate * hours + (payRate / 60) * minutes;
-
-              return (
-                <div
-                  key={`${date}-${index}`}
-                  className="flex flex-col shadow-lg p-5 rounded-xl"
-                >
-                  <GetUser id={userId} />
-
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline">Check-in Location</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <LocationMap location={items[0].location} />
-                    </DialogContent>
-                  </Dialog>
-
-                  {pair.checkOut && (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline">Check-out Location</Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <LocationMap location={items[1]?.location} />
-                      </DialogContent>
-                    </Dialog>
-                  )}
-
-                  {items[0].imageurl && (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline">View Check-in Image</Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <img
-                          src={items[0].imageurl}
-                          alt="Check-in"
-                          className="w-96 h-auto rounded-lg"
-                        />
-                      </DialogContent>
-                    </Dialog>
-                  )}
-                  {pair.checkOut && items[1]?.imageurl && (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline">View Check-out Image</Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <img
-                          src={items[1].imageurl}
-                          alt="Check-out"
-                          className="w-96 h-auto rounded-lg"
-                        />
-                      </DialogContent>
-                    </Dialog>
-                  )}
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline">View Details</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <p>Date: {pair.checkIn.toISOString().split("T")[index]}</p>
-                      <p>Check-in Time: {formatTime(pair.checkIn)}</p>
-                      {pair.checkOut && (
-                        <>
-                          <p>Check-out Time: {formatTime(pair.checkOut)}</p>
-                          <p>Hour Difference: {hours} hours</p>
-                          <p>Minute Difference: {minutes} minutes</p>
-
-                          <div>
-                            Rolltype: {payroll?.rolltype}
-                            {payroll?.typepay.map((list) => (
-                              <div key={list.typeid}>
-                                <p>Shift: {list.shift}</p>
-                                <p>Day: {list.day}</p>
-                                <p>Pay: {list.pay}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </DialogContent>
-                  </Dialog>
-                </div>
+            return Object.keys(users).map((userId) => {
+              const items = users[userId];
+              items.sort(
+                (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
               );
+              const pairs = [];
+              for (let i = 0; i < items.length; i += 2) {
+                const checkIn = new Date(items[i].time);
+                const checkOut = items[i + 1] ? new Date(items[i + 1].time) : null;
+                pairs.push({ checkIn, checkOut });
+              }
+
+              return pairs.map((pair, index) => {
+                const payroll = getPayroll(userId);
+                const payRate = getPayRate(payroll, pair.checkIn);
+                const { hours, minutes } = pair.checkOut
+                  ? calculateTimeDifference(pair.checkIn, pair.checkOut)
+                  : { hours: 0, minutes: 0 };
+                const duePayment = payRate * hours + (payRate / 60) * minutes;
+
+                return (
+                  <div
+                    key={`${date}-${userId}-${index}`}
+                    className="flex flex-col shadow-lg p-5 rounded-xl"
+                  >
+                    <GetUser id={userId} />
+
+                    {items[0]?.location && items[0].location !== "Unknown location" && (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">Check-in Location</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <LocationMap location={items[0].location} />
+                        </DialogContent>
+                      </Dialog>
+                    )}
+
+{items[1]?.location && items[1].location !== "Unknown location" && (
+  <Dialog>
+    <DialogTrigger asChild>
+      <Button variant="outline">Check-out Location</Button>
+    </DialogTrigger>
+    <DialogContent>
+      <LocationMap location={items[1]?.location} />
+    </DialogContent>
+  </Dialog>
+)}
+
+
+                    {pair.checkIn && items[0]?.imageurl && (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">View Check-in Image</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <img
+                            src={items[0].imageurl}
+                            alt="Check-in"
+                            className="w-96 h-auto rounded-lg"
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    )}
+                    {pair.checkOut && items[1]?.imageurl && (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">View Check-out Image</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <img
+                            src={items[1].imageurl}
+                            alt="Check-out"
+                            className="w-96 h-auto rounded-lg"
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    )}
+
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">View Details</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <p>Date: {pair.checkIn.toISOString().split("T")[index]}</p>
+                        <p>Check-in Time: {formatTime(pair.checkIn)}</p>
+                        {pair.checkOut && (
+                          <>
+                            <p>Check-out Time: {formatTime(pair.checkOut)}</p>
+                            <p>Hour Difference: {hours} hours</p>
+                            <p>Minute Difference: {minutes} minutes</p>
+
+                            <div>
+                              Rolltype: {payroll?.rolltype}
+                              {payroll?.typepay.map((list) => (
+                                <div key={list.typeid}>
+                                  <p>Shift: {list.shift}</p>
+                                  <p>Day: {list.day}</p>
+                                  <p>Pay: {list.pay}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                );
+              });
             });
           })}
         </div>

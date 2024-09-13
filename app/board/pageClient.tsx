@@ -58,6 +58,9 @@ const PageClient = ({ board, org }: Props) => {
     }>;
   }> | []>([]);
 
+  const router = useRouter();  // Initialize the router first
+
+  // Call the hooks unconditionally
   useEffect(() => {
     setBoardId(board);
     setOrgId(org);
@@ -66,23 +69,27 @@ const PageClient = ({ board, org }: Props) => {
   const convexBoardId = boardId as Id<"boards">;
   const convexOrgId = orgId;
 
+  // Fetch board details, lists, and audit logs
   const boarddet = useQuery(api.boards.getBoardDetails, { boardId: convexBoardId });
-  const router = useRouter()
-  if(!boarddet){
-    return router.push("/workspace")
-  }
   const listsQuery = useQuery(api.lists.getBoardLists, { boardId: convexBoardId });
+  const auditItems = useQuery(api.audit.getAuditLogs, { orgId: convexOrgId });
 
+  // Mutation hooks
+  const reorderLists = useMutation(api.lists.reorderLists);
+  const reorderCards = useMutation(api.cards.reorderCards);
+
+  // Handle setting lists after fetching
   useEffect(() => {
     if (listsQuery) {
       setLists(listsQuery);
     }
   }, [listsQuery]);
 
-  const auditItems = useQuery(api.audit.getAuditLogs, { orgId: convexOrgId });
-
-  const reorderLists = useMutation(api.lists.reorderLists);
-  const reorderCards = useMutation(api.cards.reorderCards);
+  // If no `boarddet`, navigate to `/workspace`
+  if (!boarddet) {
+    router.push("/workspace");
+    return null; // Ensure we return `null` to prevent rendering further
+  }
 
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, type } = result;
@@ -142,7 +149,7 @@ const PageClient = ({ board, org }: Props) => {
     list.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (!boarddet || !lists || !auditItems) {
+  if (!lists || !auditItems) {
     return <div>Loading...</div>;
   }
 
