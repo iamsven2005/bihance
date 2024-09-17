@@ -6,8 +6,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { gen_log_msg } from "@/lib/gen-log";
-import axios from "axios";
 import { useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -69,10 +67,8 @@ const PageClient = ({ board, org }: Props) => {
   const convexBoardId = boardId as Id<"boards">;
   const convexOrgId = orgId;
 
-  // Fetch board details, lists, and audit logs
   const boarddet = useQuery(api.boards.getBoardDetails, { boardId: convexBoardId });
   const listsQuery = useQuery(api.lists.getBoardLists, { boardId: convexBoardId });
-  const auditItems = useQuery(api.audit.getAuditLogs, { orgId: convexOrgId });
 
   // Mutation hooks
   const reorderLists = useMutation(api.lists.reorderLists);
@@ -84,12 +80,6 @@ const PageClient = ({ board, org }: Props) => {
       setLists(listsQuery);
     }
   }, [listsQuery]);
-
-  // If no `boarddet`, navigate to `/workspace`
-  if (!boarddet) {
-    router.push("/workspace");
-    return null; // Ensure we return `null` to prevent rendering further
-  }
 
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, type } = result;
@@ -149,7 +139,7 @@ const PageClient = ({ board, org }: Props) => {
     list.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (!lists || !auditItems) {
+  if (!lists) {
     return <div>Loading...</div>;
   }
 
@@ -170,15 +160,6 @@ const PageClient = ({ board, org }: Props) => {
           placeholder="Search lists..."
           className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline">Activity</Button>
-          </SheetTrigger>
-          <SheetContent side={"right"}>
-            {/* Rest of your code */}
-          </SheetContent>
-        </Sheet>
       </div>
 
       <main className="relative pt-28 h-full">

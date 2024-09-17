@@ -9,7 +9,11 @@ export async function GET(req: Request) {
     }
   
     try {
-      const templates = await db.typepayTemplate.findMany();
+      const templates = await db.typepayTemplate.findMany({
+        where:{
+          userId
+        }
+      });
       return NextResponse.json({ templates }, { status: 200 });
     } catch (error) {
       console.error("Failed to fetch templates:", error);
@@ -32,6 +36,7 @@ export async function POST(req: Request) {
         day,
         shift,
         pay,
+        userId
       },
     });
 

@@ -49,7 +49,7 @@ const UploadPage = () => {
       return () => clearInterval(intervalId);
     } else {
       setError('Geolocation is not supported by this browser.');
-      toast.error("Unable to get location")
+      toast.error("Unable to get location");
     }
   }, []);
 
@@ -65,7 +65,7 @@ const UploadPage = () => {
         }
       } catch (error) {
         setError('Failed to fetch events');
-        toast.error("No events found")
+        toast.error("No events found");
       }
     };
 
@@ -76,11 +76,11 @@ const UploadPage = () => {
     const urls = res.map((file: { url: string }) => file.url);
     setImageUrls((prevUrls) => [...prevUrls, ...urls]);
     console.log("Files: ", res);
-    toast.success("Image uploaded")
+    toast.success("Image uploaded");
   };
 
   const handleUploadError = (error: Error) => {
-    toast.error("Unable to upload")
+    toast.error("Unable to upload");
   };
 
   const handleSubmit = async () => {
@@ -89,7 +89,13 @@ const UploadPage = () => {
       return;
     }
 
-    const locationString = location ? `${location.latitude},${location.longitude}` : 'Unknown location';
+    if (!location) {
+      setSubmitError("Location is required to submit attendance.");
+      toast.error("Location is required");
+      return;
+    }
+
+    const locationString = `${location.latitude},${location.longitude}`;
 
     try {
       const response = await axios.post('/api/attendance', {
@@ -106,7 +112,7 @@ const UploadPage = () => {
         setSubmitError("Failed to save attendance.");
         setSubmitSuccess(null);
       }
-      toast.success("Submitted attendance")
+      toast.success("Submitted attendance");
     } catch (error) {
       setSubmitError("Failed to save attendance.");
       setSubmitSuccess(null);
@@ -118,7 +124,7 @@ const UploadPage = () => {
     <main className="flex flex-col items-center justify-between mx-auto">
       <Button>
         <Link href="/attend">
-        View Attendance
+          View Attendance
         </Link>
       </Button>
       <div className="flex flex-wrap items-center justify-center p-5">
@@ -145,9 +151,9 @@ const UploadPage = () => {
       {submitError && <p className="mt-4 text-red-500">{submitError}</p>}
       {submitSuccess && <p className="mt-4 text-green-500">{submitSuccess}</p>}
       <div className="flex flex-wrap gap-5">
-        <p>Upload a photo of your workarea</p>
+        <p>Upload a photo of your work area</p>
         <ComboboxDemo events={events} onSelect={setSelectedEvent} />
-        <Button onClick={handleSubmit}>
+        <Button onClick={handleSubmit} disabled={!location}>
           Submit
         </Button>
       </div>
@@ -162,9 +168,9 @@ const UploadPage = () => {
                 <h3 className="font-bold text-lg">{event.name}</h3>
                 <div className="text-sm">
                   <p>Description:</p>
-                  <div dangerouslySetInnerHTML={{__html: event.description}}></div>
+                  <div dangerouslySetInnerHTML={{ __html: event.description }}></div>
                 </div>
-                <br/>
+                <br />
                 <p>Location:</p>
                 <p>{event.location}</p>
               </div>

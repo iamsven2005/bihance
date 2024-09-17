@@ -14,9 +14,10 @@ import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import axios from "axios"; // Import axios
 
 interface Board {
-  _id: Id<"boards">;  // Make sure this uses Id<"boards"> from Convex
+  _id: Id<"boards">;
   _creationTime: number;
   title: string;
   link: string;
@@ -53,7 +54,7 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
   const router = useRouter();
 
   // Convex Queries and Mutations
-  const boardsData = useQuery(api.boards.listBoards, { orgId });  // Fetch boards
+  const boardsData = useQuery(api.boards.listBoards, { orgId });
   const createBoard = useMutation(api.boards.createBoard);
   const updateBoardTitle = useMutation(api.boards.updateBoardTitle);
   const deleteBoard = useMutation(api.boards.deleteBoard);
@@ -79,7 +80,7 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
     }
 
     try {
-      // Step 1: Create the board and get the board ID
+      // Step 1: Create the board
       const boardId: Id<"boards"> = await createBoard({
         title: newBoardTitle,
         orgId,
@@ -90,7 +91,10 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
         link: selectedImage.link,
       });
 
-      // Step 2: Update the board list directly
+      // Step 2: Send POST request to /api/board with boardId
+      await axios.post('/api/board', { boardId });
+
+      // Step 3: Update the board list directly
       const newBoard = {
         _id: boardId,
         _creationTime: Date.now(),
@@ -109,7 +113,7 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
       setNewBoardTitle('');
       setSelectedImage(null);
       toast.success('Board Created');
-      router.push(`/workspace/${orgId}/${boardId}`);
+      router.push(`board/${boardId}`);
     } catch (error) {
       console.error('Error adding board:', error);
       toast.error('Failed to create board');
@@ -119,6 +123,9 @@ export const BoardsSection = ({ orgId }: BoardsSectionProps) => {
   const handleDeleteBoard = async (id: Id<"boards">) => {
     try {
       await deleteBoard({ boardId: id });
+
+      // Send DELETE request to /api/board with boardId
+      await axios.delete('/api/board', { data: { boardId: id } });
 
       setBoards((prevBoards) => prevBoards.filter((board) => board._id !== id));
       toast.success('Board deleted');

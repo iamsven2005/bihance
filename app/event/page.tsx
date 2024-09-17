@@ -31,8 +31,7 @@ const Page = () => {
         },
       });
 
-      const polls = await db.polling.findMany();
-      resolve(<EventList events={events} user={creds} polls={polls} />);
+      resolve(<EventList events={events} user={creds}  />);
     } catch (error) {
       reject(error);
     }

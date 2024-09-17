@@ -31,14 +31,4 @@ export default defineSchema({
       description: v.optional(v.string()),
       listId: v.id("lists"),
     }).index("by_listId", ["listId"]),
-
-    audit: defineTable({
-      orgId: v.string(),
-      action: v.union(v.literal("CREATE"), v.literal("UPDATE"), v.literal("DELETE")),
-      entity: v.string(),
-      type: v.union(v.literal("board"), v.literal("list"), v.literal("card")),
-      userId: v.string(),
-      title: v.string(),
-      created: v.int64(),
-    }).index("by_orgId", ["orgId"]),
   });

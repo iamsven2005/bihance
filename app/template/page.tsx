@@ -169,7 +169,7 @@ const TemplatesPage = () => {
 
       {isEditModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="p-5 bg-white rounded-lg shadow-lg">
+          <div className="p-5 rounded-lg shadow-lg">
             <h2 className="text-xl font-semibold mb-3">Edit Template</h2>
 
             <Input

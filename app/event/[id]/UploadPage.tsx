@@ -74,7 +74,13 @@ const UploadPage = ({ event: selectedEvent, files }: Props) => {
       return;
     }
 
-    const locationString = location ? `${location.latitude},${location.longitude}` : 'Unknown location';
+    if (!location) {
+      setSubmitError("Location is required to submit attendance.");
+      toast.error("Location is required");
+      return;
+    }
+
+    const locationString = `${location.latitude},${location.longitude}`;
 
     try {
       const response = await axios.post('/api/attendance', {
@@ -119,25 +125,24 @@ const UploadPage = ({ event: selectedEvent, files }: Props) => {
           ))}
         </div>
       </div>
-      
+
       {submitError && <p className="mt-4 text-red-500">{submitError}</p>}
       {submitSuccess && <p className="mt-4 text-green-500">{submitSuccess}</p>}
-      <Button onClick={handleSubmit}>
+      <Button onClick={handleSubmit} disabled={!location}>
         Submit
       </Button>
       <Card className="m-5 p-5">
-      <CardTitle>View related files:</CardTitle>
-      {files.map((file) => (
-        <CardDescription key={file.id}>
-          <Button asChild>
-          <Link href={file.url} target="_blank" rel="noopener noreferrer">
-            <Files/>{file.name}
-          </Link>
-          </Button>
-        </CardDescription>
-      ))}
+        <CardTitle>View related files:</CardTitle>
+        {files.map((file) => (
+          <CardDescription key={file.id}>
+            <Button asChild>
+              <Link href={file.url} target="_blank" rel="noopener noreferrer">
+                <Files /> {file.name}
+              </Link>
+            </Button>
+          </CardDescription>
+        ))}
       </Card>
-      
     </main>
   );
 }

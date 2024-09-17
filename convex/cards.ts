@@ -69,8 +69,6 @@ export const updateCardDescription = mutation({
   args: { cardId: v.id("cards"), description: v.string() },
   handler: async ({ db }, { cardId, description }) => {
     const card = await db.patch(cardId, { description });
-
-    // You can add an audit log here if needed
     return card;
   },
 });
@@ -78,8 +76,6 @@ export const updateCardTitle = mutation({
   args: { cardId: v.id("cards"), title: v.string() },
   handler: async ({ db }, { cardId, title }) => {
     const card = await db.patch(cardId, { title });
-
-    // You can add an audit log here if needed
     return card;
   },
 });

@@ -18,8 +18,11 @@ model user {
   subscriptions userSubcription[]
   payrolls      payroll[]
   attendances   attendance[]
+
   credits       Int               @default(0)
   board         String?
+
+  typepayTemplate typepayTemplate[]
 }
 
 model event {
@@ -61,21 +64,24 @@ model payroll {
 
 model typepayTemplate {
   id        String   @id @default(cuid())
-  name      String   // Name of the template
-  day       String   // weekday or weekend
-  shift     String   // hr, min, day, location, shift
-  pay       Int      // The pay amount
+  name      String   
+  day       String   
+  shift     String   
+  pay       Int
+  userId    String
+  user                 user     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
   typepays  typepay[] @relation("TemplateTypePays")
 
   @@index([name])
+  @@index([userId])
 }
 
 model typepay {
   typeid          String         @id @default(cuid())
   payrollId       String
-  templateId      String?        // Optional reference to template
-  day             String         // weekday or weekend
-  shift           String         // hr, min, day, location, shift
+  templateId      String?       
+  day             String         
+  shift           String         
   pay             Int
   payroll         payroll        @relation(fields: [payrollId], references: [payrollid], onDelete: Cascade)
   template        typepayTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull, name: "TemplateTypePays")
@@ -133,84 +139,4 @@ model Vote {
 
 model board {
   id            String   @id @default(cuid())
-  title         String
-  orgId         String
-  imageId       String
-  imageThumbUrl String
-  imageFullUrl  String
-  username      String
-  link          String
-  list          List[]
-  created       DateTime @default(now())
-  update        DateTime @updatedAt
-}
-
-model List {
-  id      String @id @default(cuid())
-  title   String
-  order   Int
-  boardId String
-  card    Card[]
-  board   board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
-
-  @@index([boardId])
-}
-
-model Card {
-  id          String   @id @default(cuid())
-  title       String
-  order       Int
-  description String?
-  listId      String
-  list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
-  create      DateTime @default(now())
-  update      DateTime @updatedAt
-
-  @@index([listId])
-}
-
-enum ACTION {
-  CREATE
-  UPDATE
-  DELETE
-}
-
-enum TYPE {
-  board
-  list
-  card
-}
-
-model Audit {
-  id        String   @id @default(cuid())
-  orgId     String
-  action    ACTION
-  entity    String
-  type      TYPE
-  userId    String
-  title     String
-  userImage String
-  username  String
-  created   DateTime @default(now())
-  update    DateTime @updatedAt
-}
-
-model Polling {
-  id      String     @id @default(cuid())
-  title   String
-  images  Image[]
-  orgId   String?
-  userId  String
-}
-
-model Image {
-  id      String  @id @default(cuid())
-  url     String
-  name    String
-  votes   Int     @default(0)
-  order   Int     @default(0)  // Order field to store the image position
-  eventId String
-  event   Polling @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  @@index([eventId])
 }
