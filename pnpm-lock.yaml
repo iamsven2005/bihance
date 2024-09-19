@@ -73,6 +73,7 @@ specifiers:
   react-dom: ^18
   react-hook-form: ^7.52.0
   react-icons: ^5.3.0
+  react-intersection-observer: ^9.13.1
   react-leaflet: ^4.2.1
   react-quill: ^2.0.0
   sass: ^1.77.8
@@ -153,6 +154,7 @@ dependencies:
   react-dom: 18.3.1_react@18.3.1
   react-hook-form: 7.52.0_react@18.3.1
   react-icons: 5.3.0_react@18.3.1
+  react-intersection-observer: 9.13.1_nnrd3gsncyragczmpvfhocinkq
   react-leaflet: 4.2.1_6vzcrdvihry4phxw5cyobll4ay
   react-quill: 2.0.0_nnrd3gsncyragczmpvfhocinkq
   sass: 1.77.8
@@ -7136,6 +7138,19 @@ packages:
       react: '*'
     dependencies:
       react: 18.3.1
+    dev: false
+
+  /react-intersection-observer/9.13.1_nnrd3gsncyragczmpvfhocinkq:
+    resolution: {integrity: sha512-tSzDaTy0qwNPLJHg8XZhlyHTgGW6drFKTtvjdL+p6um12rcnp8Z5XstE+QNBJ7c64n5o0Lj4ilUleA41bmDoMw==}
+    peerDependencies:
+      react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1_react@18.3.1
     dev: false
 
   /react-is/16.13.1:

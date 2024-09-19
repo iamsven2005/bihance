@@ -1,16 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { generateUploadDropzone } from "@uploadthing/react";
-import { OurFileRouter } from "@/app/api/uploadthing/core";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-
 import Link from "next/link";
 import axios from "axios";
-import { board, event, files, sharedfiles, user } from "@prisma/client";
+import { sharedfiles, user } from "@prisma/client";
+import UploadBtn from "@/components/upload"; // Import the upload button component
 
 interface Props {
   orgId: string;
@@ -18,27 +16,14 @@ interface Props {
   user: user;
 }
 
-interface ImageDetails {
-  id: string;
-  thumbUrl: string;
-  fullUrl: string;
-  user: string;
-  link: string;
-}
-
 export default function Page({ orgId, files, user }: Props) {
-
   const [fileSearchTerm, setFileSearchTerm] = useState('');
-
-  const router = useRouter()
   const [name, setName] = useState("");
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-  const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 
-  const handleUploadComplete = async (res: any) => {
-    const urls = res.map((file: { url: string }) => file.url);
-    const url = urls[0];
+  const router = useRouter();
 
+  const handleUploadComplete = async (url: string) => {
     try {
       const { data } = await axios.post("/api/sharedfiles", {
         orgId,
@@ -48,23 +33,16 @@ export default function Page({ orgId, files, user }: Props) {
 
       setUploadedUrl(data.url);
       toast.success("File uploaded successfully");
-      router.refresh()
+      router.refresh();
     } catch (error) {
       console.error("Failed to upload file", error);
       toast.error("Failed to upload file");
     }
   };
 
-  const handleUploadError = (error: Error) => {
-    toast.error("Unable to upload file");
-  };
-
-
   const filteredFiles = files?.filter((file) =>
     file.name.toLowerCase().includes(fileSearchTerm.toLowerCase())
   );
-
- 
 
   return (
     <div className="flex flex-col gap-2">
@@ -105,15 +83,10 @@ export default function Page({ orgId, files, user }: Props) {
                 required
               />
             </div>
-            <UploadDropzone
-              endpoint="fileUploader"
-              onClientUploadComplete={handleUploadComplete}
-              onUploadError={handleUploadError}
-            />
+            <UploadBtn done={handleUploadComplete} />
           </div>
         </CardContent>
       </Card>
-
     </div>
   );
 }

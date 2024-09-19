@@ -4,7 +4,6 @@ import PayrollList from "./PayrollList";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { auth } from "@clerk/nextjs/server";
-import AddPayroll from "./Addpayroll";
 import { notFound, redirect } from "next/navigation";
 
 interface Props {
@@ -67,8 +66,7 @@ const View = ({ params }: Props) => {
             </Button>
           </div>
           <div className="p-5 rounded-xl">
-            <AddPayroll eventId={params.eventId} />
-            <PayrollList members={members} userMap={userMap} />
+            <PayrollList members={members} userMap={userMap} eventId={params.eventId}/>
           </div>
         </div>
       );

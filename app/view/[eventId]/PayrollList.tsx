@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { payroll, typepay, user } from "@prisma/client";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -16,199 +17,312 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Check, ChevronsUpDown, Loader2, Trash2, Plus, Edit } from "lucide-react";
+import { Command, CommandGroup, CommandItem, CommandList, CommandInput } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-  CommandInput,
-} from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import AddTypePayDialog from "./AddType";
+import { payroll, typepay, user } from "@prisma/client";
 
-type PayrollListProps = {
-  members: (payroll & { typepay: typepay[] })[];
-  userMap: Record<string, user>;
+const dayOptions = [
+  { value: "weekday", label: "Weekday" },
+  { value: "weekend", label: "Weekend" },
+];
+
+const payTypeOptions = [
+  { value: "location", label: "Per Location" },
+  { value: "project", label: "Per Project" },
+  { value: "hour", label: "Per Hour" },
+  { value: "minute", label: "Per Minute" },
+];
+
+interface AddPayrollProps {
+  eventId: string;
+  onPayrollAdded: () => void;
+}
+
+const AddPayroll: React.FC<AddPayrollProps> = ({ eventId, onPayrollAdded }) => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAddPayroll = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await axios.post("/api/payroll", { email, eventId });
+      setEmail("");
+      toast.success("Added payroll");
+      onPayrollAdded();
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data.error || "An error occurred. Please try again.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleAddPayroll} className="flex flex-wrap gap-4 mb-8">
+      <div className="flex-grow">
+        <Label htmlFor="email" className="sr-only">User Email</Label>
+        <Input
+          type="email"
+          id="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter user email"
+          required
+        />
+      </div>
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+        Add Shift
+      </Button>
+    </form>
+  );
 };
 
-interface Template {
-  id: string;
-  name: string;
+interface PayrollListProps {
+  members: (payroll & { typepay: typepay[] })[];
+  userMap: Record<string, user>;
 }
 
 const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUser, setSelectedUser] = useState<{
-    userId: string;
-    weekday: number;
-    weekend: number;
-  } | null>(null);
-  const [editingTypePay, setEditingTypePay] = useState<typepay | null>(null);
-  const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedTemplates, setSelectedTemplates] = useState<Record<string, string>>({});
-  const [weekday, setWeekday] = useState<number>(0);
-  const [weekend, setWeekend] = useState<number>(0);
-  const [error, setError] = useState<string>("");
-
-  const [editingTypePayId, setEditingTypePayId] = useState<string | null>(null);
-  const [editedTypePayValues, setEditedTypePayValues] = useState<{
-    [key: string]: Partial<typepay>;
-  }>({});
-
+  const [templates, setTemplates] = useState<{ id: string; name: string }[]>([]);
+  const [editedTypePayValues, setEditedTypePayValues] = useState<{ [key: string]: Partial<typepay> }>({});
   const router = useRouter();
 
-  const handleUpdateTypePay = async (
-    typeid: string,
-    field: keyof typepay,
-    value: string | number
-  ) => {
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const { data } = await axios.get("/api/typepay-template");
+        setTemplates(data.templates);
+      } catch (error) {
+        toast.error("Failed to fetch templates");
+      }
+    };
+    fetchTemplates();
+  }, []);
+
+  const handleUpdateTypePay = useCallback(async (typeid: string, field: keyof typepay, value: string | number) => {
     try {
       const updatedValue = { [field]: value };
-      await axios.patch("/api/typepay", {
-        typeid,
-        ...updatedValue,
-      });
+      await axios.patch("/api/typepay", { typeid, ...updatedValue });
       toast.success("Updated typepay successfully");
-      setEditingTypePayId(null);
       router.refresh();
     } catch (error) {
       toast.error("Failed to update typepay");
     }
-  };
+  }, [router]);
 
-  const handleBlur = (typeid: string, field: keyof typepay) => {
+  const handleBlur = useCallback((typeid: string, field: keyof typepay) => {
     const editedValue = editedTypePayValues[typeid]?.[field];
-    
     if (editedValue !== undefined && editedValue !== null) {
       handleUpdateTypePay(typeid, field, editedValue);
     }
-  };
+  }, [editedTypePayValues, handleUpdateTypePay]);
 
-  const handleInputChange = (typeid: string, field: keyof typepay, value: string | number) => {
+  const handleInputChange = useCallback((typeid: string, field: keyof typepay, value: string | number) => {
     setEditedTypePayValues((prevValues) => ({
       ...prevValues,
       [typeid]: { ...prevValues[typeid], [field]: value },
     }));
-  };
+  }, []);
+
+  const handleDelete = useCallback(async (userId: string, eventId: string) => {
+    try {
+      await axios.delete("/api/payroll", { data: { userIdToDelete: userId, eventId } });
+      toast.success("Deleted payroll entry");
+      router.refresh();
+    } catch (error) {
+      toast.error("Failed to delete payroll entry");
+    }
+  }, [router]);
+
+  const handleTypeDelete = useCallback(async (typeid: string) => {
+    try {
+      await axios.delete(`/api/payroll/${typeid}`);
+      toast.success("Deleted typepay entry");
+      router.refresh();
+    } catch (error) {
+      toast.error("Failed to delete typepay entry");
+    }
+  }, [router]);
 
   const filteredMembers = members.filter((item) => {
     const user = userMap[item.userId];
     const fullName = `${user?.first_name} ${user?.last_name}`.toLowerCase();
     return fullName.includes(searchTerm.toLowerCase());
   });
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      try {
-        const { data: templateData } = await axios.get("/api/typepay-template");
-        setTemplates(templateData.templates);
-      } catch (error) {
-        toast.error("Failed to fetch templates");
-      }
-    };
 
-    fetchTemplates();
-  }, []);
-
-  const handleUpdatePayroll = async () => {
+  const handleAssignTemplate = useCallback(async (payrollId: string, userId: string) => {
     try {
-      if (!selectedUser) return;
-
-      await axios.patch("/api/typepay", {
-        userId: selectedUser.userId,
-        weekday,
-        weekend,
-      });
-
-      setError("");
-      toast.success("Updated payroll successfully");
-      setSelectedUser(null);
-      router.refresh(); // Refresh the page instead of calling a non-existent handleUpdate function
-    } catch (error) {
-      setError(
-        axios.isAxiosError(error) && error.response
-          ? error.response.data.error || "An error occurred. Please try again."
-          : "An error occurred. Please try again."
-      );
-      toast.error("Failed to update payroll");
-    }
-  };
-
-  const handleDelete = async (userId: string, eventId: string) => {
-    try {
-      await axios.delete("/api/payroll", {
-        data: { userIdToDelete: userId, eventId },
-      });
-      toast.success("Deleted payroll entry");
-      router.refresh();
-    } catch (error) {
-      toast.error(
-        axios.isAxiosError(error) && error.response
-          ? error.response.data.error || "An error occurred. Please try again."
-          : "An error occurred. Please try again."
-      );
-    }
-  };
-
-  const handleTypeDelete = async (typeid: string) => {
-    try {
-      await axios.delete(`/api/payroll/${typeid}`);
-      toast.success("Deleted typepay entry");
-      router.refresh();
-    } catch (error) {
-      toast.error(
-        axios.isAxiosError(error) && error.response
-          ? error.response.data.error || "An error occurred. Please try again."
-          : "An error occurred. Please try again."
-      );
-    }
-  };
-
-  const handleAssignTemplate = async (payrollId: string, userId: string) => {
-    try {
-      await axios.post("/api/typepay", {
-        payrollId,
-        templateId: selectedTemplates[userId],
-      });
-
+      await axios.post("/api/typepay", { payrollId, templateId: selectedTemplates[userId] });
       toast.success("Template assigned successfully");
       router.refresh();
     } catch (error) {
       toast.error("Failed to assign template");
     }
-  };
+  }, [selectedTemplates, router]);
 
-  const handleTemplateChange = (userId: string, templateId: string) => {
-    setSelectedTemplates((prevSelectedTemplates) => ({
-      ...prevSelectedTemplates,
-      [userId]: templateId,
-    }));
-  };
+  return (
+    <div>
+      <Input
+        type="text"
+        placeholder="Search payroll by name"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mb-6"
+      />
 
- 
+      {filteredMembers.map((payrollItem) => {
+        const user = userMap[payrollItem.userId];
+        return (
+          <Card key={payrollItem.payrollid} className="mb-6">
+            <CardHeader>
+              <CardTitle>{user?.first_name} {user?.last_name}</CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              {payrollItem.typepay.map((typepayItem) => (
+                <div key={typepayItem.typeid} className="flex items-center gap-4 mb-4">
+                  <Input
+                    type="text"
+                    value={editedTypePayValues[typepayItem.typeid]?.day || typepayItem.day}
+                    onChange={(e) => handleInputChange(typepayItem.typeid, "day", e.target.value)}
+                    onBlur={() => handleBlur(typepayItem.typeid, "day")}
+                    className="w-32"
+                  />
+                  <Input
+                    type="text"
+                    value={editedTypePayValues[typepayItem.typeid]?.shift || typepayItem.shift}
+                    onChange={(e) => handleInputChange(typepayItem.typeid, "shift", e.target.value)}
+                    onBlur={() => handleBlur(typepayItem.typeid, "shift")}
+                    className="w-32"
+                  />
+                  <Input
+                    type="number"
+                    value={editedTypePayValues[typepayItem.typeid]?.pay || typepayItem.pay}
+                    onChange={(e) => handleInputChange(typepayItem.typeid, "pay", Number(e.target.value))}
+                    onBlur={() => handleBlur(typepayItem.typeid, "pay")}
+                    className="w-32"
+                  />
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleTypeDelete(typepayItem.typeid)}
+                    size="icon"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+
+            <CardFooter className="flex flex-wrap gap-4">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full sm:w-auto justify-between">
+                    {selectedTemplates[payrollItem.userId]
+                      ? templates.find((t) => t.id === selectedTemplates[payrollItem.userId])?.name
+                      : "Select Template..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search templates..." />
+                    <CommandList>
+                      <CommandGroup>
+                        {templates.map((template) => (
+                          <CommandItem key={template.id} onSelect={() => setSelectedTemplates((prev) => ({
+                            ...prev,
+                            [payrollItem.userId]: template.id,
+                          }))}>
+                            <Check className={cn("mr-2 h-4 w-4", selectedTemplates[payrollItem.userId] === template.id ? "opacity-100" : "opacity-0")} />
+                            {template.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <Button
+                onClick={() => handleAssignTemplate(payrollItem.payrollid, payrollItem.userId)}
+              >
+                Assign Template
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => handleDelete(payrollItem.userId, payrollItem.eventid)}
+              >
+                Delete Payroll
+              </Button>
+              <AddTypePayDialog payrollId={payrollItem.payrollid} />
+            </CardFooter>
+          </Card>
+        );
+      })}
+    </div>
+  );
+};
+
+interface CombinedPayrollProps {
+  eventId: string;
+  members: (payroll & { typepay: typepay[] })[];
+  userMap: Record<string, user>;
+}
+
+export const CombinedPayroll: React.FC<CombinedPayrollProps> = ({ eventId, members, userMap }) => {
+  const [payrollMembers, setPayrollMembers] = useState(members);
+
+  const handlePayrollAdded = useCallback(() => {
+    // Refresh the payroll list
+    // In a real application, you might want to fetch the updated list from the server
+    // For now, we'll just simulate a refresh by forcing a re-render
+    setPayrollMembers([...members]);
+  }, [members]);
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Payroll Management</h1>
+      <AddPayroll eventId={eventId} onPayrollAdded={handlePayrollAdded} />
+      <PayrollList members={payrollMembers} userMap={userMap} />
+    </div>
+  );
+};
+
+interface AddTypePayDialogProps {
+  payrollId: string;
+}
+
+const AddTypePayDialog: React.FC<AddTypePayDialogProps> = ({ payrollId }) => {
   const [day, setDay] = useState("");
   const [pay, setPay] = useState<number | "">("");
   const [payType, setPayType] = useState("");
   const [isDayOpen, setIsDayOpen] = useState(false);
   const [isPayTypeOpen, setIsPayTypeOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleAddTypePay = async (payrollId: string) => {
+  const handleAdd = async () => {
     if (!day || !payType || pay === "") {
       toast.error("All fields are required");
       return;
     }
 
+    setIsLoading(true);
     try {
       await axios.post("/api/add-typepay", {
         payrollId,
@@ -225,277 +339,127 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
       } else {
         toast.error("An error occurred. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="m-5">
-      <Input
-        type="text"
-        placeholder="Search pay by name"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="m-5"
-      />
-
-{filteredMembers.map((payrollItem) => {
-  const user = userMap[payrollItem.userId];
-  return (
-    <Card key={payrollItem.payrollid} className="mb-4">
-      <CardHeader>
-        <CardTitle>
-          {user?.first_name} {user?.last_name}
-        </CardTitle>
-      </CardHeader>
-
-      {payrollItem.typepay.map((typepayItem) => (
-        <CardContent key={typepayItem.typeid}>
-          <CardDescription className="flex gap-5 flex-wrap items-center">
-            {/* Inline Editable Day */}
-            <Input
-              type="text"
-              value={editedTypePayValues[typepayItem.typeid]?.day || typepayItem.day}
-              onChange={(e) =>
-                handleInputChange(typepayItem.typeid, "day", e.target.value)
-              }
-              onBlur={() => handleBlur(typepayItem.typeid, "day")}
-              className="w-32"
-            />
-
-            {/* Inline Editable Pay Type */}
-            <Input
-              type="text"
-              value={
-                editedTypePayValues[typepayItem.typeid]?.shift || typepayItem.shift
-              }
-              onChange={(e) =>
-                handleInputChange(typepayItem.typeid, "shift", e.target.value)
-              }
-              onBlur={() => handleBlur(typepayItem.typeid, "shift")}
-              className="w-32"
-            />
-
-            {/* Inline Editable Pay */}
-            <Input
-              type="number"
-              value={editedTypePayValues[typepayItem.typeid]?.pay || typepayItem.pay}
-              onChange={(e) =>
-                handleInputChange(typepayItem.typeid, "pay", Number(e.target.value))
-              }
-              onBlur={() => handleBlur(typepayItem.typeid, "pay")}
-              className="w-32"
-            />
-
-            {/* Delete TypePay Button */}
-            <Button
-              variant="destructive"
-              onClick={() => handleTypeDelete(typepayItem.typeid)}
-              className="ml-4"
-            >
-              Delete
-            </Button>
-          </CardDescription>
-        </CardContent>
-      ))}
-
-      <CardFooter>
-        {/* Template Assignment Combo Box */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full justify-between"
-              aria-expanded="true"
-            >
-              {selectedTemplates[payrollItem.userId]
-                ? templates.find((t) => t.id === selectedTemplates[payrollItem.userId])?.name
-                : "Select Template..."}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
-            <Command>
-              <CommandInput placeholder="Search template..." />
-              <CommandList>
-                <CommandEmpty>No templates found.</CommandEmpty>
-                <CommandGroup>
-                  {templates.map((template) => (
-                    <CommandItem
-                      key={template.id}
-                      onSelect={() => handleTemplateChange(payrollItem.userId, template.id)}
-                    >
-                      <Check
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          selectedTemplates[payrollItem.userId] === template.id ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                      {template.name}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-
-        <Button
-          onClick={() => handleAssignTemplate(payrollItem.payrollid, payrollItem.userId)}
-          className="mt-4"
-        >
-          Assign Template
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <Plus className="mr-2 h-4 w-4" />
+          Add Pay Type
         </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add New Type Pay</DialogTitle>
+        </DialogHeader>
 
-        {/* Delete Payroll Button */}
-        <Button
-          variant="destructive"
-          onClick={() => handleDelete(payrollItem.userId, payrollItem.eventid)}
-          className="mt-4"
-        >
-          Delete Payroll
-        </Button>
-        <AddTypePayDialog payrollId={payrollItem.payrollid}/>
-      </CardFooter>
-    </Card>
-  );
-})}
-
-
-
-      {/* Update Payroll Dialog */}
-      {selectedUser && (
-        <Dialog open={true} onOpenChange={() => setSelectedUser(null)}>
-          <DialogContent className="p-5">
-            <DialogHeader>
-              <DialogTitle>Update Shift</DialogTitle>
-              <DialogDescription>
-                Make changes to the payroll here. Click save when you&apos;re done.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="weekday" className="text-right">
-                  Weekday Payment
-                </Label>
-                <Input
-                  type="number"
-                  id="weekday"
-                  name="weekday"
-                  value={weekday}
-                  onChange={(e) => setWeekday(Number(e.target.value))}
-                  className="col-span-3"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="weekend" className="text-right">
-                  Weekend Payment
-                </Label>
-                <Input
-                  type="number"
-                  id="weekend"
-                  name="weekend"
-                  value={weekend}
-                  onChange={(e) => setWeekend(Number(e.target.value))}
-                  className="col-span-3"
-                  required
-                />
-              </div>
-            </div>
-            {error && <p className="text-red-500">{error}</p>}
-            <DialogFooter>
-              <Button onClick={handleUpdatePayroll}>Save changes</Button>
-              <Button variant="outline" onClick={() => setSelectedUser(null)}>
-                Cancel
+        <div className="space-y-4">
+          <Popover open={isDayOpen} onOpenChange={setIsDayOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={isDayOpen}
+                className="w-full justify-between"
+              >
+                {day ? dayOptions.find(option => option.value === day)?.label : "Select Day..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Search day..." />
+                <CommandList>
+                  <CommandGroup>
+                    {dayOptions.map(option => (
+                      <CommandItem
+                        key={option.value}
+                        onSelect={() => {
+                          setDay(option.value);
+                          setIsDayOpen(false);
+                        }}
+                      >
+                        <Check className={cn("mr-2 h-4 w-4", day === option.value ? "opacity-100" : "opacity-0")} />
+                        {option.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
 
-      {editingTypePay && (
-        <Dialog open={true} onOpenChange={() => setEditingTypePay(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Type Pay</DialogTitle>
-            </DialogHeader>
+          <Popover open={isPayTypeOpen} onOpenChange={setIsPayTypeOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={isPayTypeOpen}
+                className="w-full justify-between"
+              >
+                {payType ? payTypeOptions.find(option => option.value === payType)?.label : "Select Pay Type..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Search pay type..." />
+                <CommandList>
+                  <CommandGroup>
+                    {payTypeOptions.map(option => (
+                      <CommandItem
+                        key={option.value}
+                        onSelect={() => {
+                          setPayType(option.value);
+                          setIsPayTypeOpen(false);
+                        }}
+                      >
+                        <Check className={cn("mr-2 h-4 w-4", payType === option.value ? "opacity-100" : "opacity-0")} />
+                        {option.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
 
-            <Popover open={true} onOpenChange={() => setEditingTypePay(null)}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={true}
-                  className="w-full justify-between mb-4"
-                >
-                  {editingTypePay.day
-                    ? "Day: " + editingTypePay.day
-                    : "Select Day..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
-                <Command>
-                  <CommandInput placeholder="Search day..." />
-                  <CommandList>
-                    <CommandEmpty>No day found.</CommandEmpty>
-                    <CommandGroup>
-                      {["weekday", "weekend"].map((day) => (
-                        <CommandItem
-                          key={day}
-                          onSelect={() =>
-                            setEditingTypePay((prev) =>
-                              prev ? { ...prev, day } : null
-                            )
-                          }
-                        >
-                          <Check
-                            className={cn("mr-2 h-4 w-4")}
-                          />
-                          {day}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-
+          <div>
+            <Label htmlFor="pay">Pay Amount</Label>
             <Input
-              type="text"
-              placeholder="Shift"
-              value={editingTypePay?.shift || ""}
-              onChange={(e) =>
-                setEditingTypePay((prev) =>
-                  prev ? { ...prev, shift: e.target.value } : null
-                )
-              }
-              className="mb-4"
-            />
-
-            <Input
+              id="pay"
               type="number"
-              placeholder="Pay"
-              value={editingTypePay?.pay || ""}
-              onChange={(e) =>
-                setEditingTypePay((prev) =>
-                  prev ? { ...prev, pay: Number(e.target.value) } : null
-                )
-              }
-              className="mb-4"
+              placeholder="Enter pay amount"
+              value={pay}
+              onChange={(e) => setPay(e.target.value === "" ? "" : Number(e.target.value))}
             />
+          </div>
+        </div>
 
-            <DialogFooter>
-              <Button variant="secondary" onClick={() => setEditingTypePay(null)}>
-                Cancel
-              </Button>
-              <Button onClick={router.refresh}>Save Changes</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
+        <DialogFooter>
+          <Button 
+            variant="secondary" 
+            onClick={() => {
+              setDay("");
+              setPay("");
+              setPayType("");
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button onClick={handleAdd} disabled={isLoading}>
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+            Add
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-export default PayrollList;
+export default CombinedPayroll;
