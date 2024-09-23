@@ -1,7 +1,8 @@
+// pages/combined-payroll.tsx
+
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -9,26 +10,30 @@ import axios from "axios";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { Check, ChevronsUpDown, Loader2, Trash2, Plus, Edit } from "lucide-react";
-import { Command, CommandGroup, CommandItem, CommandList, CommandInput } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown, Loader2, Trash2, Plus } from "lucide-react";
+import {
+  Command,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  CommandInput,
+} from "@/components/ui/command";
 import { payroll, typepay, user } from "@prisma/client";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
+// Day and Pay Type options
 const dayOptions = [
   { value: "weekday", label: "Weekday" },
   { value: "weekend", label: "Weekend" },
@@ -41,6 +46,7 @@ const payTypeOptions = [
   { value: "minute", label: "Per Minute" },
 ];
 
+// Add Payroll Component
 interface AddPayrollProps {
   eventId: string;
   onPayrollAdded: () => void;
@@ -59,11 +65,7 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId, onPayrollAdded }) => {
       toast.success("Added payroll");
       onPayrollAdded();
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        toast.error(error.response.data.error || "An error occurred. Please try again.");
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
+      toast.error("Failed to add payroll");
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +74,9 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId, onPayrollAdded }) => {
   return (
     <form onSubmit={handleAddPayroll} className="flex flex-wrap gap-4 mb-8">
       <div className="flex-grow">
-        <Label htmlFor="email" className="sr-only">User Email</Label>
+        <Label htmlFor="email" className="sr-only">
+          User Email
+        </Label>
         <Input
           type="email"
           id="email"
@@ -85,12 +89,13 @@ const AddPayroll: React.FC<AddPayrollProps> = ({ eventId, onPayrollAdded }) => {
       </div>
       <Button type="submit" disabled={isLoading}>
         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
-        Add Shift
+        Add Payroll
       </Button>
     </form>
   );
 };
 
+// Payroll List Component
 interface PayrollListProps {
   members: (payroll & { typepay: typepay[] })[];
   userMap: Record<string, user>;
@@ -278,6 +283,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
   );
 };
 
+// Combined Payroll Component
 interface CombinedPayrollProps {
   eventId: string;
   members: (payroll & { typepay: typepay[] })[];
@@ -288,9 +294,6 @@ export const CombinedPayroll: React.FC<CombinedPayrollProps> = ({ eventId, membe
   const [payrollMembers, setPayrollMembers] = useState(members);
 
   const handlePayrollAdded = useCallback(() => {
-    // Refresh the payroll list
-    // In a real application, you might want to fetch the updated list from the server
-    // For now, we'll just simulate a refresh by forcing a re-render
     setPayrollMembers([...members]);
   }, [members]);
 
@@ -303,6 +306,7 @@ export const CombinedPayroll: React.FC<CombinedPayrollProps> = ({ eventId, membe
   );
 };
 
+// AddTypePayDialog Component
 interface AddTypePayDialogProps {
   payrollId: string;
 }
@@ -334,11 +338,7 @@ const AddTypePayDialog: React.FC<AddTypePayDialogProps> = ({ payrollId }) => {
       toast.success("Added new typepay entry");
       router.refresh();
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        toast.error(error.response.data.error || "An error occurred. Please try again.");
-      } else {
-        toast.error("An error occurred. Please try again.");
-      }
+      toast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -441,8 +441,8 @@ const AddTypePayDialog: React.FC<AddTypePayDialogProps> = ({ payrollId }) => {
         </div>
 
         <DialogFooter>
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="secondary"
             onClick={() => {
               setDay("");
               setPay("");

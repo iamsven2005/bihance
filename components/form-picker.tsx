@@ -63,7 +63,7 @@ export const FormPicker = ({ id, onSelectImage }: Props) => {
 
   return (
     <Carousel className="m-5 p-5 rounded-xl">
-        <h1>Board Background</h1>
+        <h1>Select Board Background</h1>
         <CarouselContent>
 
         
