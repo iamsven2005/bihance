@@ -207,7 +207,7 @@ const EventList = ({ events, user }: { events: UnifiedEventType[], user: user })
   };
 
   const handleCopyLink = (eventId: string) => {
-    const uploadLink = `https://www.bihance.app/event/${eventId}`;
+    const uploadLink = `https://www.bihance.app/dashboard/${eventId}`;
     navigator.clipboard.writeText(uploadLink).then(() => {
       toast.success("Copied Link!");
     }).catch((err) => {
@@ -306,7 +306,7 @@ const EventList = ({ events, user }: { events: UnifiedEventType[], user: user })
               <DialogTitle>QR Code Preview</DialogTitle>
             </DialogHeader>
             <div className="flex justify-center">
-              <QRCodeCanvas ref={qrCodeRef} value={`https://www.bihance.app/event/${qrCodePreviewEventId}`} size={256} />
+              <QRCodeCanvas ref={qrCodeRef} value={`https://www.bihance.app/dashboard/${qrCodePreviewEventId}`} size={256} />
             </div>
             <DialogFooter className="flex-col sm:flex-row gap-2">
               <Button variant="ghost" onClick={() => setQrCodePreviewEventId(null)} className="w-full sm:w-auto">Close</Button>

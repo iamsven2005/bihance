@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server"; // Correct import for server-side authentication
-import EventList from "./EventList"; // Client component
+import EventList from "./dashboardList"; // Client component
 import { notFound, redirect } from "next/navigation";
 
 const Page = () => {

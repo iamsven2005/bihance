@@ -24,6 +24,11 @@ export default function Page({ orgId, files, user }: Props) {
   const router = useRouter();
 
   const handleUploadComplete = async (url: string) => {
+    if (!name) {
+      toast.error("Please provide a name for the file before uploading.");
+      return; // Prevent the upload from proceeding if no name is provided
+    }
+
     try {
       const { data } = await axios.post("/api/sharedfiles", {
         orgId,
@@ -83,7 +88,7 @@ export default function Page({ orgId, files, user }: Props) {
                 required
               />
             </div>
-            <UploadBtn done={handleUploadComplete} />
+            <UploadBtn done={handleUploadComplete}/>
           </div>
         </CardContent>
       </Card>

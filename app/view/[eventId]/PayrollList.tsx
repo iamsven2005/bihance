@@ -1,5 +1,3 @@
-// pages/combined-payroll.tsx
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -103,6 +101,7 @@ interface PayrollListProps {
 
 const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [payrollMembers, setPayrollMembers] = useState(members);
   const [selectedTemplates, setSelectedTemplates] = useState<Record<string, string>>({});
   const [templates, setTemplates] = useState<{ id: string; name: string }[]>([]);
   const [editedTypePayValues, setEditedTypePayValues] = useState<{ [key: string]: Partial<typepay> }>({});
@@ -149,25 +148,36 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
     try {
       await axios.delete("/api/payroll", { data: { userIdToDelete: userId, eventId } });
       toast.success("Deleted payroll entry");
-      router.refresh();
+
+      // Immediately remove the deleted payroll from the local state
+      setPayrollMembers((prevMembers) =>
+        prevMembers.filter((member) => member.userId !== userId || member.eventid !== eventId)
+      );
     } catch (error) {
       toast.error("Failed to delete payroll entry");
     }
-  }, [router]);
+  }, []);
 
   const handleTypeDelete = useCallback(async (typeid: string) => {
     try {
       await axios.delete(`/api/payroll/${typeid}`);
       toast.success("Deleted typepay entry");
-      router.refresh();
+
+      // Update the local state to remove the deleted typepay entry
+      setPayrollMembers((prevMembers) =>
+        prevMembers.map((member) => ({
+          ...member,
+          typepay: member.typepay.filter((type) => type.typeid !== typeid),
+        }))
+      );
     } catch (error) {
       toast.error("Failed to delete typepay entry");
     }
-  }, [router]);
+  }, []);
 
-  const filteredMembers = members.filter((item) => {
+  const filteredMembers = payrollMembers.filter((item) => {
     const user = userMap[item.userId];
-    const fullName = `${user?.first_name} ${user?.last_name}`.toLowerCase();
+    const fullName = `${user?.first_name} ${user?.last_name}.toLowerCase();`
     return fullName.includes(searchTerm.toLowerCase());
   });
 
@@ -282,6 +292,7 @@ const PayrollList: React.FC<PayrollListProps> = ({ members, userMap }) => {
     </div>
   );
 };
+
 
 // Combined Payroll Component
 interface CombinedPayrollProps {

@@ -23,7 +23,7 @@ export const EventsSection = ({ orgId, events }: EventsSectionProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleCopyLink = (eventId: string) => {
-    const uploadLink = `https://www.bihance.app/event/${eventId}`;
+    const uploadLink = `https://www.bihance.app/dashboard/${eventId}`;
     navigator.clipboard
       .writeText(uploadLink)
       .then(() => {
@@ -110,7 +110,7 @@ export const EventsSection = ({ orgId, events }: EventsSectionProps) => {
             </DialogHeader>
             <QRCodeCanvas
               id={`qr-code-preview`}
-              value={`https://www.bihance.app/event/${qrCodePreviewEventId}`}
+              value={`https://www.bihance.app/dashboard/${qrCodePreviewEventId}`}
               size={256}
             />
             <DialogFooter>

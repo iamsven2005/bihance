@@ -6,18 +6,7 @@ const f = createUploadthing();
 
  
 export const ourFileRouter = {
-  imageUploader: f({ image: { maxFileSize: "4MB" } })
-    .middleware(async ({ req }) => {
-      const {userId} = auth()
-      if (!userId) throw new UploadThingError("Unauthorized");
-      return { userId: userId };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
-      console.log("Upload complete for userId:", metadata.userId);
-      console.log("file url", file.url);
-      return { uploadedBy: metadata.userId };
-    }),
-    fileUploader: f(["video", "image","audio", "blob", "pdf", "text" ])
+  fileUploader: f(["video", "image","audio", "blob", "pdf", "text" ])
     .middleware(async ({ req }) => {
       const {userId} = auth()
       if (!userId) throw new UploadThingError("Unauthorized");

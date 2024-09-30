@@ -122,7 +122,7 @@ const AttendList = ({ attendances, payrolls, userId }: AttendListProps) => {
           <h1 className="font-bold text-xl">Attendance</h1>
           <div className="flex flex-wrap gap-5">
             <Button asChild>
-              <Link href="/event">Events</Link>
+              <Link href="/dashboard">Events</Link>
             </Button>
             <ExportButton data={rows} filename="attendance.csv" />
           </div>

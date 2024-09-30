@@ -83,7 +83,7 @@ const EventForm = ({ params }: Props) => {
   }
 
   if (!event) {
-    return router.push("/event");
+    return router.push("/dashboard");
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -101,7 +101,7 @@ const EventForm = ({ params }: Props) => {
     try {
       await deleteEvent(eventId);
       toast.success("Event deleted");
-      router.push("/event");
+      router.push("/dashboard");
     } catch (error) {
       console.error("Failed to delete event:", error);
       toast.error("Failed to delete event");
@@ -115,7 +115,7 @@ const EventForm = ({ params }: Props) => {
           <CardTitle className="m-5">Edit {event.name}</CardTitle>
           <div className="flex flex-wrap gap-5">
             <Button asChild>
-              <Link href="/event">Back to events</Link>
+              <Link href="/dashboard">Back to events</Link>
             </Button>
             <DeleteConfirmationDialog onConfirm={handleDelete} />
           </div>

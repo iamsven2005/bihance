@@ -129,7 +129,7 @@ const UploadPage = () => {
       </Button>
       <div className="flex flex-wrap items-center justify-center p-5">
         <UploadDropzone
-          endpoint="imageUploader"
+          endpoint="fileUploader"
           onClientUploadComplete={handleUploadComplete}
           onUploadError={handleUploadError}
         />

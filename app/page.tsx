@@ -54,7 +54,7 @@ const MainPage = async () => {
             </SignedOut>
             <CardDescription className="flex gap-5">
               
-              <Link href={"/event"}>
+              <Link href={"/dashboard"}>
               <Button>
               Dashboard
               </Button>

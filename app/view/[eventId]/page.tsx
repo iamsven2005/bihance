@@ -59,7 +59,7 @@ const View = ({ params }: Props) => {
           <div className="flex justify-between m-5">
             <h1 className="font-bold text-xl">Payroll for {event?.name}</h1>
             <Button asChild>
-              <Link href="/event">Events</Link>
+              <Link href="/dashboard">Events</Link>
             </Button>
             <Button asChild>
               <Link href="/template">Template</Link>

@@ -22,7 +22,7 @@ export async function deleteEvent(eventId: string) {
     await db.event.delete({
       where: { eventid: eventId },
     });
-    redirect("/event");
+    redirect("/dashboard");
   } catch (error) {
     console.error("Failed to delete event:", error);
     throw new Error("Failed to delete event");

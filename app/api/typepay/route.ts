@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -28,7 +29,6 @@ export async function POST(req: Request) {
         pay: template.pay,
       },
     });
-
     return NextResponse.json({ message: "Template assigned successfully" }, { status: 200 });
   } catch (error) {
     console.error("Failed to assign template:", error);

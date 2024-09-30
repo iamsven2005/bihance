@@ -6,7 +6,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getUserSubscription } from "./queries";
 
-const returnUrl = absoluteUrl("/event");
+const returnUrl = absoluteUrl("/dashboard");
 export const createStripeUrl = async() => {
     const {userId} = await auth()
     const user = await currentUser()
