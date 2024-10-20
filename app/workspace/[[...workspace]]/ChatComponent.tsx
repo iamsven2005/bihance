@@ -47,7 +47,7 @@ export const ChatComponent = ({ orgId, orgname, username }: ChatComponentProps) 
 
   const handleStartCall = () => {
     const callWindow = window.open(
-      `/room/${orgId}`,
+      `https://meet.bihance.app/rooms/${orgId}`,
       'callWindow',
       'width=1200,height=800,left=200,top=100'
     );
