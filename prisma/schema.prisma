@@ -139,4 +139,8 @@ model Vote {
 
 model board {
   id            String   @id @default(cuid())
+  one String?
+  two String?
+  three String?
 }
+
