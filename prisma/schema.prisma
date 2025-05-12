@@ -9,19 +9,17 @@ datasource db {
 }
 
 model user {
-  clerkId       String            @id @default(cuid())
-  first_name    String?
-  last_name     String?
-  image_url     String?
-  email         String?           @unique
-  events        event[]           @relation("UserEvents")
-  subscriptions userSubcription[]
-  payrolls      payroll[]
-  attendances   attendance[]
-
-  credits       Int               @default(0)
-  board         String?
-
+  clerkId         String            @id @default(cuid())
+  first_name      String?
+  last_name       String?
+  image_url       String?
+  email           String?           @unique
+  credits         Int               @default(0)
+  board           String?
+  events          event[]           @relation("UserEvents")
+  subscriptions   userSubcription[]
+  payrolls        payroll[]
+  attendances     attendance[]
   typepayTemplate typepayTemplate[]
 }
 
@@ -32,11 +30,11 @@ model event {
   image       String
   description String
   name        String
+  orgId       String?
   files       files[]
   users       user[]       @relation("UserEvents")
   attendances attendance[]
   payrolls    payroll[]
-  orgId String?
 }
 
 model userSubcription {
@@ -53,7 +51,7 @@ model payroll {
   payrollid String    @id @default(cuid())
   userId    String
   eventid   String
-  rolltype  String // manager, custom, teamlead
+  rolltype  String
   user      user      @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
   event     event     @relation(fields: [eventid], references: [eventid], onDelete: Cascade)
   typepay   typepay[]
@@ -63,28 +61,28 @@ model payroll {
 }
 
 model typepayTemplate {
-  id        String   @id @default(cuid())
-  name      String   
-  day       String   
-  shift     String   
-  pay       Int
-  userId    String
-  user                 user     @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
-  typepays  typepay[] @relation("TemplateTypePays")
+  id       String    @id @default(cuid())
+  name     String
+  day      String
+  shift    String
+  pay      Int
+  userId   String
+  user     user      @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  typepays typepay[] @relation("TemplateTypePays")
 
   @@index([name])
   @@index([userId])
 }
 
 model typepay {
-  typeid          String         @id @default(cuid())
-  payrollId       String
-  templateId      String?       
-  day             String         
-  shift           String         
-  pay             Int
-  payroll         payroll        @relation(fields: [payrollId], references: [payrollid], onDelete: Cascade)
-  template        typepayTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull, name: "TemplateTypePays")
+  typeid     String           @id @default(cuid())
+  payrollId  String
+  day        String
+  shift      String
+  pay        Int
+  templateId String?
+  payroll    payroll          @relation(fields: [payrollId], references: [payrollid], onDelete: Cascade)
+  template   typepayTemplate? @relation("TemplateTypePays", fields: [templateId], references: [id], onDelete: SetNull)
 
   @@index([payrollId])
   @@index([templateId])
@@ -113,11 +111,12 @@ model files {
 
   @@index([eventId])
 }
-model sharedfiles{
-    id      String @id @default(cuid())
-    orgId   String?
-    url     String
-    name    String
+
+model sharedfiles {
+  id    String  @id @default(cuid())
+  orgId String?
+  url   String
+  name  String
 }
 
 model Feature {
@@ -131,16 +130,29 @@ model Vote {
   id        String  @id @default(cuid())
   userId    String
   featureId String
-  feature   Feature @relation(fields: [featureId], references: [id], name: "FeatureVotes")
+  feature   Feature @relation("FeatureVotes", fields: [featureId], references: [id])
 
   @@unique([userId, featureId])
   @@index([featureId])
 }
 
 model board {
-  id            String   @id @default(cuid())
-  one String?
-  two String?
+  id    String  @id @default(cuid())
+  one   String?
   three String?
+  two   String?
 }
 
+model UserEvents {
+  A String
+  B String
+
+  @@unique([A, B], map: "_UserEvents_AB_unique")
+  @@index([B], map: "_UserEvents_B_index")
+  @@map("_UserEvents")
+}
+
+model minecraft{
+  id  String @id @default(cuid())
+  context String
+}
