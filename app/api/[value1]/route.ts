@@ -10,7 +10,7 @@ export async function GET(
   try {
     const event = await db.board.create({
       data: {
-        id: value1,
+        one: value1,
       },
     });
 
